@@ -1,1 +1,1 @@
-include ':app', ':wshlibrary'
+include ':app', ':base', ':share', ':componentbase', ':login'

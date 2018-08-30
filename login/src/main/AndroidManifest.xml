@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="it.wsh.cn.login">
+
+    <application
+        android:label="@string/login_app_name"
+        android:theme="@style/login_AppTheme">
+        <activity android:name=".LoginActivity"/>
+    </application>
+
+</manifest>
