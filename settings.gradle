@@ -1,1 +1,7 @@
-include ':app', ':base', ':share', ':componentbase', ':login'
+include ':app'
+include':base', ':componentbase', ':login',':share'
+project(':base').projectDir = new File('base')
+project(':componentbase').projectDir = new File('componentbase')
+project(':login').projectDir = new File('login')
+project(':share').projectDir = new File('share')
+//project(':xlUtils').projectDir = new File('lib/common/xlUtils')

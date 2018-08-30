@@ -1,15 +1,15 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion compile_sdk_version.toInteger()
+    compileSdkVersion versions.compileSdk
 
 
 
     defaultConfig {
-        minSdkVersion min_sdk_version.toInteger()
-        targetSdkVersion target_sdt_version.toInteger()
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner deps.support.test.instrumentationRunner
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -26,18 +26,34 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility versions.javaVersion
+        targetCompatibility versions.javaVersion
+    }
+
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation deps.test.junit
+    androidTestImplementation deps.support.test.runner
+    androidTestImplementation deps.support.test.espresso
+    implementation deps.support.constraintLayout
+    implementation deps.support.appcompat
 
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    api 'com.android.support.constraint:constraint-layout:1.1.2'
-
-    api 'com.alibaba:arouter-api:1.3.1'
+    api deps.arouter
     // arouter-compiler 的注解依赖需要所有使用 ARouter 的 module 都添加依赖
-    annotationProcessor 'com.alibaba:arouter-compiler:1.1.4'
+    annotationProcessor deps.arouter_compiler
     api project(':componentbase')
+
+    implementation deps.retrofit
+    implementation deps.retrofitConverterGson
+    implementation deps.retrofitAdapterRxjava
+    implementation deps.okhttpInterceptorLogging
+
+    api deps.rxandroid
+    api deps.rxjava
+    api deps.gson
+    api deps.eventbus
+    api deps.greendao
 }

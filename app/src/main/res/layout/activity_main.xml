@@ -33,11 +33,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
+        android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="50dp"
         android:onClick="fragment"
@@ -45,5 +44,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_login" />
+
+    <TextView
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:background="#FF0"
+        android:gravity="center"
+        android:text="http测试"
+        android:onClick="httpTest"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button"
+        tools:ignore="OnClick" />
 
 </android.support.constraint.ConstraintLayout>

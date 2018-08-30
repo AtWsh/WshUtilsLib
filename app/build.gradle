@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion compile_sdk_version.toInteger()
+    compileSdkVersion versions.compileSdk
     defaultConfig {
         applicationId "it.wsh.cn.wshutilslib"
-        minSdkVersion min_sdk_version.toInteger()
-        targetSdkVersion target_sdt_version.toInteger()
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+        versionCode verCode
+        versionName verName
+        testInstrumentationRunner deps.support.test.instrumentationRunner
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -29,13 +29,21 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility versions.javaVersion
+        targetCompatibility versions.javaVersion
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation deps.support.appcompatv7
+    implementation deps.support.constraintLayout
 
-    annotationProcessor 'com.alibaba:arouter-compiler:1.1.4'
+    implementation deps.butterknife
+    annotationProcessor deps.butterknifeAnnotation
+    annotationProcessor deps.arouter_compiler
     implementation project(':base')
 
     runtimeOnly project(':login')

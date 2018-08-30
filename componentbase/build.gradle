@@ -1,15 +1,15 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion compile_sdk_version.toInteger()
+    compileSdkVersion versions.compileSdk
 
 
 
     defaultConfig {
-        minSdkVersion min_sdk_version.toInteger()
-        targetSdkVersion target_sdt_version.toInteger()
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner deps.support.test.instrumentationRunner
 
     }
 
@@ -20,10 +20,15 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility versions.javaVersion
+        targetCompatibility versions.javaVersion
+    }
+
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    api "com.android.support:appcompat-v7:$support_version"
+    implementation deps.support.appcompat
 }

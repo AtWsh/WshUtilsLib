@@ -5,7 +5,7 @@ if (isRunAlone.toBoolean()) {
 }
 
 android {
-    compileSdkVersion compile_sdk_version.toInteger()
+    compileSdkVersion versions.compileSdk
 
 
 
@@ -13,12 +13,12 @@ android {
         if (isRunAlone.toBoolean()) {
             applicationId "it.wsh.cn.share"
         }
-        minSdkVersion min_sdk_version.toInteger()
-        targetSdkVersion target_sdt_version.toInteger()
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+        versionCode verCode
+        versionName verName
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner deps.support.test.instrumentationRunner
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -47,11 +47,18 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility versions.javaVersion
+        targetCompatibility versions.javaVersion
+    }
+
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation deps.support.appcompatv7
+    implementation deps.support.constraintLayout
     implementation project(':base')
-    annotationProcessor 'com.alibaba:arouter-compiler:1.1.4'
+    annotationProcessor deps.arouter_compiler
 }

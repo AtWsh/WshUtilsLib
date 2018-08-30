@@ -20,6 +20,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".FragmentActivity"></activity>
+        <activity android:name=".httpdemo.HttpDemoActivity"></activity>
+        <activity android:name=".httpdemo.LifeCircleTestActivity"></activity>
+        <activity android:name=".httpdemo.DownloadTestActivity"></activity>
     </application>
 
 </manifest>

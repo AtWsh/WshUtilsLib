@@ -1,14 +1,15 @@
 package it.wsh.cn.wshutilslib;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
 import com.alibaba.android.arouter.launcher.ARouter;
 
 import it.wsh.cn.wshlibrary.utils.RouteUtils;
+import it.wsh.cn.wshutilslib.httpdemo.HttpDemoActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,5 +57,14 @@ public class MainActivity extends AppCompatActivity {
      */
     public void fragment(View view) {
         startActivity(new Intent(this, FragmentActivity.class));
+    }
+
+    /**
+     * 跳 FragmentActivity
+     *
+     * @param view
+     */
+    public void httpTest(View view) {
+        HttpDemoActivity.luanchActivity(this);
     }
 }

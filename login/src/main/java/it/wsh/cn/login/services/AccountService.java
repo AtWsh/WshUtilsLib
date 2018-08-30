@@ -1,10 +1,12 @@
 package it.wsh.cn.login.services;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+
+import android.app.FragmentManager;
+import android.app.Fragment;
+
 
 import it.wsh.cn.componentbase.services.IAccountService;
 import it.wsh.cn.login.UserFragment;
