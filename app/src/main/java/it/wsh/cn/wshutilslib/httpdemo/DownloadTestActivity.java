@@ -193,6 +193,7 @@ public class DownloadTestActivity extends AppCompatActivity {
             XLDownloadManager.getInstance(DownloadTestActivity.this).startDownload(downloadUrl, new HttpCallBack<String>() {
                 @Override
                 public void onSuccess(String fileName) {
+                    mProgressBar1.setProgress(100);
                     Toast.makeText(DownloadTestActivity.this, "下载完成", Toast.LENGTH_SHORT).show();
                     installApp(fileName);
                 }
@@ -223,6 +224,7 @@ public class DownloadTestActivity extends AppCompatActivity {
             XLDownloadManager.getInstance(DownloadTestActivity.this).startDownload(downloadUrl, new HttpCallBack<String>() {
                 @Override
                 public void onSuccess(String fileName) {
+                    mProgressBar2.setProgress(100);
                     Toast.makeText(DownloadTestActivity.this, "下载完成", Toast.LENGTH_SHORT).show();
                     installApp(fileName);
                 }
@@ -253,6 +255,7 @@ public class DownloadTestActivity extends AppCompatActivity {
             XLDownloadManager.getInstance(DownloadTestActivity.this).startDownload(downloadUrl, new HttpCallBack<String>() {
                 @Override
                 public void onSuccess(String fileName) {
+                    mProgressBar3.setProgress(100);
                     Toast.makeText(DownloadTestActivity.this, "下载完成", Toast.LENGTH_SHORT).show();
                     installApp(fileName);
                 }

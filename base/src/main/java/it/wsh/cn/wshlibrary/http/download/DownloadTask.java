@@ -52,8 +52,9 @@ public class DownloadTask {
     private String mFileName;
     private File mSaveFile;
     private String mTotalLength = "-";
-    private long mRange ;
+    private long mRange = 0;
     private DownloadCallBack mDownloadCallBack;
+    private long mTotalSize;
 
     private static final int SUCCESS = 1;
     private static final int PROGRESS = 2;
@@ -144,40 +145,49 @@ public class DownloadTask {
     //下载
     public void downloadFile(final String url, final String fileName, final DownloadCallBack  downloadCallback) {
 
-        String downloadPath = DownloadPathConfig.getDownloadPath(mContext);
-        mSaveFile = new File(downloadPath + fileName);
-        if (mSaveFile.exists()) {
-            mTotalLength += mSaveFile.length();
-        }
-        mDownloadUrl = url;
-        mFileName = fileName;
-        mDownloadCallBack = downloadCallback;
-        download();
-    }
-
-    private void download() {
         if (mCurrentServices == null) {
             return;
         }
-        if (TextUtils.isEmpty(mDownloadUrl)) {
+        if (TextUtils.isEmpty(url)) {
             return;
         }
 
+        mDownloadUrl = url;
+        mFileName = fileName;
+        mDownloadCallBack = downloadCallback;
+
+        DownloadInfo info = DownloadInfoDaoHelper.queryTask(url);
         int progress = 0;
-        if (mSaveFile.exists()) {
-            mRange = SPDownloadUtil.getInstance(mContext).getDownloadPosition(mDownloadUrl, 0);
-            if (mRange == 0) {
-                mSaveFile.delete();
-            }else if (mSaveFile.length() > 0){
-                progress = (int) (mRange * 100 / mSaveFile.length());
-                if (mRange == mSaveFile.length()) {
-                    mDownloadCallBack.onSuccess(mFileName);
-                    return;
+        if (info != null) {
+            mRange = info.getDownloadPosition();
+            mSaveFile = new File(info.getSavePath());
+            mTotalSize = info.getTotolSize();
+            mTotalLength += mTotalSize;
+            if (mSaveFile.exists()) {
+                if (mRange == 0) {
+                    mSaveFile.delete();
+                }else if (mSaveFile.length() > 0){
+                    progress = (int) (mRange * 100 / mTotalSize);
+                    if (mRange == mTotalSize) {
+                        mDownloadCallBack.onSuccess(mFileName);
+                        return;
+                    }
                 }
+            }
+        }else {
+            String downloadPath = DownloadPathConfig.getDownloadPath(mContext);
+            mSaveFile = new File(downloadPath + fileName);
+            if (mSaveFile.exists()) {
+                mSaveFile.delete();
             }
         }
 
         mDownloadCallBack.onProgress(progress);
+        download();
+    }
+
+    private void download() {
+
         mDownloading = true;
         mCurrentServices.download("bytes=" + Long.toString(mRange) + mTotalLength, mDownloadUrl)
                 .subscribeOn(Schedulers.io())
@@ -193,7 +203,7 @@ public class DownloadTask {
                     public void onNext(ResponseBody responseBody) {
                         RandomAccessFile randomAccessFile = null;
                         InputStream inputStream = null;
-                        long total = mRange;
+                        long downloadedLength = mRange;
                         long responseLength = 0;
                         try {
                             byte[] buf = new byte[1024 * 16];
@@ -206,13 +216,13 @@ public class DownloadTask {
                             if (!mSaveFile.exists()) {
                                 mSaveFile.createNewFile();
                             }
-                            SPDownloadUtil.getInstance(mContext).saveDownloadSaveFile(mDownloadUrl, mSaveFile.getAbsolutePath());
                             randomAccessFile = new RandomAccessFile(mSaveFile, "rwd");
                             if (mRange == 0) {
                                 randomAccessFile.setLength(responseLength);
                             }
                             randomAccessFile.seek(mRange);
-                            if (mRange == randomAccessFile.length()) {
+                            mTotalSize = randomAccessFile.length();
+                            if (mRange == mTotalSize) {
                                 mDownloading = false;
                                 mFinish = true;
                                 mExit = true;
@@ -226,18 +236,25 @@ public class DownloadTask {
                             int progress = 0;
                             int lastProgress = 0;
 
+                            int updateCount = 0;
                             while (!mExit && (len = inputStream.read(buf)) != -1) {
                                 randomAccessFile.write(buf, 0, len);
-                                total += len;
-                                SPDownloadUtil.getInstance(mContext).saveDownloadPosition(mDownloadUrl, total);
+                                downloadedLength += len;
+
                                 lastProgress = progress;
-                                progress = (int) (total * 100 / randomAccessFile.length());
+                                progress = (int) (downloadedLength * 100 / mTotalSize);
                                 if (progress > 0 && progress != lastProgress) {
                                     Message message = new Message();
                                     message.what = PROGRESS;
                                     message.obj = progress;
                                     mMainHander.sendMessage(message);
                                 }
+                                if ((updateCount % 5) == 0) {
+                                    DownloadInfoDaoHelper.insertInfoSync(mDownloadUrl, mFileName,
+                                            mSaveFile.getPath(), downloadedLength, mTotalSize);
+                                }
+
+                                updateCount++;
                             }
                             mDownloading = false;
                             if (!mExit) {
@@ -256,7 +273,8 @@ public class DownloadTask {
                         } finally {
                             try {
                                 mDownloading = false;
-                                SPDownloadUtil.getInstance(mContext).saveDownloadPosition(mDownloadUrl, total);
+                                DownloadInfoDaoHelper.insertInfoSync(mDownloadUrl, mFileName,
+                                        mSaveFile.getPath(), downloadedLength, mTotalSize);
                                 if (randomAccessFile != null) {
                                     randomAccessFile.close();
                                 }

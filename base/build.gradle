@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'org.greenrobot.greendao'
 
 android {
     compileSdkVersion versions.compileSdk
@@ -29,6 +30,12 @@ android {
     compileOptions {
         sourceCompatibility versions.javaVersion
         targetCompatibility versions.javaVersion
+    }
+
+    greendao {
+        schemaVersion 1
+        daoPackage 'it.wsh.cn.wshlibrary.database.greendao'
+        //targetGenDir 'src/main/java'
     }
 
 }

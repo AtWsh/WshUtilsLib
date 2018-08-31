@@ -45,10 +45,18 @@ public class XLDownloadManager {
         if (TextUtils.isEmpty(downloadUrl)) {
             return;
         }
-        String fileName = downloadUrl.substring(downloadUrl.lastIndexOf('/') + 1);
-        if (TextUtils.isEmpty(fileName)) {
-            fileName = downloadUrl.hashCode() + "";
+
+        DownloadInfo info = DownloadInfoDaoHelper.queryTask(downloadUrl);
+        String fileName = "";
+        if (info == null) {
+            fileName = downloadUrl.substring(downloadUrl.lastIndexOf('/') + 1);
+            if (TextUtils.isEmpty(fileName)) {
+                fileName = downloadUrl.hashCode() + "";
+            }
+        }else {
+            fileName = info.getFileName();
         }
+
         startDownload(downloadUrl, fileName, callBack);
     }
 
@@ -56,9 +64,13 @@ public class XLDownloadManager {
         if (callBack == null) {
             return;
         }
-        if (TextUtils.isEmpty(downloadUrl) || TextUtils.isEmpty(fileName) ) {
+        if (TextUtils.isEmpty(downloadUrl)) {
             callBack.onError(HttpStateCode.ERROR_DOWNLOAD, null);
             return;
+        }
+
+        if (TextUtils.isEmpty(fileName)) {
+            fileName = downloadUrl;
         }
 
         if (mContext == null) {
@@ -151,17 +163,18 @@ public class XLDownloadManager {
     }
 
     private boolean clearDownloadData(String url) {
-        SPDownloadUtil spDownloadUtil = SPDownloadUtil.getInstance(mContext);
-        spDownloadUtil.saveDownloadPosition(url, 0);
-        String saveFile = spDownloadUtil.getDownloadSaveFile(url);
-        if (TextUtils.isEmpty(saveFile)) {
-            return false;
-        }
-        File file = new File(saveFile);
-        if (file != null && file.exists()) {
-            file.delete();
-            spDownloadUtil.saveDownloadSaveFile(url, "");
-            return true;
+        DownloadInfo info = DownloadInfoDaoHelper.queryTask(url);
+        if (info != null) {
+            String saveFile = info.getSavePath();
+            DownloadInfoDaoHelper.deleteInfo(url);
+            if (TextUtils.isEmpty(saveFile)) {
+                return false;
+            }
+            File file = new File(saveFile);
+            if (file != null && file.exists()) {
+                file.delete();
+                return true;
+            }
         }
         return false;
     }
