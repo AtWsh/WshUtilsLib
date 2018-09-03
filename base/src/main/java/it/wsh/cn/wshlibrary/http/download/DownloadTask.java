@@ -163,6 +163,9 @@ public class DownloadTask {
             mSaveFile = new File(info.getSavePath());
             mTotalSize = info.getTotolSize();
             mTotalLength += mTotalSize;
+            if (TextUtils.isEmpty(mFileName)) {
+                mFileName = info.getFileName();
+            }
             if (mSaveFile.exists()) {
                 if (mRange == 0) {
                     mSaveFile.delete();
@@ -177,6 +180,12 @@ public class DownloadTask {
         }else {
             String downloadPath = DownloadPathConfig.getDownloadPath(mContext);
             mSaveFile = new File(downloadPath + fileName);
+            if (TextUtils.isEmpty(mFileName)) {
+                mFileName = url.substring(url.lastIndexOf('/') + 1);
+                if (TextUtils.isEmpty(fileName)) {
+                    mFileName = url.hashCode() + "";
+                }
+            }
             if (mSaveFile.exists()) {
                 mSaveFile.delete();
             }

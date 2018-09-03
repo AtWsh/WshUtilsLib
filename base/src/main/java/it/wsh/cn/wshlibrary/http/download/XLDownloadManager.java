@@ -46,18 +46,7 @@ public class XLDownloadManager {
             return;
         }
 
-        DownloadInfo info = DownloadInfoDaoHelper.queryTask(downloadUrl);
-        String fileName = "";
-        if (info == null) {
-            fileName = downloadUrl.substring(downloadUrl.lastIndexOf('/') + 1);
-            if (TextUtils.isEmpty(fileName)) {
-                fileName = downloadUrl.hashCode() + "";
-            }
-        }else {
-            fileName = info.getFileName();
-        }
-
-        startDownload(downloadUrl, fileName, callBack);
+        startDownload(downloadUrl, "", callBack);
     }
 
     public void startDownload(String downloadUrl, String fileName, final HttpCallBack<String> callBack) {
@@ -67,10 +56,6 @@ public class XLDownloadManager {
         if (TextUtils.isEmpty(downloadUrl)) {
             callBack.onError(HttpStateCode.ERROR_DOWNLOAD, null);
             return;
-        }
-
-        if (TextUtils.isEmpty(fileName)) {
-            fileName = downloadUrl;
         }
 
         if (mContext == null) {
