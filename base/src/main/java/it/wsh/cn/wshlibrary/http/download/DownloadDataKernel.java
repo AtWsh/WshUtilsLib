@@ -69,7 +69,6 @@ public class DownloadDataKernel {
         for (DownloadTask task : allTasks) {
             DownloadInfo downloadInfo = task.getDownloadInfo();
             allTaskInfos.add(downloadInfo);
-            Log.d("wsh_log", "updateDataBase taskName = " + downloadInfo.getFileName() + "; downloadPosition = " +downloadInfo.getDownloadPosition());
         }
         DownloadInfoDaoHelper.insertTasks(allTaskInfos);
     }
@@ -78,9 +77,7 @@ public class DownloadDataKernel {
      * 界面更新定时器
      */
     public void startUpdateTimer() {
-        Log.d("wsh_log", "startUpdateTimer");
         if (mUpdating) {
-            Log.d("wsh_log", "startUpdateTimer   正在计时");
             return;
         }
         mUpdating = true;
@@ -91,7 +88,6 @@ public class DownloadDataKernel {
     }
 
     private void stopUpdateTimer() {
-        Log.d("wsh_log", "stopUpdateTimer");
         mUpdating = false;
         if (mWorkerHandler != null) {
             mWorkerHandler.removeCallbacks(mUpdateRunnable);

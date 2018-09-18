@@ -29,8 +29,10 @@ import it.wsh.cn.wshlibrary.http.HttpServices;
 import it.wsh.cn.wshlibrary.http.HttpStateCode;
 import it.wsh.cn.wshlibrary.http.converter.ConvertFactory;
 import it.wsh.cn.wshlibrary.http.https.SslContextFactory;
+import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
@@ -57,7 +59,8 @@ public class DownloadTask {
     private static final int SUCCESS = 1;
     private static final int PROGRESS = 2;
     private static final int ERROR = 3;
-
+    private static final int ERROR_CHECK_LENGTH = 4;
+    private static final int PAUSE = 5;
     private List<DownloadProcessListener> mProcessListeners = new ArrayList<>();
 
     public DownloadTask(Context context) {
@@ -70,6 +73,7 @@ public class DownloadTask {
     private Handler mMainHander = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
+            String info = "";
             switch (msg.what) {
                 case SUCCESS:
                     String fileName = (String) msg.obj;
@@ -80,8 +84,15 @@ public class DownloadTask {
                     notifyProcessUpdate(progress);
                     break;
                 case ERROR:
-                    String errorInfo = (String) msg.obj;
-                    mDownloadCallBack.onError(HttpStateCode.ERROR_DOWNLOAD_RETROFIT, errorInfo);
+                    info = (String) msg.obj;
+                    mDownloadCallBack.onError(HttpStateCode.ERROR_DOWNLOAD_RETROFIT, info);
+                    break;
+                case ERROR_CHECK_LENGTH:
+                    info = (String) msg.obj;
+                    mDownloadCallBack.onError(HttpStateCode.ERROR_CHECK_LENGTH, info);
+                    break;
+                case PAUSE:
+                    mDownloadCallBack.onPause();
                     break;
                 default:
                     break;
@@ -161,23 +172,25 @@ public class DownloadTask {
         if (info != null) {
             mDownloadInfo = info;
             mSaveFile = new File(info.getSavePath());
-            long totalSize = mDownloadInfo.getTotolSize();
+            long totalSize = mDownloadInfo.getTotalSize();
             mTotalLength += totalSize;
             if (TextUtils.isEmpty(mDownloadInfo.getFileName())) {
                 mDownloadInfo.setFileName(info.getFileName());
             }
-            Log.d("wsh_log", "DownloadInfoDaoHelper.queryTask(url) != null； mDownloadInfo.getDownloadPosition() =" +  mDownloadInfo.getDownloadPosition());
             if (mSaveFile.exists()) {
                 if (mDownloadInfo.getDownloadPosition() == 0) {
                     mSaveFile.delete();
                 }else if (mSaveFile.length() > 0){
-                    if (mDownloadInfo.getDownloadPosition() == totalSize) {
-                        mDownloadCallBack.onSuccess(mDownloadInfo.getFileName());
-                        return;
-                    }
+                    //先请求Content_length信息
                 }
             }else {
                 mDownloadInfo.setDownloadPosition(0);
+            }
+
+            if (mDownloadInfo.getDownloadPosition() == 0) {
+                download();
+            }else {
+                checkContentByHeader();
             }
         }else {
             if (TextUtils.isEmpty(mDownloadInfo.getFileName())) {
@@ -192,8 +205,87 @@ public class DownloadTask {
             if (mSaveFile.exists()) {
                 mSaveFile.delete();
             }
+            download();
         }
-        download();
+    }
+
+    /**
+     * 通过Header请求Content_Length,判断服务器的内容是否已经改变
+     */
+    private void checkContentByHeader() {
+        mCurrentServices.download( mDownloadInfo.getUrl())
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(new Observer<Response<Void>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.d("wsh_log", "onSubscribe");
+                    }
+
+                    @Override
+                    public void onNext(Response<Void> responseBody) {
+                        Log.d("wsh_log", responseBody.toString());
+                        checkResponseLength(responseBody);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("wsh_log", "onError");
+                        Message message = new Message();
+                        message.what = ERROR;
+                        message.obj = e.toString();
+                        mMainHander.sendMessage(message);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d("wsh_log", "onComplete");
+                    }
+                });
+    }
+
+    /**
+     * 检测服务器的内容是否已改变。（方法是通过检测Content-Length）
+     * @param responseBody
+     */
+    private void checkResponseLength(Response<Void> responseBody) {
+        Headers headers = responseBody.headers();
+        String lengthStr = headers.get("Content-Length");
+        long length = -1;
+        try{
+            length = Long.parseLong(lengthStr);
+            if (length == 0) {
+                Message message = new Message();
+                message.what = ERROR_CHECK_LENGTH;
+                message.obj = "ContentLength = 0";
+                mMainHander.sendMessage(message);
+                return;
+            }
+
+            if (mDownloadInfo.getDownloadPosition() == length) {
+                Message message = new Message();
+                message.what = SUCCESS;
+                message.obj = mDownloadInfo.getFileName();
+                mMainHander.sendMessage(message);
+                return;
+            }
+            if (length != mDownloadInfo.getTotalSize()) {
+                Log.d("wsh_log", "checkResponseLength  不是同一个下载源   强制重新下载");
+                mDownloadInfo.setDownloadPosition(0);
+                if (mSaveFile.exists()) {
+                    mSaveFile.delete();
+                }
+            }else {
+                Log.d("wsh_log", "checkResponseLength  还是同一个下载源   继续下载");
+            }
+            download();
+        }catch (Exception e) {
+            Message message = new Message();
+            message.what = ERROR_CHECK_LENGTH;
+            message.obj = e.toString();
+            mMainHander.sendMessage(message);
+        }
     }
 
     private void download() {
@@ -229,7 +321,7 @@ public class DownloadTask {
                             randomAccessFile = new RandomAccessFile(mSaveFile, "rwd");
                             if (downloadedLength == 0) {
                                 randomAccessFile.setLength(responseLength);
-                                mDownloadInfo.setTotolSize(responseLength);
+                                mDownloadInfo.setTotalSize(responseLength);
                             }
                             randomAccessFile.seek(downloadedLength);
                             long totalSize = randomAccessFile.length();
@@ -261,7 +353,10 @@ public class DownloadTask {
                                 mDownloadInfo.setDownloadPosition(downloadedLength);
                             }
                             if (mExit) {
-                                mDownloadCallBack.onPause();
+                                DownloadInfoDaoHelper.insertInfo(mDownloadInfo);
+                                Message message = new Message();
+                                message.what = PAUSE;
+                                mMainHander.sendMessage(message);
                             }else {
                                 Message message = new Message();
                                 message.what = SUCCESS;
@@ -276,6 +371,7 @@ public class DownloadTask {
                             mMainHander.sendMessage(message);
                         } finally {
                             try {
+                                DownloadInfoDaoHelper.insertInfo(mDownloadInfo);
                                 if (randomAccessFile != null) {
                                     randomAccessFile.close();
                                 }

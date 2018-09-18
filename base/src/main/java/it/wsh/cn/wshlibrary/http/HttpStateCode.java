@@ -70,4 +70,9 @@ public class HttpStateCode {
      */
     public static final int ERROR_HAS_REGIST = 1012;
 
+    /**
+     * DOWNLOAD相关  检查ContextLength时出错
+     */
+    public static final int ERROR_CHECK_LENGTH = 1013;
+
 }

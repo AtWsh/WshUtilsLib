@@ -55,12 +55,12 @@ public class XLDownloadManager {
      * @param downloadUrl
      * @param callBack
      */
-    public void startDownload(String downloadUrl, HttpCallBack<String> callBack) {
+    public void start(String downloadUrl, HttpCallBack<String> callBack) {
         if (TextUtils.isEmpty(downloadUrl)) {
             return;
         }
 
-        startDownload(downloadUrl, "", callBack);
+        start(downloadUrl, "", callBack);
     }
 
     /**
@@ -69,7 +69,7 @@ public class XLDownloadManager {
      * @param fileName
      * @param callBack
      */
-    public void startDownload(String downloadUrl, String fileName, final HttpCallBack<String> callBack) {
+    public void start(String downloadUrl, String fileName, final HttpCallBack<String> callBack) {
 
         //1.判断下载条件并获取key
         int key = checkDownloadConditionAndGetKey(downloadUrl, callBack);
@@ -165,7 +165,7 @@ public class XLDownloadManager {
      * 暂停下载
      * @param downloadUrl
      */
-    public void stopDownload(String downloadUrl) {
+    public void stop(String downloadUrl) {
         if (TextUtils.isEmpty(downloadUrl)) {
             return;
         }
@@ -183,12 +183,12 @@ public class XLDownloadManager {
      * @param url
      * @return
      */
-    public boolean deleteDownloadTask(String url) {
+    public boolean delete(String url) {
         if (TextUtils.isEmpty(url)) {
             return false;
         }
 
-        stopDownload(url);
+        stop(url);
         return clearDownloadData(url);
 
     }

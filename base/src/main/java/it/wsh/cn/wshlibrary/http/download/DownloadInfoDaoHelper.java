@@ -34,7 +34,7 @@ public class DownloadInfoDaoHelper {
         info.setFileName(name);
         info.setDownloadPosition(position);
         info.setSavePath(savePath);
-        info.setTotolSize(totalSize);
+        info.setTotalSize(totalSize);
         try{
             raw = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao().insertOrReplace(info);
         }catch (Exception e) {
@@ -63,7 +63,7 @@ public class DownloadInfoDaoHelper {
         info.setFileName(name);
         info.setDownloadPosition(position);
         info.setSavePath(savePath);
-        info.setTotolSize(totalSize);
+        info.setTotalSize(totalSize);
         if(info == null || TextUtils.isEmpty(info.getUrl()) || TextUtils.isEmpty(info.getFileName())){
             return;
         }

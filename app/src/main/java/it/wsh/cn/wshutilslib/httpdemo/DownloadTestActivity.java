@@ -114,7 +114,7 @@ public class DownloadTestActivity extends AppCompatActivity {
         public void onClick(View v) {
 
             String downloadUrl = mDownloadUrl1;
-            boolean deleteDownloadTask = XLDownloadManager.getInstance().deleteDownloadTask(downloadUrl);
+            boolean deleteDownloadTask = XLDownloadManager.getInstance().delete(downloadUrl);
             if (deleteDownloadTask) {
                 Toast.makeText(DownloadTestActivity.this, "成功删除", Toast.LENGTH_SHORT).show();
                 mProgressBar1.setProgress(0);
@@ -129,7 +129,7 @@ public class DownloadTestActivity extends AppCompatActivity {
         public void onClick(View v) {
 
             String downloadUrl = mDownloadUrl2;
-            boolean deleteDownloadTask = XLDownloadManager.getInstance().deleteDownloadTask(downloadUrl);
+            boolean deleteDownloadTask = XLDownloadManager.getInstance().delete(downloadUrl);
             if (deleteDownloadTask) {
                 Toast.makeText(DownloadTestActivity.this, "成功删除", Toast.LENGTH_SHORT).show();
                 mProgressBar2.setProgress(0);
@@ -144,7 +144,7 @@ public class DownloadTestActivity extends AppCompatActivity {
         public void onClick(View v) {
 
             String downloadUrl = mDownloadUrl3;
-            boolean deleteDownloadTask = XLDownloadManager.getInstance().deleteDownloadTask(downloadUrl);
+            boolean deleteDownloadTask = XLDownloadManager.getInstance().delete(downloadUrl);
             if (deleteDownloadTask) {
                 Toast.makeText(DownloadTestActivity.this, "成功删除", Toast.LENGTH_SHORT).show();
                 mProgressBar3.setProgress(0);
@@ -159,7 +159,7 @@ public class DownloadTestActivity extends AppCompatActivity {
         public void onClick(View v) {
 
             String downloadUrl = mDownloadUrl1;
-            XLDownloadManager.getInstance().stopDownload(downloadUrl);
+            XLDownloadManager.getInstance().stop(downloadUrl);
         }
     };
 
@@ -168,7 +168,7 @@ public class DownloadTestActivity extends AppCompatActivity {
         public void onClick(View v) {
 
             String downloadUrl = mDownloadUrl2;
-            XLDownloadManager.getInstance().stopDownload(downloadUrl);
+            XLDownloadManager.getInstance().stop(downloadUrl);
         }
     };
 
@@ -177,7 +177,7 @@ public class DownloadTestActivity extends AppCompatActivity {
         public void onClick(View v) {
 
             String downloadUrl = mDownloadUrl3;
-            XLDownloadManager.getInstance().stopDownload(downloadUrl);
+            XLDownloadManager.getInstance().stop(downloadUrl);
         }
     };
 
@@ -191,7 +191,7 @@ public class DownloadTestActivity extends AppCompatActivity {
 
 
             String downloadUrl = mDownloadUrl1;
-            XLDownloadManager.getInstance().startDownload(downloadUrl, new HttpCallBack<String>() {
+            XLDownloadManager.getInstance().start(downloadUrl, new HttpCallBack<String>() {
                 @Override
                 public void onSuccess(String fileName) {
                     mProgressBar1.setProgress(100);
@@ -218,7 +218,7 @@ public class DownloadTestActivity extends AppCompatActivity {
 
 
             String downloadUrl = mDownloadUrl2;
-            XLDownloadManager.getInstance().startDownload(downloadUrl, new HttpCallBack<String>() {
+            XLDownloadManager.getInstance().start(downloadUrl, new HttpCallBack<String>() {
                 @Override
                 public void onSuccess(String fileName) {
                     mProgressBar2.setProgress(100);
@@ -246,7 +246,7 @@ public class DownloadTestActivity extends AppCompatActivity {
 
 
             String downloadUrl = mDownloadUrl3;
-            XLDownloadManager.getInstance().startDownload(downloadUrl, new HttpCallBack<String>() {
+            XLDownloadManager.getInstance().start(downloadUrl, new HttpCallBack<String>() {
                 @Override
                 public void onSuccess(String fileName) {
                     mProgressBar3.setProgress(100);

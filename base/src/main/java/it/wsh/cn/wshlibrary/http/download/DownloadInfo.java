@@ -76,14 +76,6 @@ public class DownloadInfo {
         this.savePath = savePath;
     }
 
-    public long getTotolSize() {
-        return this.totalSize;
-    }
-
-    public void setTotolSize(long totalSize) {
-        this.totalSize = totalSize;
-    }
-
     public long getTotalSize() {
         return this.totalSize;
     }

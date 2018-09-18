@@ -1,5 +1,5 @@
 
-2018/9/13日修改内容
+2018/9/13日--9/18修改内容
 1.下载接口，当回调为null时，改为依旧执行正常逻辑。后面所有操作皆判空。
 2.具体化错误码
     删除了HttpStateCode.ERROR_DOWNLOAD；
@@ -13,3 +13,9 @@
 4.进度返回改为根据url注册监听的方式，同时提供反注册。
 5.增加HttpManager类，提供init方法，同时初始化HttpClient和XLDownloadManager。
 6.数据库存储下载进度改为1S存一次的机制。核心类： DownloadDataKernel
+7.处理同一个请求，服务器内容作了改变的情况。
+  1）通过@HEAD请求Content-Length，对比服务器的Length和数据库保存的字段是否相同。不相同则删除本地记录，强制重新下载。
+  2）第一次下载，数据库没有记录时，直接开始下载，不用检测Content-Length
+  3）当检测到数据库有记录，但是downloadPosition为0时，也是直接开始下载，不用检测Content-Length。
+  4）当检测到数据库有记录，且downloadPosition不为0，通过@HEAD请求Content-Length的length和数据库保存的不一样，
+     则将DownloadInfo的downloadPosition置为0，并且删除存储文件。然后执行download().
