@@ -15,9 +15,6 @@ import org.greenrobot.greendao.annotation.Generated;
 @Entity
 public class DownloadInfo {
 
-    @Id
-    private long id;
-
     @Unique
     private String url;
 
@@ -38,22 +35,13 @@ public class DownloadInfo {
     }
 
     @Generated(hash = 1625172689) @Keep
-    public DownloadInfo(long id, String url, String fileName, String savePath,
+    public DownloadInfo(String url, String fileName, String savePath,
             long downloadPosition, long totalSize) {
-        this.id = id;
         this.url = url;
         this.fileName = fileName;
         this.savePath = savePath;
         this.downloadPosition = downloadPosition;
         this.totalSize = totalSize;
-    }
-
-    public long getId() {
-        return this.id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getUrl() {

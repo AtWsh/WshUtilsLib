@@ -5,12 +5,15 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -45,20 +48,17 @@ public class DownloadTask {
     private HttpServices mCurrentServices;
     private final Gson mGson = new Gson();
     private boolean mExit = false; //控制退出
-    private boolean mFinish = false; //是否下载完成
-    private boolean mDownloading = false; //是否在下载中
 
-    private String mDownloadUrl;
-    private String mFileName;
+    private DownloadInfo mDownloadInfo = new DownloadInfo();
     private File mSaveFile;
     private String mTotalLength = "-";
-    private long mRange = 0;
     private DownloadCallBack mDownloadCallBack;
-    private long mTotalSize;
 
     private static final int SUCCESS = 1;
     private static final int PROGRESS = 2;
     private static final int ERROR = 3;
+
+    private List<DownloadProcessListener> mProcessListeners = new ArrayList<>();
 
     public DownloadTask(Context context) {
         if (context == null) {
@@ -77,11 +77,11 @@ public class DownloadTask {
                     break;
                 case PROGRESS:
                     int progress = (int) msg.obj;
-                    mDownloadCallBack.onProgress(progress);
+                    notifyProcessUpdate(progress);
                     break;
                 case ERROR:
                     String errorInfo = (String) msg.obj;
-                    mDownloadCallBack.onError(HttpStateCode.ERROR_DOWNLOAD, errorInfo);
+                    mDownloadCallBack.onError(HttpStateCode.ERROR_DOWNLOAD_RETROFIT, errorInfo);
                     break;
                 default:
                     break;
@@ -143,62 +143,63 @@ public class DownloadTask {
     }
 
     //下载
-    public void downloadFile(final String url, final String fileName, final DownloadCallBack  downloadCallback) {
+    public void downloadFile(final String url, final String fileName, DownloadCallBack  downloadCallback) {
 
-        if (mCurrentServices == null) {
-            return;
+        if (downloadCallback == null) {
+            downloadCallback = new EmptyDownloadCallback();
         }
         if (TextUtils.isEmpty(url)) {
+            downloadCallback.onError(HttpStateCode.ERROR_DOWNLOAD_URL_IS_NULL, "");
             return;
         }
 
-        mDownloadUrl = url;
-        mFileName = fileName;
+        mDownloadInfo.setUrl(url);
+        mDownloadInfo.setFileName(fileName);
         mDownloadCallBack = downloadCallback;
 
         DownloadInfo info = DownloadInfoDaoHelper.queryTask(url);
-        int progress = 0;
         if (info != null) {
-            mRange = info.getDownloadPosition();
+            mDownloadInfo = info;
             mSaveFile = new File(info.getSavePath());
-            mTotalSize = info.getTotolSize();
-            mTotalLength += mTotalSize;
-            if (TextUtils.isEmpty(mFileName)) {
-                mFileName = info.getFileName();
+            long totalSize = mDownloadInfo.getTotolSize();
+            mTotalLength += totalSize;
+            if (TextUtils.isEmpty(mDownloadInfo.getFileName())) {
+                mDownloadInfo.setFileName(info.getFileName());
             }
+            Log.d("wsh_log", "DownloadInfoDaoHelper.queryTask(url) != null； mDownloadInfo.getDownloadPosition() =" +  mDownloadInfo.getDownloadPosition());
             if (mSaveFile.exists()) {
-                if (mRange == 0) {
+                if (mDownloadInfo.getDownloadPosition() == 0) {
                     mSaveFile.delete();
                 }else if (mSaveFile.length() > 0){
-                    progress = (int) (mRange * 100 / mTotalSize);
-                    if (mRange == mTotalSize) {
-                        mDownloadCallBack.onSuccess(mFileName);
+                    if (mDownloadInfo.getDownloadPosition() == totalSize) {
+                        mDownloadCallBack.onSuccess(mDownloadInfo.getFileName());
                         return;
                     }
                 }
+            }else {
+                mDownloadInfo.setDownloadPosition(0);
             }
         }else {
-            String downloadPath = DownloadPathConfig.getDownloadPath(mContext);
-            mSaveFile = new File(downloadPath + fileName);
-            if (TextUtils.isEmpty(mFileName)) {
-                mFileName = url.substring(url.lastIndexOf('/') + 1);
-                if (TextUtils.isEmpty(fileName)) {
-                    mFileName = url.hashCode() + "";
+            if (TextUtils.isEmpty(mDownloadInfo.getFileName())) {
+                mDownloadInfo.setFileName(url.substring(url.lastIndexOf('/') + 1));
+                if (TextUtils.isEmpty(mDownloadInfo.getFileName())) {
+                    mDownloadInfo.setFileName(url.hashCode() + "");
                 }
             }
+            String downloadPath = DownloadPathConfig.getDownloadPath(mContext);
+            mSaveFile = new File(downloadPath + mDownloadInfo.getFileName());
+            mDownloadInfo.setSavePath(mSaveFile.getPath());
             if (mSaveFile.exists()) {
                 mSaveFile.delete();
             }
         }
-
-        mDownloadCallBack.onProgress(progress);
         download();
     }
 
     private void download() {
 
-        mDownloading = true;
-        mCurrentServices.download("bytes=" + Long.toString(mRange) + mTotalLength, mDownloadUrl)
+        mCurrentServices.download("bytes=" + Long.toString(
+                mDownloadInfo.getDownloadPosition()) + mTotalLength, mDownloadInfo.getUrl())
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -212,7 +213,7 @@ public class DownloadTask {
                     public void onNext(ResponseBody responseBody) {
                         RandomAccessFile randomAccessFile = null;
                         InputStream inputStream = null;
-                        long downloadedLength = mRange;
+                        long downloadedLength = mDownloadInfo.getDownloadPosition();
                         long responseLength = 0;
                         try {
                             byte[] buf = new byte[1024 * 16];
@@ -226,18 +227,17 @@ public class DownloadTask {
                                 mSaveFile.createNewFile();
                             }
                             randomAccessFile = new RandomAccessFile(mSaveFile, "rwd");
-                            if (mRange == 0) {
+                            if (downloadedLength == 0) {
                                 randomAccessFile.setLength(responseLength);
+                                mDownloadInfo.setTotolSize(responseLength);
                             }
-                            randomAccessFile.seek(mRange);
-                            mTotalSize = randomAccessFile.length();
-                            if (mRange == mTotalSize) {
-                                mDownloading = false;
-                                mFinish = true;
+                            randomAccessFile.seek(downloadedLength);
+                            long totalSize = randomAccessFile.length();
+                            if (downloadedLength == totalSize) {
                                 mExit = true;
                                 Message message = new Message();
                                 message.what = SUCCESS;
-                                message.obj = mFileName;
+                                message.obj = mDownloadInfo.getFileName();
                                 mMainHander.sendMessage(message);
                                 return;
                             }
@@ -245,32 +245,27 @@ public class DownloadTask {
                             int progress = 0;
                             int lastProgress = 0;
 
-                            int updateCount = 0;
+                            DownloadDataKernel.getInstance().startUpdateTimer();
                             while (!mExit && (len = inputStream.read(buf)) != -1) {
                                 randomAccessFile.write(buf, 0, len);
                                 downloadedLength += len;
 
                                 lastProgress = progress;
-                                progress = (int) (downloadedLength * 100 / mTotalSize);
+                                progress = (int) (downloadedLength * 100 / totalSize);
                                 if (progress > 0 && progress != lastProgress) {
                                     Message message = new Message();
                                     message.what = PROGRESS;
                                     message.obj = progress;
                                     mMainHander.sendMessage(message);
                                 }
-                                if ((updateCount % 5) == 0) {
-                                    DownloadInfoDaoHelper.insertInfoSync(mDownloadUrl, mFileName,
-                                            mSaveFile.getPath(), downloadedLength, mTotalSize);
-                                }
-
-                                updateCount++;
+                                mDownloadInfo.setDownloadPosition(downloadedLength);
                             }
-                            mDownloading = false;
-                            if (!mExit) {
-                                mFinish = true;
+                            if (mExit) {
+                                mDownloadCallBack.onPause();
+                            }else {
                                 Message message = new Message();
                                 message.what = SUCCESS;
-                                message.obj = mFileName;
+                                message.obj = mDownloadInfo.getFileName();
                                 mMainHander.sendMessage(message);
                             }
                             mExit = true;
@@ -281,9 +276,6 @@ public class DownloadTask {
                             mMainHander.sendMessage(message);
                         } finally {
                             try {
-                                mDownloading = false;
-                                DownloadInfoDaoHelper.insertInfoSync(mDownloadUrl, mFileName,
-                                        mSaveFile.getPath(), downloadedLength, mTotalSize);
                                 if (randomAccessFile != null) {
                                     randomAccessFile.close();
                                 }
@@ -301,7 +293,6 @@ public class DownloadTask {
 
                     @Override
                     public void onError(Throwable e) {
-                        mDownloading = false;
                         Message message = new Message();
                         message.what = ERROR;
                         message.obj = e.toString();
@@ -310,21 +301,60 @@ public class DownloadTask {
 
                     @Override
                     public void onComplete() {
-                        mDownloading = false;
+
                     }
                 });
     }
 
     public void exit() {
         mExit = true;
-        mDownloading = false;
-        mDownloadCallBack.onPause();
     }
 
-    public boolean isFinish() {
-        return mFinish;
+    /**
+     * 添加下载监听
+     * @param processListener
+     */
+    public void addProcessListener(DownloadProcessListener processListener) {
+        if (processListener == null) {
+            return;
+        }
+        if (mProcessListeners.contains(processListener)) {
+            processListener.onError(HttpStateCode.ERROR_HAS_REGIST, "");
+            return;
+        }
+
+        mProcessListeners.add(processListener);
     }
 
-    public boolean isDownloading() {return mDownloading;}
+    /**
+     * 删除下载监听
+     * @param processListener
+     */
+    public boolean removeProcessListener(DownloadProcessListener processListener) {
+        if (processListener == null || mProcessListeners == null || mProcessListeners.size() == 0) {
+            return false;
+        }
+        return mProcessListeners.remove(processListener);
+    }
 
+    /**
+     * 通知所有的DownloadProcessListener更新
+     * @param progress
+     */
+    private void notifyProcessUpdate(int progress) {
+        if (mProcessListeners == null || mProcessListeners.size() == 0) {
+            return;
+        }
+        for (DownloadProcessListener processListener : mProcessListeners) {
+            processListener.onProgress(progress);
+        }
+    }
+
+    /**
+     * 获取下载信息
+     * @return
+     */
+    public DownloadInfo getDownloadInfo() {
+        return mDownloadInfo;
+    }
 }

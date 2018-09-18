@@ -11,5 +11,4 @@ public abstract class HttpCallBack<T> {
     public abstract void onSuccess(T t);
     public abstract void onError(int stateCode, String errorInfo);
     public void onProgress(int progress){}
-    public void onDownloaded(byte[] file){}
 }

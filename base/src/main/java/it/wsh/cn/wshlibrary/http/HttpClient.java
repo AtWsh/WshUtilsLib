@@ -385,16 +385,17 @@ public class HttpClient<T> implements GenericLifecycleObserver {
      * @param observable
      * @param callback
      */
-    private void doSubscribe(final String pathKey, final int tagHash, Observable<Response<String>> observable, final boolean onUiCallBack, final HttpCallBack<T> callback) {
+    private void doSubscribe(final String pathKey, final int tagHash,
+                             Observable<Response<String>> observable,
+                             final boolean onUiCallBack, final HttpCallBack<T> callback) {
 
-        Observable<Pair<String, T>> mapObservable = observable.map(new Function<Response<String>, Pair<String, T>>() {
+        Observable<Pair<String, T>> mapObservable =
+                observable.map(new Function<Response<String>, Pair<String, T>>() {
             @Override
             public Pair<String, T> apply(retrofit2.Response<String> response) throws Exception {
-                int code;
                 String msg = "";
                 Pair<String, T> pair;
-                code = response.code();
-                if (code == HttpStateCode.RESULT_OK) {
+                if(response.isSuccessful()){
                     String data = response.body();
                     if (data != null) {
                         Class<T> cls = getParameterizedTypeClass(callback);
@@ -414,7 +415,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                     } else {
                         msg = "response body is null";
                     }
-                } else {
+                }else {
                     ResponseBody errorBody = response.errorBody();
                     if (errorBody == null) {
                         msg = "errorBody is null";
@@ -422,6 +423,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                         msg = errorBody.string();
                     }
                 }
+
                 Log.e(TAG, "apply: " + msg);
                 pair = new Pair<>(msg, null);
                 if (!onUiCallBack){
@@ -458,7 +460,8 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                     public void onError(Throwable throwable) {
                         dispose(tagHash, pathKey);
                         if (onUiCallBack) {
-                            callback.onError(HttpStateCode.ERROR_SUBSCRIBE_ERROR, throwable == null ? "" : throwable.getMessage());
+                            callback.onError(HttpStateCode.ERROR_SUBSCRIBE_ERROR, throwable == null
+                                    ? "" : throwable.getMessage());
                         }
                     }
 

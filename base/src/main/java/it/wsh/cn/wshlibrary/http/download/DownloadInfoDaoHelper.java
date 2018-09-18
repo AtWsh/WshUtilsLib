@@ -44,6 +44,14 @@ public class DownloadInfoDaoHelper {
         return raw;
     }
 
+    /**
+     * 异步操作
+     * @param url
+     * @param name
+     * @param savePath
+     * @param position
+     * @param totalSize
+     */
     public static void insertInfoSync(String url, String name, String savePath, long position, long totalSize) {
 
         if(TextUtils.isEmpty(url) || TextUtils.isEmpty(name)){
@@ -191,7 +199,7 @@ public class DownloadInfoDaoHelper {
         List<DownloadInfo> infos = new ArrayList<>();
         try{
             List<DownloadInfo> list = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao()
-                    .queryBuilder().orderDesc(DownloadInfoDao.Properties.Id).list();
+                    .queryBuilder().orderDesc(DownloadInfoDao.Properties.Url).list();
             if(list.size() > count){
                 for (int i = 0; i < count; i++) {
                     infos.add(list.get(i));
@@ -213,7 +221,7 @@ public class DownloadInfoDaoHelper {
         List<DownloadInfo> infos = new ArrayList<>();
         try{
             infos = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao()
-                    .queryBuilder().orderDesc(DownloadInfoDao.Properties.Id).list();
+                    .queryBuilder().orderDesc(DownloadInfoDao.Properties.Url).list();
         }catch (Exception e) {
             e.printStackTrace();
         }

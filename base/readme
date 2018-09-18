@@ -1,0 +1,15 @@
+
+2018/9/13日修改内容
+1.下载接口，当回调为null时，改为依旧执行正常逻辑。后面所有操作皆判空。
+2.具体化错误码
+    删除了HttpStateCode.ERROR_DOWNLOAD；
+    增加了HttpStateCode.ERROR_DOWNLOAD_URL_IS_NULL、
+         HttpStateCode.ERROR_DOWNLOAD_CONTEXT_IS_NULL、
+         HttpStateCode.ERROR_DOWNLOAD_RETROFIT、
+         HttpStateCode.ERROR_IS_NOT_DOWNLOADING、
+         HttpStateCode.ERROR_HAS_REGIST、
+
+3.删除isDownloading的判断，只根据缓存中是否有对应DownloadTask判断。如果有，则确定为还在下载中。
+4.进度返回改为根据url注册监听的方式，同时提供反注册。
+5.增加HttpManager类，提供init方法，同时初始化HttpClient和XLDownloadManager。
+6.数据库存储下载进度改为1S存一次的机制。核心类： DownloadDataKernel

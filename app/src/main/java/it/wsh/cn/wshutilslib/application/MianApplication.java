@@ -8,6 +8,7 @@ import it.wsh.cn.componentbase.application.ApplicationConfig;
 import it.wsh.cn.componentbase.application.BaseApplication;
 import it.wsh.cn.wshlibrary.database.utils.GreenDaoDatabase;
 import it.wsh.cn.wshlibrary.http.HttpClient;
+import it.wsh.cn.wshlibrary.http.HttpManager;
 
 /**
  * author: wenshenghui
@@ -28,7 +29,7 @@ public class MianApplication extends BaseApplication{
         // 开启调试模式(如果在InstantRun模式下运行，必须开启调试模式！线上版本需要关闭,否则有安全风险)
         ARouter.openDebug();
         ARouter.init(this);
-        HttpClient.getInstance().init(this);
+        HttpManager.init(this);
         GreenDaoDatabase.getInstance().initDatabase(this);
     }
 
