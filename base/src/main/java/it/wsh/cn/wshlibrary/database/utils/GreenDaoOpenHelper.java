@@ -8,8 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import org.greenrobot.greendao.database.Database;
 
 import it.wsh.cn.wshlibrary.database.greendao.DaoMaster;
-import it.wsh.cn.wshlibrary.database.greendao.DownloadInfoDao;
-import it.wsh.cn.wshlibrary.http.download.DownloadInfo;
 
 /**
  * Created by wenshenghui on 2018/8/31.

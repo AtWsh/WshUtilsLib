@@ -46,11 +46,6 @@ public class HttpStateCode {
     public static final int ERROR_DOWNLOAD_URL_IS_NULL = 1007;
 
     /**
-     * DOWNLOAD相关  context为空
-     */
-    public static final int ERROR_DOWNLOAD_CONTEXT_IS_NULL = 1008;
-
-    /**
      * DOWNLOAD相关  开启下载时，检测到正在下载
      */
     public static final int ERROR_IS_DOWNLOADING = 1009;

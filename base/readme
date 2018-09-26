@@ -19,3 +19,10 @@
   3）当检测到数据库有记录，但是downloadPosition为0时，也是直接开始下载，不用检测Content-Length。
   4）当检测到数据库有记录，且downloadPosition不为0，通过@HEAD请求Content-Length的length和数据库保存的不一样，
      则将DownloadInfo的downloadPosition置为0，并且删除存储文件。然后执行download().
+
+
+2018/9/25日--9/27修改内容
+1.数据库只记录url，totalSize，saveFile.删除需要删除彻底。
+2.数据缓存类删除，只在XLDownloadManager
+3.开启下载时，优先判断是否满足下载条件，通过boolean值返回。
+4.RXJava实现整体逻辑。

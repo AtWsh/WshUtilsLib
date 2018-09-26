@@ -1,40 +1,34 @@
 package it.wsh.cn.wshlibrary.http.download;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
-
-import com.google.gson.Gson;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
-
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
+import it.wsh.cn.wshlibrary.database.bean.DownloadInfo;
+import it.wsh.cn.wshlibrary.database.daohelper.DownloadInfoDaoHelper;
 import it.wsh.cn.wshlibrary.http.HttpConfig;
 import it.wsh.cn.wshlibrary.http.HttpConstants;
-import it.wsh.cn.wshlibrary.http.HttpServices;
-import it.wsh.cn.wshlibrary.http.HttpStateCode;
-import it.wsh.cn.wshlibrary.http.converter.ConvertFactory;
+import it.wsh.cn.wshlibrary.http.IOUtil;
 import it.wsh.cn.wshlibrary.http.https.SslContextFactory;
-import okhttp3.Headers;
+import okhttp3.Call;
 import okhttp3.OkHttpClient;
-import okhttp3.ResponseBody;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import okhttp3.Request;
 
 /**
  * author: wenshenghui
@@ -43,25 +37,11 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
  */
 public class DownloadTask {
 
-    private static final String TAG = "DownloadTask";
-
     private Context mContext;
-    private Retrofit mCurrentRetrofit;
-    private HttpServices mCurrentServices;
-    private final Gson mGson = new Gson();
+    private OkHttpClient mClient;
+    private File mSaveFile; //存储路径
+    private DownloadObserver mDownloadObserver; //回调
     private boolean mExit = false; //控制退出
-
-    private DownloadInfo mDownloadInfo = new DownloadInfo();
-    private File mSaveFile;
-    private String mTotalLength = "-";
-    private DownloadCallBack mDownloadCallBack;
-
-    private static final int SUCCESS = 1;
-    private static final int PROGRESS = 2;
-    private static final int ERROR = 3;
-    private static final int ERROR_CHECK_LENGTH = 4;
-    private static final int PAUSE = 5;
-    private List<DownloadProcessListener> mProcessListeners = new ArrayList<>();
 
     public DownloadTask(Context context) {
         if (context == null) {
@@ -69,36 +49,6 @@ public class DownloadTask {
         }
         mContext = context.getApplicationContext();
     }
-
-    private Handler mMainHander = new Handler(Looper.getMainLooper()) {
-        @Override
-        public void handleMessage(Message msg) {
-            String info = "";
-            switch (msg.what) {
-                case SUCCESS:
-                    String fileName = (String) msg.obj;
-                    mDownloadCallBack.onSuccess(fileName);
-                    break;
-                case PROGRESS:
-                    int progress = (int) msg.obj;
-                    notifyProcessUpdate(progress);
-                    break;
-                case ERROR:
-                    info = (String) msg.obj;
-                    mDownloadCallBack.onError(HttpStateCode.ERROR_DOWNLOAD_RETROFIT, info);
-                    break;
-                case ERROR_CHECK_LENGTH:
-                    info = (String) msg.obj;
-                    mDownloadCallBack.onError(HttpStateCode.ERROR_CHECK_LENGTH, info);
-                    break;
-                case PAUSE:
-                    mDownloadCallBack.onPause();
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
 
     /**
      * @param url
@@ -128,278 +78,97 @@ public class DownloadTask {
                         }
                     });
         }
-        OkHttpClient client = builder.build();
-
-        try {
-            mCurrentRetrofit = new Retrofit.Builder()
-                    .client(client)
-                    .addConverterFactory(new ConvertFactory(mGson))
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .baseUrl("http://dldir1.qq.com/")
-                    .build();
-
-        } catch (Exception e) {
-            mCurrentRetrofit = null;
-            e.printStackTrace();
-            return null;
-        }
-
-        if (mCurrentRetrofit != null) {
-            mCurrentServices = mCurrentRetrofit.create(HttpServices.class);
-            return this;
-        }
-
-        mCurrentServices = mCurrentRetrofit.create(HttpServices.class);
+        mClient = builder.build();
         return this;
     }
 
     //下载
-    public void downloadFile(final String url, final String fileName, DownloadCallBack  downloadCallback) {
+    public void start(DownloadInfo info,
+                      DownloadObserver downLoadObserver) {
 
-        if (downloadCallback == null) {
-            downloadCallback = new EmptyDownloadCallback();
-        }
-        if (TextUtils.isEmpty(url)) {
-            downloadCallback.onError(HttpStateCode.ERROR_DOWNLOAD_URL_IS_NULL, "");
-            return;
-        }
+        mDownloadObserver = downLoadObserver;
+        Observable.just(info).flatMap(new Function<DownloadInfo, Observable<DownloadInfo>>() {
+            @Override
+            public Observable<DownloadInfo> apply(DownloadInfo info) throws Exception {
+                return Observable.just(createDownInfo(info));
+            }
+        }).flatMap(new Function<DownloadInfo, Observable<DownloadInfo>>() {
+            @Override
+            public Observable<DownloadInfo> apply(DownloadInfo downloadInfo) throws Exception {
+                return Observable.create(new DownloadSubscribe(downloadInfo));
+            }
+        }).observeOn(AndroidSchedulers.mainThread())//在主线程回调
+                .subscribeOn(Schedulers.io())//在子线程执行
+                .subscribe(downLoadObserver);
+    }
 
-        mDownloadInfo.setUrl(url);
-        mDownloadInfo.setFileName(fileName);
-        mDownloadCallBack = downloadCallback;
+    /**
+     * 创建DownInfo
+     *
+     * @param downloadInfo 请求网址
+     * @return DownInfo
+     */
+    private DownloadInfo createDownInfo(DownloadInfo downloadInfo) {
 
-        DownloadInfo info = DownloadInfoDaoHelper.queryTask(url);
+        int key = downloadInfo.getKey();
+        String url = downloadInfo.getUrl();
+        DownloadInfo info = DownloadInfoDaoHelper.queryTask(key);
         if (info != null) {
-            mDownloadInfo = info;
+            downloadInfo = info;
             mSaveFile = new File(info.getSavePath());
-            long totalSize = mDownloadInfo.getTotalSize();
-            mTotalLength += totalSize;
-            if (TextUtils.isEmpty(mDownloadInfo.getFileName())) {
-                mDownloadInfo.setFileName(info.getFileName());
-            }
+            long totalSize = downloadInfo.getTotalSize();
             if (mSaveFile.exists()) {
-                if (mDownloadInfo.getDownloadPosition() == 0) {
-                    mSaveFile.delete();
-                }else if (mSaveFile.length() > 0){
-                    //先请求Content_length信息
-                }
-            }else {
-                mDownloadInfo.setDownloadPosition(0);
+                downloadInfo.setDownloadPosition(mSaveFile.length());
             }
 
-            if (mDownloadInfo.getDownloadPosition() == 0) {
-                download();
-            }else {
-                checkContentByHeader();
+            if (downloadInfo.getDownloadPosition() != 0) {
+                long serverContentLength = getServerContentLength(url);
+                if (serverContentLength != totalSize) {
+                    downloadInfo.setDownloadPosition(0);
+                    downloadInfo.setTotalSize(serverContentLength);
+                    if (mSaveFile.exists()) {
+                        mSaveFile.delete();
+                    }
+                }
             }
         }else {
-            if (TextUtils.isEmpty(mDownloadInfo.getFileName())) {
-                mDownloadInfo.setFileName(url.substring(url.lastIndexOf('/') + 1));
-                if (TextUtils.isEmpty(mDownloadInfo.getFileName())) {
-                    mDownloadInfo.setFileName(url.hashCode() + "");
-                }
-            }
-            String downloadPath = DownloadPathConfig.getDownloadPath(mContext);
-            mSaveFile = new File(downloadPath + mDownloadInfo.getFileName());
-            mDownloadInfo.setSavePath(mSaveFile.getPath());
-            if (mSaveFile.exists()) {
-                mSaveFile.delete();
-            }
-            download();
+            initFirstDownload(downloadInfo);
+
+        }
+        return downloadInfo;
+    }
+
+    /**
+     * 第一次下载的初始化
+     * @param downloadInfo
+     */
+    private void initFirstDownload(DownloadInfo downloadInfo) {
+        String downloadPath = downloadInfo.getSavePath();
+        mSaveFile = new File(downloadPath);
+        if (mSaveFile.exists()) {
+            mSaveFile.delete();
         }
     }
 
     /**
-     * 通过Header请求Content_Length,判断服务器的内容是否已经改变
+     * 请求完整数据长度
+     * @param url
      */
-    private void checkContentByHeader() {
-        mCurrentServices.download( mDownloadInfo.getUrl())
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(new Observer<Response<Void>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        Log.d("wsh_log", "onSubscribe");
-                    }
-
-                    @Override
-                    public void onNext(Response<Void> responseBody) {
-                        Log.d("wsh_log", responseBody.toString());
-                        checkResponseLength(responseBody);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.d("wsh_log", "onError");
-                        Message message = new Message();
-                        message.what = ERROR;
-                        message.obj = e.toString();
-                        mMainHander.sendMessage(message);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d("wsh_log", "onComplete");
-                    }
-                });
-    }
-
-    /**
-     * 检测服务器的内容是否已改变。（方法是通过检测Content-Length）
-     * @param responseBody
-     */
-    private void checkResponseLength(Response<Void> responseBody) {
-        Headers headers = responseBody.headers();
-        String lengthStr = headers.get("Content-Length");
-        long length = -1;
-        try{
-            length = Long.parseLong(lengthStr);
-            if (length == 0) {
-                Message message = new Message();
-                message.what = ERROR_CHECK_LENGTH;
-                message.obj = "ContentLength = 0";
-                mMainHander.sendMessage(message);
-                return;
+    private long getServerContentLength(String url) {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        try {
+            okhttp3.Response response = mClient.newCall(request).execute();
+            if (response != null && response.isSuccessful()) {
+                long contentLength = response.body().contentLength();
+                response.close();
+                return contentLength == 0 ? -1 : contentLength;
             }
-
-            if (mDownloadInfo.getDownloadPosition() == length) {
-                Message message = new Message();
-                message.what = SUCCESS;
-                message.obj = mDownloadInfo.getFileName();
-                mMainHander.sendMessage(message);
-                return;
-            }
-            if (length != mDownloadInfo.getTotalSize()) {
-                Log.d("wsh_log", "checkResponseLength  不是同一个下载源   强制重新下载");
-                mDownloadInfo.setDownloadPosition(0);
-                if (mSaveFile.exists()) {
-                    mSaveFile.delete();
-                }
-            }else {
-                Log.d("wsh_log", "checkResponseLength  还是同一个下载源   继续下载");
-            }
-            download();
-        }catch (Exception e) {
-            Message message = new Message();
-            message.what = ERROR_CHECK_LENGTH;
-            message.obj = e.toString();
-            mMainHander.sendMessage(message);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }
-
-    private void download() {
-
-        mCurrentServices.download("bytes=" + Long.toString(
-                mDownloadInfo.getDownloadPosition()) + mTotalLength, mDownloadInfo.getUrl())
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(new Observer<ResponseBody>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(ResponseBody responseBody) {
-                        RandomAccessFile randomAccessFile = null;
-                        InputStream inputStream = null;
-                        long downloadedLength = mDownloadInfo.getDownloadPosition();
-                        long responseLength = 0;
-                        try {
-                            byte[] buf = new byte[1024 * 16];
-                            int len = 0;
-                            responseLength = responseBody.contentLength();
-                            inputStream = responseBody.byteStream();
-                            if (!mSaveFile.exists()) {
-                                mSaveFile.getParentFile().mkdirs();
-                            }
-                            if (!mSaveFile.exists()) {
-                                mSaveFile.createNewFile();
-                            }
-                            randomAccessFile = new RandomAccessFile(mSaveFile, "rwd");
-                            if (downloadedLength == 0) {
-                                randomAccessFile.setLength(responseLength);
-                                mDownloadInfo.setTotalSize(responseLength);
-                            }
-                            randomAccessFile.seek(downloadedLength);
-                            long totalSize = randomAccessFile.length();
-                            if (downloadedLength == totalSize) {
-                                mExit = true;
-                                Message message = new Message();
-                                message.what = SUCCESS;
-                                message.obj = mDownloadInfo.getFileName();
-                                mMainHander.sendMessage(message);
-                                return;
-                            }
-
-                            int progress = 0;
-                            int lastProgress = 0;
-
-                            DownloadDataKernel.getInstance().startUpdateTimer();
-                            while (!mExit && (len = inputStream.read(buf)) != -1) {
-                                randomAccessFile.write(buf, 0, len);
-                                downloadedLength += len;
-
-                                lastProgress = progress;
-                                progress = (int) (downloadedLength * 100 / totalSize);
-                                if (progress > 0 && progress != lastProgress) {
-                                    Message message = new Message();
-                                    message.what = PROGRESS;
-                                    message.obj = progress;
-                                    mMainHander.sendMessage(message);
-                                }
-                                mDownloadInfo.setDownloadPosition(downloadedLength);
-                            }
-                            if (mExit) {
-                                DownloadInfoDaoHelper.insertInfo(mDownloadInfo);
-                                Message message = new Message();
-                                message.what = PAUSE;
-                                mMainHander.sendMessage(message);
-                            }else {
-                                Message message = new Message();
-                                message.what = SUCCESS;
-                                message.obj = mDownloadInfo.getFileName();
-                                mMainHander.sendMessage(message);
-                            }
-                            mExit = true;
-                        } catch (Exception e) {
-                            Message message = new Message();
-                            message.what = ERROR;
-                            message.obj = e.getMessage();
-                            mMainHander.sendMessage(message);
-                        } finally {
-                            try {
-                                DownloadInfoDaoHelper.insertInfo(mDownloadInfo);
-                                if (randomAccessFile != null) {
-                                    randomAccessFile.close();
-                                }
-
-                                if (inputStream != null) {
-                                    inputStream.close();
-                                }
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Message message = new Message();
-                        message.what = ERROR;
-                        message.obj = e.toString();
-                        mMainHander.sendMessage(message);
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+        return -1;
     }
 
     public void exit() {
@@ -410,47 +179,99 @@ public class DownloadTask {
      * 添加下载监听
      * @param processListener
      */
-    public void addProcessListener(DownloadProcessListener processListener) {
-        if (processListener == null) {
-            return;
+    public void addProcessListener(IDownloadListener processListener) {
+        if (mDownloadObserver != null) {
+            mDownloadObserver.addProcessListener(processListener);
         }
-        if (mProcessListeners.contains(processListener)) {
-            processListener.onError(HttpStateCode.ERROR_HAS_REGIST, "");
-            return;
-        }
-
-        mProcessListeners.add(processListener);
     }
 
     /**
      * 删除下载监听
      * @param processListener
      */
-    public boolean removeProcessListener(DownloadProcessListener processListener) {
-        if (processListener == null || mProcessListeners == null || mProcessListeners.size() == 0) {
-            return false;
+    public boolean removeProcessListener(IDownloadListener processListener) {
+        if (mDownloadObserver != null) {
+            return mDownloadObserver.removeProcessListener(processListener);
         }
-        return mProcessListeners.remove(processListener);
+        return false;
     }
 
-    /**
-     * 通知所有的DownloadProcessListener更新
-     * @param progress
-     */
-    private void notifyProcessUpdate(int progress) {
-        if (mProcessListeners == null || mProcessListeners.size() == 0) {
-            return;
-        }
-        for (DownloadProcessListener processListener : mProcessListeners) {
-            processListener.onProgress(progress);
-        }
-    }
+    private class DownloadSubscribe implements ObservableOnSubscribe<DownloadInfo> {
+        private DownloadInfo downloadInfo;
 
-    /**
-     * 获取下载信息
-     * @return
-     */
-    public DownloadInfo getDownloadInfo() {
-        return mDownloadInfo;
+        public DownloadSubscribe(DownloadInfo downloadInfo) {
+            this.downloadInfo = downloadInfo;
+        }
+
+        @Override
+        public void subscribe(ObservableEmitter<DownloadInfo> e) throws Exception {
+            String url = downloadInfo.getUrl();
+            long downloadLength = downloadInfo.getDownloadPosition();//已经下载好的长度
+            long responseLength = downloadInfo.getTotalSize();//文件的总长度, 注意此处可能为0
+            String saveFilePath = downloadInfo.getSavePath();
+            File saveFile = new File(saveFilePath);
+            if (!saveFile.exists()) {
+                saveFile.getParentFile().mkdirs();
+            }
+            if (!saveFile.exists()) {
+                saveFile.createNewFile();
+            }
+            if (responseLength == -1) {
+                e.onError(new SocketTimeoutException());
+                return;
+            }
+
+            Request.Builder builder = new Request.Builder().url(url);
+            if (responseLength != 0) {
+                builder.addHeader("RANGE", "bytes=" + downloadLength + "-" + responseLength);
+            }
+            Request request = builder.build();
+            Call call = mClient.newCall(request);
+            okhttp3.Response response = call.execute();
+
+            if (responseLength == 0) {
+                responseLength = response.body().contentLength();
+            }
+            //初始进度信息
+            e.onNext(downloadInfo);
+            if (downloadLength == 0) {
+                downloadInfo.setTotalSize(responseLength);
+                DownloadInfoDaoHelper.insertInfo(downloadInfo);
+            }
+            if (downloadLength >= responseLength) {
+                //初始进度信息
+                e.onNext(downloadInfo);
+                e.onComplete();//完成
+                return;
+            }
+            RandomAccessFile randomAccessFile = null;
+            InputStream inputStream = null;
+
+            try {
+                randomAccessFile = new RandomAccessFile(saveFile, "rwd");
+                randomAccessFile.seek(downloadLength);
+                inputStream = response.body().byteStream();
+                byte[] buffer = new byte[1024 * 16];//缓冲数组16kB
+                int len;
+                while (!mExit && (len = inputStream.read(buffer)) != -1) {
+                    randomAccessFile.write(buffer, 0, len);
+                    downloadLength += len;
+                    downloadInfo.setDownloadPosition(downloadLength);
+                    e.onNext(downloadInfo);
+                }
+            } catch (Exception t) {
+                e.onError(t);
+                return;
+            } finally {
+                //关闭IO流
+                IOUtil.closeAll(inputStream, randomAccessFile);
+            }
+            if (mExit) {
+                downloadInfo.setExit(true);
+                e.onNext(downloadInfo);
+            }else {
+                e.onComplete();//完成
+            }
+        }
     }
 }

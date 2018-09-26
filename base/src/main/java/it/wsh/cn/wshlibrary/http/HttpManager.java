@@ -2,7 +2,7 @@ package it.wsh.cn.wshlibrary.http;
 
 import android.content.Context;
 
-import it.wsh.cn.wshlibrary.http.download.XLDownloadManager;
+import it.wsh.cn.wshlibrary.http.download.DownloadManager;
 
 /**
  * author: wenshenghui
@@ -13,6 +13,6 @@ public class HttpManager {
 
     public static void init(Context context) {
         HttpClient.getInstance().init(context);
-        XLDownloadManager.getInstance().init(context);
+        DownloadManager.getInstance().init(context);
     }
 }

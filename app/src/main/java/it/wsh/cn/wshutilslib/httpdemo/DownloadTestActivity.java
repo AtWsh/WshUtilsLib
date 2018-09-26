@@ -11,14 +11,14 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import it.wsh.cn.wshlibrary.http.HttpCallBack;
-import it.wsh.cn.wshlibrary.http.download.DownloadProcessListener;
-import it.wsh.cn.wshlibrary.http.download.XLDownloadManager;
+import it.wsh.cn.wshlibrary.http.download.IDownloadListener;
+import it.wsh.cn.wshlibrary.http.download.DownloadManager;
 import it.wsh.cn.wshutilslib.R;
 
 
@@ -112,9 +112,11 @@ public class DownloadTestActivity extends AppCompatActivity {
     private View.OnClickListener mDeleteClickListener1 = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+            String fileName = "123.apk";
+            String path = Environment.getExternalStorageDirectory().getPath();
+            String downloadPath = path + "/111/";
             String downloadUrl = mDownloadUrl1;
-            boolean deleteDownloadTask = XLDownloadManager.getInstance().delete(downloadUrl);
+            boolean deleteDownloadTask = DownloadManager.getInstance().delete(downloadUrl, fileName, downloadPath);
             if (deleteDownloadTask) {
                 Toast.makeText(DownloadTestActivity.this, "成功删除", Toast.LENGTH_SHORT).show();
                 mProgressBar1.setProgress(0);
@@ -128,8 +130,8 @@ public class DownloadTestActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
-            String downloadUrl = mDownloadUrl2;
-            boolean deleteDownloadTask = XLDownloadManager.getInstance().delete(downloadUrl);
+            String downloadUrl = mDownloadUrl1;
+            boolean deleteDownloadTask = DownloadManager.getInstance().delete(downloadUrl);
             if (deleteDownloadTask) {
                 Toast.makeText(DownloadTestActivity.this, "成功删除", Toast.LENGTH_SHORT).show();
                 mProgressBar2.setProgress(0);
@@ -143,8 +145,10 @@ public class DownloadTestActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
-            String downloadUrl = mDownloadUrl3;
-            boolean deleteDownloadTask = XLDownloadManager.getInstance().delete(downloadUrl);
+            String path = Environment.getExternalStorageDirectory().getPath();
+            String downloadPath = path + "/111/";
+            String downloadUrl = mDownloadUrl1;
+            boolean deleteDownloadTask = DownloadManager.getInstance().delete(downloadUrl, "", downloadPath);
             if (deleteDownloadTask) {
                 Toast.makeText(DownloadTestActivity.this, "成功删除", Toast.LENGTH_SHORT).show();
                 mProgressBar3.setProgress(0);
@@ -157,9 +161,11 @@ public class DownloadTestActivity extends AppCompatActivity {
     private View.OnClickListener mPauseClickListener1 = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+            String fileName = "123.apk";
+            String path = Environment.getExternalStorageDirectory().getPath();
+            String downloadPath = path + "/111/";
             String downloadUrl = mDownloadUrl1;
-            XLDownloadManager.getInstance().stop(downloadUrl);
+            DownloadManager.getInstance().stop(downloadUrl, fileName, downloadPath);
         }
     };
 
@@ -167,17 +173,18 @@ public class DownloadTestActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
-            String downloadUrl = mDownloadUrl2;
-            XLDownloadManager.getInstance().stop(downloadUrl);
+            String downloadUrl = mDownloadUrl1;
+            DownloadManager.getInstance().stop(downloadUrl);
         }
     };
 
     private View.OnClickListener mPauseClickListener3 = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
-            String downloadUrl = mDownloadUrl3;
-            XLDownloadManager.getInstance().stop(downloadUrl);
+            String path = Environment.getExternalStorageDirectory().getPath();
+            String downloadPath = path + "/111/";
+            String downloadUrl = mDownloadUrl1;
+            DownloadManager.getInstance().stop(downloadUrl, "", downloadPath);
         }
     };
 
@@ -185,26 +192,33 @@ public class DownloadTestActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
+            String fileName = "123.apk";
             String path = Environment.getExternalStorageDirectory().getPath();
-            String downloadPath = path + "/111";
-            XLDownloadManager.getInstance().setSaveFile(downloadPath);
+            String downloadPath = path + "/111/";
+            //DownloadManager.getInstance().initSaveFile(downloadPath);
 
 
             String downloadUrl = mDownloadUrl1;
-            XLDownloadManager.getInstance().start(downloadUrl, new HttpCallBack<String>() {
+            //boolean start = DownloadManager.getInstance().start(downloadUrl);
+            //Log.d("wsh_log", "start = " + start);
+            DownloadManager.getInstance().start(downloadUrl, fileName, downloadPath/*, new IDownloadListener() {
+
                 @Override
-                public void onSuccess(String fileName) {
-                    mProgressBar1.setProgress(100);
-                    Toast.makeText(DownloadTestActivity.this, "下载完成", Toast.LENGTH_SHORT).show();
-                    installApp(fileName);
+                public void onProgress(int progress) {
+                    mProgressBar1.setProgress(progress);
                 }
 
                 @Override
                 public void onError(int stateCode, String errorInfo) {
                     Toast.makeText(DownloadTestActivity.this, "下载失败：" + errorInfo, Toast.LENGTH_SHORT).show();
                 }
-            });
-            XLDownloadManager.getInstance().registDownloadProcessListener(downloadUrl, mProcessListener1);
+
+                @Override
+                public void onPause() {
+                    Log.d("wsh_log", "onPause");
+                }
+            }*/);
+            DownloadManager.getInstance().addDownloadProcessListener(downloadUrl, fileName, downloadPath, mProcessListener1);
         }
     };
 
@@ -212,27 +226,31 @@ public class DownloadTestActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
-            String path = Environment.getExternalStorageDirectory().getPath();
-            String downloadPath = path + "/111";
-            XLDownloadManager.getInstance().setSaveFile(downloadPath);
+            //String path = Environment.getExternalStorageDirectory().getPath();
+            //String downloadPath = path + "/111/";
+            //DownloadManager.getInstance().initSaveFile(downloadPath);
 
 
-            String downloadUrl = mDownloadUrl2;
-            XLDownloadManager.getInstance().start(downloadUrl, new HttpCallBack<String>() {
+            String downloadUrl = mDownloadUrl1;
+            DownloadManager.getInstance().startWithName(downloadUrl, "tengxun.apk", new IDownloadListener() {
+
                 @Override
-                public void onSuccess(String fileName) {
-                    mProgressBar2.setProgress(100);
-                    Toast.makeText(DownloadTestActivity.this, "下载完成", Toast.LENGTH_SHORT).show();
-                    installApp(fileName);
+                public void onProgress(int progress) {
+                    mProgressBar2.setProgress(progress);
                 }
 
                 @Override
                 public void onError(int stateCode, String errorInfo) {
                     Toast.makeText(DownloadTestActivity.this, "下载失败：" + errorInfo, Toast.LENGTH_SHORT).show();
                 }
+
+                @Override
+                public void onPause() {
+                    Log.d("wsh_log", "onPause");
+                }
             });
 
-            XLDownloadManager.getInstance().registDownloadProcessListener(downloadUrl, mProcessListener2);
+            //DownloadManager.getInstance().addDownloadProcessListener(downloadUrl, mProcessListener2);
         }
     };
 
@@ -241,30 +259,33 @@ public class DownloadTestActivity extends AppCompatActivity {
         public void onClick(View v) {
 
             String path = Environment.getExternalStorageDirectory().getPath();
-            String downloadPath = path + "/111";
-            XLDownloadManager.getInstance().setSaveFile(downloadPath);
+            String downloadPath = path + "/111/";
 
 
-            String downloadUrl = mDownloadUrl3;
-            XLDownloadManager.getInstance().start(downloadUrl, new HttpCallBack<String>() {
+            String downloadUrl = mDownloadUrl1;
+            DownloadManager.getInstance().startWithPath(downloadUrl, downloadPath, new IDownloadListener() {
+
                 @Override
-                public void onSuccess(String fileName) {
-                    mProgressBar3.setProgress(100);
-                    Toast.makeText(DownloadTestActivity.this, "下载完成", Toast.LENGTH_SHORT).show();
-                    installApp(fileName);
+                public void onProgress(int progress) {
+                    mProgressBar3.setProgress(progress);
                 }
 
                 @Override
                 public void onError(int stateCode, String errorInfo) {
                     Toast.makeText(DownloadTestActivity.this, "下载失败：" + errorInfo, Toast.LENGTH_SHORT).show();
                 }
+
+                @Override
+                public void onPause() {
+                    Log.d("wsh_log", "onPause");
+                }
             });
 
-            XLDownloadManager.getInstance().registDownloadProcessListener(downloadUrl, mProcessListener3);
+            //DownloadManager.getInstance().addDownloadProcessListener(downloadUrl, mProcessListener3);
         }
     };
 
-    private DownloadProcessListener mProcessListener1 = new DownloadProcessListener() {
+    private IDownloadListener mProcessListener1 = new IDownloadListener() {
         @Override
         public void onProgress(int progress) {
             mProgressBar1.setProgress(progress);
@@ -272,11 +293,16 @@ public class DownloadTestActivity extends AppCompatActivity {
 
         @Override
         public void onError(int stateCode, String errorInfo) {
+            Log.d("wsh_log", "mProcessListener1 onError stateCode = " + stateCode);
+        }
 
+        @Override
+        public void onPause() {
+            Log.d("wsh_log", "onPause");
         }
     };
 
-    private DownloadProcessListener mProcessListener2 = new DownloadProcessListener() {
+    private IDownloadListener mProcessListener2 = new IDownloadListener() {
         @Override
         public void onProgress(int progress) {
             mProgressBar2.setProgress(progress);
@@ -286,9 +312,14 @@ public class DownloadTestActivity extends AppCompatActivity {
         public void onError(int stateCode, String errorInfo) {
 
         }
+
+        @Override
+        public void onPause() {
+            Log.d("wsh_log", "onPause");
+        }
     };
 
-    private DownloadProcessListener mProcessListener3 = new DownloadProcessListener() {
+    private IDownloadListener mProcessListener3 = new IDownloadListener() {
         @Override
         public void onProgress(int progress) {
             mProgressBar3.setProgress(progress);
@@ -297,6 +328,11 @@ public class DownloadTestActivity extends AppCompatActivity {
         @Override
         public void onError(int stateCode, String errorInfo) {
 
+        }
+
+        @Override
+        public void onPause() {
+            Log.d("wsh_log", "onPause");
         }
     };
 
@@ -330,8 +366,8 @@ public class DownloadTestActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        XLDownloadManager.getInstance().unRegistDownloadProcessListener(mDownloadUrl1, mProcessListener1);
-        XLDownloadManager.getInstance().unRegistDownloadProcessListener(mDownloadUrl2, mProcessListener2);
-        XLDownloadManager.getInstance().unRegistDownloadProcessListener(mDownloadUrl3, mProcessListener3);
+        DownloadManager.getInstance().removeDownloadProcessListener(mDownloadUrl1, mProcessListener1);
+        DownloadManager.getInstance().removeDownloadProcessListener(mDownloadUrl2, mProcessListener2);
+        DownloadManager.getInstance().removeDownloadProcessListener(mDownloadUrl3, mProcessListener3);
     }
 }

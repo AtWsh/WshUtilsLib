@@ -71,13 +71,4 @@ public interface HttpServices {
             @HeaderMap Map<String, String> headers,
             @PartMap Map<String, RequestBody> partMap
     );
-
-    //断点续传 下载
-    @Streaming/*大文件需要加入这个判断，防止下载过程中写入到内存中*/
-    @GET
-    Observable<ResponseBody> download(@Header("RANGE") String start, @Url String url);
-
-    @HEAD
-    @Headers("Content-type: application/json")
-    Observable<Response<Void>> download(@Url String url);
 }

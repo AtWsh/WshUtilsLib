@@ -1,4 +1,4 @@
-package it.wsh.cn.wshlibrary.http.download;
+package it.wsh.cn.wshlibrary.database.daohelper;
 
 import android.text.TextUtils;
 
@@ -7,6 +7,7 @@ import org.greenrobot.greendao.async.AsyncSession;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.wsh.cn.wshlibrary.database.bean.DownloadInfo;
 import it.wsh.cn.wshlibrary.database.greendao.DownloadInfoDao;
 import it.wsh.cn.wshlibrary.database.utils.GreenDaoDatabase;
 
@@ -22,19 +23,14 @@ public class DownloadInfoDaoHelper {
      *
      * @return  < 0 为添加失败
      */
-    public static long insertInfo(String url, String name, String savePath, long position, long totalSize) {
+    public static long insertInfo(int key, String url, String savePath, long totalSize) {
         long raw = -1;
 
-        if(TextUtils.isEmpty(url) || TextUtils.isEmpty(name)){
+        if(TextUtils.isEmpty(url)){
             return raw;
         }
 
-        DownloadInfo info = new DownloadInfo();
-        info.setUrl(url);
-        info.setFileName(name);
-        info.setDownloadPosition(position);
-        info.setSavePath(savePath);
-        info.setTotalSize(totalSize);
+        DownloadInfo info = new DownloadInfo(key, url, savePath, totalSize);
         try{
             raw = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao().insertOrReplace(info);
         }catch (Exception e) {
@@ -47,24 +43,17 @@ public class DownloadInfoDaoHelper {
     /**
      * 异步操作
      * @param url
-     * @param name
      * @param savePath
-     * @param position
      * @param totalSize
      */
-    public static void insertInfoSync(String url, String name, String savePath, long position, long totalSize) {
+    public static void insertInfoSync(int key, String url, String savePath, long totalSize) {
 
-        if(TextUtils.isEmpty(url) || TextUtils.isEmpty(name)){
+        if(TextUtils.isEmpty(url)){
             return;
         }
 
-        DownloadInfo info = new DownloadInfo();
-        info.setUrl(url);
-        info.setFileName(name);
-        info.setDownloadPosition(position);
-        info.setSavePath(savePath);
-        info.setTotalSize(totalSize);
-        if(info == null || TextUtils.isEmpty(info.getUrl()) || TextUtils.isEmpty(info.getFileName())){
+        DownloadInfo info = new DownloadInfo(key, url, savePath, totalSize);
+        if(info == null || TextUtils.isEmpty(info.getUrl())){
             return;
         }
 
@@ -86,7 +75,7 @@ public class DownloadInfoDaoHelper {
     public static long insertInfo(DownloadInfo info) {
         long raw = -1;
 
-        if(info == null || TextUtils.isEmpty(info.getUrl()) || TextUtils.isEmpty(info.getFileName())){
+        if(info == null || TextUtils.isEmpty(info.getUrl())){
             return raw;
         }
 
@@ -101,7 +90,7 @@ public class DownloadInfoDaoHelper {
 
     public static void insertInfoSync(DownloadInfo info) {
 
-        if(info == null || TextUtils.isEmpty(info.getUrl()) || TextUtils.isEmpty(info.getFileName())){
+        if(info == null || TextUtils.isEmpty(info.getUrl())){
             return;
         }
         try{
@@ -132,19 +121,15 @@ public class DownloadInfoDaoHelper {
     /**
      * 删除数据
      *
-     * @param url
+     * @param key
      * @return 是否删除成功
      */
-    public static boolean deleteInfo(String url) {
+    public static boolean deleteInfo(int key) {
         boolean delete = false;
-
-        if(TextUtils.isEmpty(url)){
-            return delete;
-        }
 
         try{
             DownloadInfo info = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao()
-                    .queryBuilder().where(DownloadInfoDao.Properties.Url.eq(url)).unique();
+                    .queryBuilder().where(DownloadInfoDao.Properties.Key.eq(key)).unique();
             if(info != null){
                 deleteInfo(info);
                 delete = true;
@@ -176,15 +161,12 @@ public class DownloadInfoDaoHelper {
      *
      * @return
      */
-    public static DownloadInfo queryTask(String url) {
+    public static DownloadInfo queryTask(int key) {
         DownloadInfo info = null;
 
-        if(TextUtils.isEmpty(url)){
-            return null;
-        }
         try{
             info = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao().
-                    queryBuilder().where(DownloadInfoDao.Properties.Url.eq(url)).unique();
+                    queryBuilder().where(DownloadInfoDao.Properties.Key.eq(key)).unique();
 
         }catch (Exception e) {
             e.printStackTrace();
@@ -199,7 +181,7 @@ public class DownloadInfoDaoHelper {
         List<DownloadInfo> infos = new ArrayList<>();
         try{
             List<DownloadInfo> list = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao()
-                    .queryBuilder().orderDesc(DownloadInfoDao.Properties.Url).list();
+                    .queryBuilder().orderDesc(DownloadInfoDao.Properties.Key).list();
             if(list.size() > count){
                 for (int i = 0; i < count; i++) {
                     infos.add(list.get(i));
@@ -221,7 +203,7 @@ public class DownloadInfoDaoHelper {
         List<DownloadInfo> infos = new ArrayList<>();
         try{
             infos = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao()
-                    .queryBuilder().orderDesc(DownloadInfoDao.Properties.Url).list();
+                    .queryBuilder().orderDesc(DownloadInfoDao.Properties.Key).list();
         }catch (Exception e) {
             e.printStackTrace();
         }
