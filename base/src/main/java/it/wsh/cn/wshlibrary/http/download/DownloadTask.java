@@ -18,7 +18,6 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import it.wsh.cn.wshlibrary.database.bean.DownloadInfo;
 import it.wsh.cn.wshlibrary.database.daohelper.DownloadInfoDaoHelper;
@@ -177,21 +176,21 @@ public class DownloadTask {
 
     /**
      * 添加下载监听
-     * @param processListener
+     * @param listener
      */
-    public void addProcessListener(IDownloadListener processListener) {
+    public void addListener(IDownloadListener listener) {
         if (mDownloadObserver != null) {
-            mDownloadObserver.addProcessListener(processListener);
+            mDownloadObserver.addListener(listener);
         }
     }
 
     /**
      * 删除下载监听
-     * @param processListener
+     * @param listener
      */
-    public boolean removeProcessListener(IDownloadListener processListener) {
+    public boolean removeProcessListener(IDownloadListener listener) {
         if (mDownloadObserver != null) {
-            return mDownloadObserver.removeProcessListener(processListener);
+            return mDownloadObserver.removeListener(listener);
         }
         return false;
     }

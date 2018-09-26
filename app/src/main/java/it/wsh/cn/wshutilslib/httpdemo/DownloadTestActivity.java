@@ -218,7 +218,7 @@ public class DownloadTestActivity extends AppCompatActivity {
                     Log.d("wsh_log", "onPause");
                 }
             }*/);
-            DownloadManager.getInstance().addDownloadProcessListener(downloadUrl, fileName, downloadPath, mProcessListener1);
+            DownloadManager.getInstance().addDownloadListener(downloadUrl, fileName, downloadPath, mProcessListener1);
         }
     };
 
@@ -250,7 +250,7 @@ public class DownloadTestActivity extends AppCompatActivity {
                 }
             });
 
-            //DownloadManager.getInstance().addDownloadProcessListener(downloadUrl, mProcessListener2);
+            //DownloadManager.getInstance().addDownloadListener(downloadUrl, mProcessListener2);
         }
     };
 
@@ -281,7 +281,7 @@ public class DownloadTestActivity extends AppCompatActivity {
                 }
             });
 
-            //DownloadManager.getInstance().addDownloadProcessListener(downloadUrl, mProcessListener3);
+            //DownloadManager.getInstance().addDownloadListener(downloadUrl, mProcessListener3);
         }
     };
 
@@ -366,8 +366,8 @@ public class DownloadTestActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        DownloadManager.getInstance().removeDownloadProcessListener(mDownloadUrl1, mProcessListener1);
-        DownloadManager.getInstance().removeDownloadProcessListener(mDownloadUrl2, mProcessListener2);
-        DownloadManager.getInstance().removeDownloadProcessListener(mDownloadUrl3, mProcessListener3);
+        DownloadManager.getInstance().removeDownloadListener(mDownloadUrl1, mProcessListener1);
+        DownloadManager.getInstance().removeDownloadListener(mDownloadUrl2, mProcessListener2);
+        DownloadManager.getInstance().removeDownloadListener(mDownloadUrl3, mProcessListener3);
     }
 }

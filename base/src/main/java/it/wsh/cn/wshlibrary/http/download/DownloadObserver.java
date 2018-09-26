@@ -11,7 +11,7 @@ import it.wsh.cn.wshlibrary.http.HttpStateCode;
 public class DownloadObserver implements Observer<DownloadInfo> {
 
     private int mKey;
-    private List<IDownloadListener> mProcessListeners = new ArrayList<>();
+    private List<IDownloadListener> mListeners = new ArrayList<>();
 
     public DownloadObserver(int key) {
         mKey = key;
@@ -51,29 +51,29 @@ public class DownloadObserver implements Observer<DownloadInfo> {
 
     /**
      * 添加下载监听
-     * @param processListener
+     * @param listener
      */
-    public void addProcessListener(IDownloadListener processListener) {
-        if (processListener == null) {
+    public void addListener(IDownloadListener listener) {
+        if (listener == null) {
             return;
         }
-        if (mProcessListeners.contains(processListener)) {
-            processListener.onError(HttpStateCode.ERROR_HAS_REGIST, "");
+        if (mListeners.contains(listener)) {
+            listener.onError(HttpStateCode.ERROR_HAS_REGIST, "");
             return;
         }
 
-        mProcessListeners.add(processListener);
+        mListeners.add(listener);
     }
 
     /**
      * 删除下载监听
-     * @param processListener
+     * @param listener
      */
-    public boolean removeProcessListener(IDownloadListener processListener) {
-        if (processListener == null || mProcessListeners.size() == 0) {
+    public boolean removeListener(IDownloadListener listener) {
+        if (listener == null || mListeners.size() == 0) {
             return false;
         }
-        return mProcessListeners.remove(processListener);
+        return mListeners.remove(listener);
     }
 
     /**
@@ -81,11 +81,11 @@ public class DownloadObserver implements Observer<DownloadInfo> {
      * @param progress
      */
     private void notifyProcessUpdate(int progress) {
-        if (mProcessListeners == null || mProcessListeners.size() == 0) {
+        if (mListeners == null || mListeners.size() == 0) {
             return;
         }
-        for (IDownloadListener processListener : mProcessListeners) {
-            processListener.onProgress(progress);
+        for (IDownloadListener listener : mListeners) {
+            listener.onProgress(progress);
         }
     }
 
@@ -94,11 +94,11 @@ public class DownloadObserver implements Observer<DownloadInfo> {
      * @param e
      */
     private void notifyError(Throwable e) {
-        if (mProcessListeners == null || mProcessListeners.size() == 0) {
+        if (mListeners == null || mListeners.size() == 0) {
             return;
         }
-        for (IDownloadListener processListener : mProcessListeners) {
-            processListener.onError(HttpStateCode.ERROR_DOWNLOAD_RETROFIT, e.getMessage());
+        for (IDownloadListener listener : mListeners) {
+            listener.onError(HttpStateCode.ERROR_DOWNLOAD_RETROFIT, e.getMessage());
         }
     }
 
@@ -106,11 +106,11 @@ public class DownloadObserver implements Observer<DownloadInfo> {
      * 通知所有的DownloadProcessListener下载结束
      */
     private void notifyPause() {
-        if (mProcessListeners == null || mProcessListeners.size() == 0) {
+        if (mListeners == null || mListeners.size() == 0) {
             return;
         }
-        for (IDownloadListener processListener : mProcessListeners) {
-            processListener.onPause();
+        for (IDownloadListener listener : mListeners) {
+            listener.onPause();
         }
     }
 }

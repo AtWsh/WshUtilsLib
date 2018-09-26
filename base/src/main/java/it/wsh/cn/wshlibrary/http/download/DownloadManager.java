@@ -58,7 +58,7 @@ public class DownloadManager {
      * @param downloadUrl
      * @return true为开启下载成功，false为不满足下载条件
      */
-    public boolean start(String downloadUrl) {
+    public int start(String downloadUrl) {
         return start(downloadUrl, "", "",null);
     }
 
@@ -67,7 +67,7 @@ public class DownloadManager {
      * @param downloadUrl
      * @return true为开启下载成功，false为不满足下载条件
      */
-    public boolean start(String downloadUrl, IDownloadListener callBack) {
+    public int start(String downloadUrl, IDownloadListener callBack) {
         return start(downloadUrl, "", "", callBack);
     }
 
@@ -76,7 +76,7 @@ public class DownloadManager {
      * @param downloadUrl
      * @return true为开启下载成功，false为不满足下载条件
      */
-    public boolean startWithName(String downloadUrl, String fileName, IDownloadListener callBack) {
+    public int startWithName(String downloadUrl, String fileName, IDownloadListener callBack) {
         return start(downloadUrl, fileName, "",callBack);
     }
 
@@ -85,7 +85,7 @@ public class DownloadManager {
      * @param downloadUrl
      * @return true为开启下载成功，false为不满足下载条件
      */
-    public boolean startWithName(String downloadUrl, String fileName) {
+    public int startWithName(String downloadUrl, String fileName) {
         return start(downloadUrl, fileName, "",null);
     }
 
@@ -94,7 +94,7 @@ public class DownloadManager {
      * @param downloadUrl
      * @return true为开启下载成功，false为不满足下载条件
      */
-    public boolean startWithPath(String downloadUrl, String savePath) {
+    public int startWithPath(String downloadUrl, String savePath) {
         return start(downloadUrl, "", savePath, null);
     }
 
@@ -103,7 +103,7 @@ public class DownloadManager {
      * @param downloadUrl
      * @return true为开启下载成功，false为不满足下载条件
      */
-    public boolean startWithPath(String downloadUrl, String savePath, IDownloadListener callBack) {
+    public int startWithPath(String downloadUrl, String savePath, IDownloadListener callBack) {
         return start(downloadUrl, "", savePath, callBack);
     }
 
@@ -112,7 +112,7 @@ public class DownloadManager {
      * @param downloadUrl
      * @return true为开启下载成功，false为不满足下载条件
      */
-    public boolean start(String downloadUrl, String fileName, String savePath) {
+    public int start(String downloadUrl, String fileName, String savePath) {
         return start(downloadUrl, fileName, savePath, null);
     }
 
@@ -122,25 +122,26 @@ public class DownloadManager {
      * @param callBack
      * @return true为开启下载成功，false为不满足下载条件
      */
-    public boolean start(String downloadUrl, String fileName, String savePath, IDownloadListener callBack) {
+    public int start(String downloadUrl, String fileName, String savePath, IDownloadListener callBack) {
 
         //1.判断下载条件并获取key
         DownloadInfo info = getDownloadInfo(downloadUrl, fileName, savePath);
         if (info == null) {
-            return false;
+            return -1;
         }
 
+        int key = info.getKey();
         //2.获取DownloadCallBack
-        DownloadObserver downloadObserver = new DownloadObserver(info.getKey());
-        downloadObserver.addProcessListener(callBack);
+        DownloadObserver downloadObserver = new DownloadObserver(key);
+        downloadObserver.addListener(callBack);
 
         //3.创建DownloadTask，并初始化retrofit
         DownloadTask task = new DownloadTask(mContext);
         task.init(downloadUrl);
         //4.保存DownloadTask并开始下载
-        saveDownloadTask(info.getKey(), task);
+        saveDownloadTask(key, task);
         task.start(info, downloadObserver);
-        return true;
+        return key;
     }
 
     /**
@@ -148,8 +149,8 @@ public class DownloadManager {
      * @param downloadUrl
      * @param processListener
      */
-    public void addDownloadProcessListener(String downloadUrl,IDownloadListener processListener) {
-        addDownloadProcessListener(downloadUrl, "", "", processListener);
+    public void addDownloadListener(String downloadUrl, IDownloadListener processListener) {
+        addDownloadListener(downloadUrl, "", "", processListener);
     }
 
 
@@ -159,8 +160,8 @@ public class DownloadManager {
      * @param downloadUrl
      * @param processListener
      */
-    public void addDownloadProcessListener(String downloadUrl, String fileName,
-                                           String savePath, IDownloadListener processListener) {
+    public void addDownloadListener(String downloadUrl, String fileName,
+                                    String savePath, IDownloadListener processListener) {
         if (processListener == null) {
             return;
         }
@@ -172,9 +173,18 @@ public class DownloadManager {
         fileName = getRealFileName(fileName, downloadUrl);
         savePath = getRealSavePath(fileName, savePath);
         int key = getDownloadKey(downloadUrl, fileName, savePath);
+        addDownloadListener(key, processListener);
+    }
+
+    /**
+     * 注册下载监听
+     * @param key
+     * @param processListener
+     */
+    public void addDownloadListener(int key, IDownloadListener processListener) {
         DownloadTask downloadTask = mDownloadTasks.get(key);
         if (downloadTask != null) {
-            downloadTask.addProcessListener(processListener);
+            downloadTask.addListener(processListener);
         }else {
             processListener.onError(HttpStateCode.ERROR_IS_NOT_DOWNLOADING, "");
         }
@@ -185,8 +195,8 @@ public class DownloadManager {
      * @param downloadUrl
      * @param processListener
      */
-    public boolean removeDownloadProcessListener(String downloadUrl, IDownloadListener processListener) {
-        return removeDownloadProcessListener(downloadUrl,"", "", processListener);
+    public boolean removeDownloadListener(String downloadUrl, IDownloadListener processListener) {
+        return removeDownloadListener(downloadUrl,"", "", processListener);
     }
 
     /**
@@ -194,8 +204,8 @@ public class DownloadManager {
      * @param downloadUrl
      * @param processListener
      */
-    public boolean removeDownloadProcessListener(String downloadUrl, String fileName,
-                                                 String savePath, IDownloadListener processListener) {
+    public boolean removeDownloadListener(String downloadUrl, String fileName,
+                                          String savePath, IDownloadListener processListener) {
         if (TextUtils.isEmpty(downloadUrl) || processListener == null) {
             return false;
         }
@@ -203,6 +213,15 @@ public class DownloadManager {
         fileName = getRealFileName(fileName, downloadUrl);
         savePath = getRealSavePath(fileName, savePath);
         int key = getDownloadKey(downloadUrl, fileName, savePath);
+        return removeDownloadListener(key, processListener);
+    }
+
+    /**
+     * 注销进度监听
+     * @param key
+     * @param processListener
+     */
+    public boolean removeDownloadListener(int key, IDownloadListener processListener) {
         DownloadTask downloadTask = mDownloadTasks.get(key);
         if (downloadTask != null) {
             return downloadTask.removeProcessListener(processListener);
@@ -228,6 +247,10 @@ public class DownloadManager {
         fileName = getRealFileName(fileName, downloadUrl);
         savePath = getRealSavePath(fileName, savePath);
         int key = getDownloadKey(downloadUrl, fileName, savePath);
+        return stop(key);
+    }
+
+    public boolean stop(int key) {
         DownloadTask task = mDownloadTasks.get(key);
         if (task != null) {
             task.exit();
@@ -235,7 +258,6 @@ public class DownloadManager {
             return true;
         }
         return false;
-
     }
 
     /**
@@ -260,8 +282,16 @@ public class DownloadManager {
         fileName = getRealFileName(fileName, url);
         savePath = getRealSavePath(fileName, savePath);
         int key = getDownloadKey(url, fileName, savePath);
+        return delete(key);
+    }
 
-        stop(url);
+    /**
+     * 删除下载任务和文件
+     * @param key
+     * @return
+     */
+    public boolean delete(int key) {
+        stop(key);
         return clearDownloadData(key);
     }
 
