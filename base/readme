@@ -26,3 +26,6 @@
 2.数据缓存类删除，只在XLDownloadManager
 3.开启下载时，优先判断是否满足下载条件，通过boolean值返回。
 4.RXJava实现整体逻辑。
+
+2018/9/27日--9/28修改内容
+1.修改IDownloadListener接口，onProgress()改为传DownloadInfo

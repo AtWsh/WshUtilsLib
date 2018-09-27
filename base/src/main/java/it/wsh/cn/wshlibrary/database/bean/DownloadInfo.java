@@ -35,7 +35,7 @@ public class DownloadInfo {
     private String fileName;
 
     @Transient
-    private boolean exit;
+    private int process;
 
     @Generated(hash = 1625172689) @Keep
     public DownloadInfo(int key, String url, String savePath, long totalSize) {
@@ -97,11 +97,11 @@ public class DownloadInfo {
         this.key = key;
     }
 
-    public boolean isExit() {
-        return exit;
+    public int getProcess() {
+        return process;
     }
 
-    public void setExit(boolean exit) {
-        this.exit = exit;
+    public void setProcess(int process) {
+        this.process = process;
     }
 }

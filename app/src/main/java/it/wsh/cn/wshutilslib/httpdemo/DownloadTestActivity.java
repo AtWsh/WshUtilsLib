@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import it.wsh.cn.wshlibrary.database.bean.DownloadInfo;
 import it.wsh.cn.wshlibrary.http.download.IDownloadListener;
 import it.wsh.cn.wshlibrary.http.download.DownloadManager;
 import it.wsh.cn.wshutilslib.R;
@@ -235,18 +236,17 @@ public class DownloadTestActivity extends AppCompatActivity {
             DownloadManager.getInstance().startWithName(downloadUrl, "tengxun.apk", new IDownloadListener() {
 
                 @Override
-                public void onProgress(int progress) {
-                    mProgressBar2.setProgress(progress);
+                public void onProgress(DownloadInfo info) {
+                    mProgressBar2.setProgress(info.getProcess());
                 }
 
                 @Override
-                public void onError(int stateCode, String errorInfo) {
-                    Toast.makeText(DownloadTestActivity.this, "下载失败：" + errorInfo, Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onPause() {
-                    Log.d("wsh_log", "onPause");
+                public void onComplete(int stateCode, String info) {
+                    if (stateCode == IDownloadListener.PAUSE) {
+                        Log.d("wsh_log", "onPause");
+                    }else {
+                        Toast.makeText(DownloadTestActivity.this, "下载失败：" + info, Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
@@ -266,18 +266,17 @@ public class DownloadTestActivity extends AppCompatActivity {
             DownloadManager.getInstance().startWithPath(downloadUrl, downloadPath, new IDownloadListener() {
 
                 @Override
-                public void onProgress(int progress) {
-                    mProgressBar3.setProgress(progress);
+                public void onProgress(DownloadInfo info) {
+                    mProgressBar3.setProgress(info.getProcess());
                 }
 
                 @Override
-                public void onError(int stateCode, String errorInfo) {
-                    Toast.makeText(DownloadTestActivity.this, "下载失败：" + errorInfo, Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onPause() {
-                    Log.d("wsh_log", "onPause");
+                public void onComplete(int stateCode, String info) {
+                    if (stateCode == IDownloadListener.PAUSE) {
+                        Log.d("wsh_log", "onPause");
+                    }else {
+                        Toast.makeText(DownloadTestActivity.this, "下载失败：" + info, Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
@@ -287,52 +286,49 @@ public class DownloadTestActivity extends AppCompatActivity {
 
     private IDownloadListener mProcessListener1 = new IDownloadListener() {
         @Override
-        public void onProgress(int progress) {
-            mProgressBar1.setProgress(progress);
+        public void onProgress(DownloadInfo info) {
+            mProgressBar1.setProgress(info.getProcess());
         }
 
         @Override
-        public void onError(int stateCode, String errorInfo) {
-            Log.d("wsh_log", "mProcessListener1 onError stateCode = " + stateCode);
-        }
-
-        @Override
-        public void onPause() {
-            Log.d("wsh_log", "onPause");
+        public void onComplete(int stateCode, String info) {
+            if (stateCode == IDownloadListener.PAUSE) {
+                Log.d("wsh_log", "onPause");
+            }else {
+                Toast.makeText(DownloadTestActivity.this, "下载失败：" + info, Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
     private IDownloadListener mProcessListener2 = new IDownloadListener() {
         @Override
-        public void onProgress(int progress) {
-            mProgressBar2.setProgress(progress);
+        public void onProgress(DownloadInfo info) {
+            mProgressBar2.setProgress(info.getProcess());
         }
 
         @Override
-        public void onError(int stateCode, String errorInfo) {
-
-        }
-
-        @Override
-        public void onPause() {
-            Log.d("wsh_log", "onPause");
+        public void onComplete(int stateCode, String info) {
+            if (stateCode == IDownloadListener.PAUSE) {
+                Log.d("wsh_log", "onPause");
+            }else {
+                Toast.makeText(DownloadTestActivity.this, "下载失败：" + info, Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
     private IDownloadListener mProcessListener3 = new IDownloadListener() {
         @Override
-        public void onProgress(int progress) {
-            mProgressBar3.setProgress(progress);
+        public void onProgress(DownloadInfo info) {
+            mProgressBar3.setProgress(info.getProcess());
         }
 
         @Override
-        public void onError(int stateCode, String errorInfo) {
-
-        }
-
-        @Override
-        public void onPause() {
-            Log.d("wsh_log", "onPause");
+        public void onComplete(int stateCode, String info) {
+            if (stateCode == IDownloadListener.PAUSE) {
+                Log.d("wsh_log", "onPause");
+            }else {
+                Toast.makeText(DownloadTestActivity.this, "下载失败：" + info, Toast.LENGTH_SHORT).show();
+            }
         }
     };
 

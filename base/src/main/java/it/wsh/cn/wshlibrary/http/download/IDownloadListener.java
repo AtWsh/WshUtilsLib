@@ -1,5 +1,7 @@
 package it.wsh.cn.wshlibrary.http.download;
 
+import it.wsh.cn.wshlibrary.database.bean.DownloadInfo;
+
 /**
  * author: wenshenghui
  * created on: 2018/9/14 12:16
@@ -7,7 +9,10 @@ package it.wsh.cn.wshlibrary.http.download;
  */
 public interface IDownloadListener {
 
-    void onProgress(int progress);
-    void onError(int stateCode, String errorInfo);
-    void onPause();
+    String PAUSE_STATE = "pause";
+    int PAUSE = 1;
+    int ERROR_DOWNLOAD_RETROFIT = 1001;
+
+    void onProgress(DownloadInfo info);
+    void onComplete(int stateCode, String info);
 }

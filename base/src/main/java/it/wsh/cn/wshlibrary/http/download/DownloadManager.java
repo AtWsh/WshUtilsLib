@@ -4,8 +4,12 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import it.wsh.cn.wshlibrary.database.bean.DownloadInfo;
 import it.wsh.cn.wshlibrary.database.daohelper.DownloadInfoDaoHelper;
 import it.wsh.cn.wshlibrary.http.HttpStateCode;
@@ -120,27 +124,29 @@ public class DownloadManager {
      * 开始下载提供文件名
      * @param downloadUrl
      * @param callBack
-     * @return true为开启下载成功，false为不满足下载条件
+     * @return
      */
     public int start(String downloadUrl, String fileName, String savePath, IDownloadListener callBack) {
 
-        //1.判断下载条件并获取key
+        //1.构建DownloadInfo
         DownloadInfo info = getDownloadInfo(downloadUrl, fileName, savePath);
         if (info == null) {
             return -1;
         }
 
-        int key = info.getKey();
-        //2.获取DownloadCallBack
-        DownloadObserver downloadObserver = new DownloadObserver(key);
+        //2.创建DownloadObserver
+        DownloadObserver downloadObserver = new DownloadObserver(info.getKey());
         downloadObserver.addListener(callBack);
 
-        //3.创建DownloadTask，并初始化retrofit
-        DownloadTask task = new DownloadTask(mContext);
-        task.init(downloadUrl);
+        //3..创建DownloadTask
+        DownloadTask task = getDownloadTask(mContext, info, downloadObserver);
+        if (task == null) {
+            return -1;
+        }
         //4.保存DownloadTask并开始下载
+        int key = info.getKey();
+        task.start();
         saveDownloadTask(key, task);
-        task.start(info, downloadObserver);
         return key;
     }
 
@@ -160,20 +166,19 @@ public class DownloadManager {
      * @param downloadUrl
      * @param processListener
      */
-    public void addDownloadListener(String downloadUrl, String fileName,
+    public boolean addDownloadListener(String downloadUrl, String fileName,
                                     String savePath, IDownloadListener processListener) {
         if (processListener == null) {
-            return;
+            return false;
         }
         if (TextUtils.isEmpty(downloadUrl)) {
-            processListener.onError(HttpStateCode.ERROR_DOWNLOAD_URL_IS_NULL, "");
-            return;
+            return false;
         }
 
         fileName = getRealFileName(fileName, downloadUrl);
         savePath = getRealSavePath(fileName, savePath);
         int key = getDownloadKey(downloadUrl, fileName, savePath);
-        addDownloadListener(key, processListener);
+        return addDownloadListener(key, processListener);
     }
 
     /**
@@ -181,13 +186,12 @@ public class DownloadManager {
      * @param key
      * @param processListener
      */
-    public void addDownloadListener(int key, IDownloadListener processListener) {
+    public boolean addDownloadListener(int key, IDownloadListener processListener) {
         DownloadTask downloadTask = mDownloadTasks.get(key);
         if (downloadTask != null) {
-            downloadTask.addListener(processListener);
-        }else {
-            processListener.onError(HttpStateCode.ERROR_IS_NOT_DOWNLOADING, "");
+            return downloadTask.addListener(processListener);
         }
+        return false;
     }
 
     /**
@@ -295,6 +299,25 @@ public class DownloadManager {
         return clearDownloadData(key);
     }
 
+    /**
+     * 获取DownloadTask
+     * @param mContext
+     * @param info
+     * @param observer
+     * @return
+     */
+    private DownloadTask getDownloadTask(Context mContext, DownloadInfo info, DownloadObserver observer) {
+        if (mContext == null || info == null) {
+            return null;
+        }
+
+        DownloadTask task = mDownloadTasks.get(info.getKey());
+        if (task != null ) { //在下载中
+            return null;
+        }
+        task = new DownloadTask(mContext, info, observer);
+        return task;
+    }
 
     /**
      * 下载之前获取DownloadInfo，
@@ -319,10 +342,6 @@ public class DownloadManager {
 
         //判断是否在下载中
         int key = getDownloadKey(downloadUrl, fileName, savePath);
-        DownloadTask task = mDownloadTasks.get(key);
-        if (task != null ) { //在下载中
-            return null;
-        }
         downloadInfo.setKey(key);
         return downloadInfo;
     }
@@ -400,6 +419,118 @@ public class DownloadManager {
     public void removeDownloadTask(int key) {
         if (mDownloadTasks.containsKey(key)) {
             mDownloadTasks.remove(key);
+        }
+    }
+
+    public class DownloadObserver implements Observer<DownloadInfo> {
+
+        private int mKey;
+        private List<IDownloadListener> mListeners = new ArrayList<>();
+
+        public DownloadObserver(int key) {
+            mKey = key;
+        }
+
+        protected Disposable d;//可以用于取消注册的监听者
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            if (d != null) {
+                this.d = d;
+            }
+        }
+
+        @Override
+        public void onNext(DownloadInfo downloadInfo) {
+            long downloadedLength = downloadInfo.getDownloadPosition();
+            long totalSize = downloadInfo.getTotalSize();
+            int progress = (int) (downloadedLength * 100 / totalSize);
+            downloadInfo.setProcess(progress);
+            notifyProcessUpdate(downloadInfo);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            if (e != null && IDownloadListener.PAUSE_STATE.equals(e.getMessage())) {
+                notifyPause();
+            } else {
+                notifyError(e);
+            }
+            removeDownloadTask(mKey);
+        }
+
+        @Override
+        public void onComplete() {
+            removeDownloadTask(mKey);
+        }
+
+        /**
+         * 添加下载监听
+         *
+         * @param listener
+         * @return true： 添加成功
+         */
+        public boolean addListener(IDownloadListener listener) {
+            if (listener == null) {
+                return false;
+            }
+            if (mListeners.contains(listener)) {
+                return false;
+            }
+
+            return mListeners.add(listener);
+        }
+
+        /**
+         * 删除下载监听
+         *
+         * @param listener
+         */
+        public boolean removeListener(IDownloadListener listener) {
+            if (listener == null || mListeners.size() == 0) {
+                return false;
+            }
+            return mListeners.remove(listener);
+        }
+
+        /**
+         * 通知所有的DownloadProcessListener更新
+         *
+         * @param downloadInfo
+         */
+        private void notifyProcessUpdate(DownloadInfo downloadInfo) {
+            if (mListeners == null || mListeners.size() == 0) {
+                return;
+            }
+            for (IDownloadListener listener : mListeners) {
+                listener.onProgress(downloadInfo);
+            }
+        }
+
+        /**
+         * 通知所有的DownloadProcessListener出错
+         *
+         * @param e
+         */
+        private void notifyError(Throwable e) {
+            if (mListeners == null || mListeners.size() == 0) {
+                return;
+            }
+            for (IDownloadListener listener : mListeners) {
+                listener.onComplete(IDownloadListener.ERROR_DOWNLOAD_RETROFIT, e.getMessage());
+            }
+        }
+
+        /**
+         * 通知所有的DownloadProcessListener下载结束
+         */
+        private void notifyPause() {
+            if (mListeners == null || mListeners.size() == 0) {
+                return;
+            }
+            for (IDownloadListener listener : mListeners) {
+                listener.onComplete(IDownloadListener.PAUSE, "");
+            }
         }
     }
 }

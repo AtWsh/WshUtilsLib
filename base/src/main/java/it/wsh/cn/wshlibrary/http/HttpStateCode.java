@@ -34,40 +34,4 @@ public class HttpStateCode {
      */
     public static final int ERROR_PATH_EMPTY = 1005;
 
-    /**
-     * onNext返回T为null
-     */
-    public static final int ERROR_ONNEXT_EXCEPTION = 1006;
-
-
-    /**
-     * DOWNLOAD相关  url为空
-     */
-    public static final int ERROR_DOWNLOAD_URL_IS_NULL = 1007;
-
-    /**
-     * DOWNLOAD相关  开启下载时，检测到正在下载
-     */
-    public static final int ERROR_IS_DOWNLOADING = 1009;
-
-    /**
-     * DOWNLOAD相关  retrofit的逻辑执行出错
-     */
-    public static final int ERROR_DOWNLOAD_RETROFIT = 1010;
-
-    /**
-     * DOWNLOAD相关  注册下载监听时，通知该任务不在下载中
-     */
-    public static final int ERROR_IS_NOT_DOWNLOADING = 1011;
-
-    /**
-     * DOWNLOAD相关  注册下载监听时，通知已经注册过
-     */
-    public static final int ERROR_HAS_REGIST = 1012;
-
-    /**
-     * DOWNLOAD相关  检查ContextLength时出错
-     */
-    public static final int ERROR_CHECK_LENGTH = 1013;
-
 }

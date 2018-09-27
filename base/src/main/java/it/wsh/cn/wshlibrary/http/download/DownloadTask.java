@@ -39,23 +39,25 @@ public class DownloadTask {
     private Context mContext;
     private OkHttpClient mClient;
     private File mSaveFile; //存储路径
-    private DownloadObserver mDownloadObserver; //回调
+    private DownloadManager.DownloadObserver mDownloadObserver; //回调
+    private DownloadInfo mDownloadInfo;
     private boolean mExit = false; //控制退出
 
-    public DownloadTask(Context context) {
-        if (context == null) {
+    public DownloadTask(Context context, DownloadInfo info, DownloadManager.DownloadObserver observer) {
+        if (context == null || info == null) {
             return;
         }
         mContext = context.getApplicationContext();
+        mDownloadInfo = info;
+        mDownloadObserver = observer;
     }
 
     /**
-     * @param url
      * @return
      */
-    public DownloadTask init(String url) {
+    public DownloadTask init() {
 
-        if (TextUtils.isEmpty(url)) {
+        if (TextUtils.isEmpty(mDownloadInfo.getUrl())) {
             return null;
         }
 
@@ -66,7 +68,7 @@ public class DownloadTask {
                 .readTimeout(config.getReadTimeout(), TimeUnit.SECONDS)
                 .writeTimeout(config.getWriteTimeout(), TimeUnit.SECONDS);
         //测试用  跳过所有认证
-        if (url.startsWith(HttpConstants.HTTPS)) {
+        if (HttpConstants.HTTPS.startsWith(mDownloadInfo.getUrl())) {
             //SSLSocketFactory sslSocketFactory = new SslContextFactory().getSslSocket(mContext).getSocketFactory();
             //builder.sslSocketFactory(sslSocketFactory);
             builder.sslSocketFactory(new SslContextFactory().createSSLSocketFactory())
@@ -82,11 +84,9 @@ public class DownloadTask {
     }
 
     //下载
-    public void start(DownloadInfo info,
-                      DownloadObserver downLoadObserver) {
+    public void start() {
 
-        mDownloadObserver = downLoadObserver;
-        Observable.just(info).flatMap(new Function<DownloadInfo, Observable<DownloadInfo>>() {
+        Observable.just(mDownloadInfo).flatMap(new Function<DownloadInfo, Observable<DownloadInfo>>() {
             @Override
             public Observable<DownloadInfo> apply(DownloadInfo info) throws Exception {
                 return Observable.just(createDownInfo(info));
@@ -98,7 +98,7 @@ public class DownloadTask {
             }
         }).observeOn(AndroidSchedulers.mainThread())//在主线程回调
                 .subscribeOn(Schedulers.io())//在子线程执行
-                .subscribe(downLoadObserver);
+                .subscribe(mDownloadObserver);
     }
 
     /**
@@ -178,10 +178,11 @@ public class DownloadTask {
      * 添加下载监听
      * @param listener
      */
-    public void addListener(IDownloadListener listener) {
+    public boolean addListener(IDownloadListener listener) {
         if (mDownloadObserver != null) {
-            mDownloadObserver.addListener(listener);
+            return mDownloadObserver.addListener(listener);
         }
+        return false;
     }
 
     /**
@@ -266,8 +267,7 @@ public class DownloadTask {
                 IOUtil.closeAll(inputStream, randomAccessFile);
             }
             if (mExit) {
-                downloadInfo.setExit(true);
-                e.onNext(downloadInfo);
+                e.onError(new Throwable(IDownloadListener.PAUSE_STATE));
             }else {
                 e.onComplete();//完成
             }
