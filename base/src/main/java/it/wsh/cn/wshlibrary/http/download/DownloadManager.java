@@ -134,19 +134,15 @@ public class DownloadManager {
             return -1;
         }
 
-        //2.创建DownloadObserver
-        DownloadObserver downloadObserver = new DownloadObserver(info.getKey());
-        downloadObserver.addListener(callBack);
-
-        //3..创建DownloadTask
-        DownloadTask task = getDownloadTask(mContext, info, downloadObserver);
+        //2.创建DownloadTask
+        DownloadTask task = getDownloadTask(mContext, info, callBack);
         if (task == null) {
             return -1;
         }
-        //4.保存DownloadTask并开始下载
+        //3.保存DownloadTask并开始下载
         int key = info.getKey();
-        task.start();
         saveDownloadTask(key, task);
+        task.start();
         return key;
     }
 
@@ -303,10 +299,9 @@ public class DownloadManager {
      * 获取DownloadTask
      * @param mContext
      * @param info
-     * @param observer
      * @return
      */
-    private DownloadTask getDownloadTask(Context mContext, DownloadInfo info, DownloadObserver observer) {
+    private DownloadTask getDownloadTask(Context mContext, DownloadInfo info, IDownloadListener callBack) {
         if (mContext == null || info == null) {
             return null;
         }
@@ -315,7 +310,7 @@ public class DownloadManager {
         if (task != null ) { //在下载中
             return null;
         }
-        task = new DownloadTask(mContext, info, observer);
+        task = new DownloadTask(mContext, info, callBack);
         return task;
     }
 
@@ -419,118 +414,6 @@ public class DownloadManager {
     public void removeDownloadTask(int key) {
         if (mDownloadTasks.containsKey(key)) {
             mDownloadTasks.remove(key);
-        }
-    }
-
-    public class DownloadObserver implements Observer<DownloadInfo> {
-
-        private int mKey;
-        private List<IDownloadListener> mListeners = new ArrayList<>();
-
-        public DownloadObserver(int key) {
-            mKey = key;
-        }
-
-        protected Disposable d;//可以用于取消注册的监听者
-
-        @Override
-        public void onSubscribe(Disposable d) {
-            if (d != null) {
-                this.d = d;
-            }
-        }
-
-        @Override
-        public void onNext(DownloadInfo downloadInfo) {
-            long downloadedLength = downloadInfo.getDownloadPosition();
-            long totalSize = downloadInfo.getTotalSize();
-            int progress = (int) (downloadedLength * 100 / totalSize);
-            downloadInfo.setProcess(progress);
-            notifyProcessUpdate(downloadInfo);
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            if (e != null && IDownloadListener.PAUSE_STATE.equals(e.getMessage())) {
-                notifyPause();
-            } else {
-                notifyError(e);
-            }
-            removeDownloadTask(mKey);
-        }
-
-        @Override
-        public void onComplete() {
-            removeDownloadTask(mKey);
-        }
-
-        /**
-         * 添加下载监听
-         *
-         * @param listener
-         * @return true： 添加成功
-         */
-        public boolean addListener(IDownloadListener listener) {
-            if (listener == null) {
-                return false;
-            }
-            if (mListeners.contains(listener)) {
-                return false;
-            }
-
-            return mListeners.add(listener);
-        }
-
-        /**
-         * 删除下载监听
-         *
-         * @param listener
-         */
-        public boolean removeListener(IDownloadListener listener) {
-            if (listener == null || mListeners.size() == 0) {
-                return false;
-            }
-            return mListeners.remove(listener);
-        }
-
-        /**
-         * 通知所有的DownloadProcessListener更新
-         *
-         * @param downloadInfo
-         */
-        private void notifyProcessUpdate(DownloadInfo downloadInfo) {
-            if (mListeners == null || mListeners.size() == 0) {
-                return;
-            }
-            for (IDownloadListener listener : mListeners) {
-                listener.onProgress(downloadInfo);
-            }
-        }
-
-        /**
-         * 通知所有的DownloadProcessListener出错
-         *
-         * @param e
-         */
-        private void notifyError(Throwable e) {
-            if (mListeners == null || mListeners.size() == 0) {
-                return;
-            }
-            for (IDownloadListener listener : mListeners) {
-                listener.onComplete(IDownloadListener.ERROR_DOWNLOAD_RETROFIT, e.getMessage());
-            }
-        }
-
-        /**
-         * 通知所有的DownloadProcessListener下载结束
-         */
-        private void notifyPause() {
-            if (mListeners == null || mListeners.size() == 0) {
-                return;
-            }
-            for (IDownloadListener listener : mListeners) {
-                listener.onComplete(IDownloadListener.PAUSE, "");
-            }
         }
     }
 }

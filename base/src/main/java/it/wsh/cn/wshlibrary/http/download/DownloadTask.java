@@ -39,27 +39,27 @@ public class DownloadTask {
     private Context mContext;
     private OkHttpClient mClient;
     private File mSaveFile; //存储路径
-    private DownloadManager.DownloadObserver mDownloadObserver; //回调
+    private DownloadObserver mDownloadObserver; //回调
     private DownloadInfo mDownloadInfo;
     private boolean mExit = false; //控制退出
 
-    public DownloadTask(Context context, DownloadInfo info, DownloadManager.DownloadObserver observer) {
+    public DownloadTask(Context context, DownloadInfo info, IDownloadListener callBack) {
         if (context == null || info == null) {
             return;
         }
         mContext = context.getApplicationContext();
         mDownloadInfo = info;
-        mDownloadObserver = observer;
+        init(callBack);
     }
 
-    /**
-     * @return
-     */
-    public DownloadTask init() {
+    private void init(IDownloadListener callBack) {
 
         if (TextUtils.isEmpty(mDownloadInfo.getUrl())) {
-            return null;
+            return;
         }
+
+        mDownloadObserver = new DownloadObserver(mDownloadInfo.getKey());
+        mDownloadObserver.addListener(callBack);
 
         HttpConfig config = HttpConfig.create(true);
 
@@ -80,7 +80,7 @@ public class DownloadTask {
                     });
         }
         mClient = builder.build();
-        return this;
+        return;
     }
 
     //下载
