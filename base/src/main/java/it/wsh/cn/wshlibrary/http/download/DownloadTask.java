@@ -2,6 +2,7 @@ package it.wsh.cn.wshlibrary.http.download;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +43,7 @@ public class DownloadTask {
     private DownloadObserver mDownloadObserver; //回调
     private DownloadInfo mDownloadInfo;
     private boolean mExit = false; //控制退出
+    private boolean mDelete = false; //控制删除
 
     public DownloadTask(Context context, DownloadInfo info, IDownloadListener callBack) {
         if (context == null || info == null) {
@@ -63,6 +65,7 @@ public class DownloadTask {
 
         HttpConfig config = HttpConfig.create(true);
 
+        long currentTimeMillis = System.currentTimeMillis();
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .connectTimeout(config.getConnectTimeout(), TimeUnit.SECONDS)
                 .readTimeout(config.getReadTimeout(), TimeUnit.SECONDS)
@@ -80,6 +83,8 @@ public class DownloadTask {
                     });
         }
         mClient = builder.build();
+        long currentTimeMillis2 = System.currentTimeMillis();
+        Log.d("wsh_log", "mClient 创建时间差： " + (currentTimeMillis2 - currentTimeMillis));
         return;
     }
 
@@ -174,6 +179,11 @@ public class DownloadTask {
         mExit = true;
     }
 
+    public void delete() {
+        this.mDelete = true;
+    }
+
+
     /**
      * 添加下载监听
      * @param listener
@@ -253,7 +263,7 @@ public class DownloadTask {
                 inputStream = response.body().byteStream();
                 byte[] buffer = new byte[1024 * 16];//缓冲数组16kB
                 int len;
-                while (!mExit && (len = inputStream.read(buffer)) != -1) {
+                while (!mDelete && !mExit && (len = inputStream.read(buffer)) != -1) {
                     randomAccessFile.write(buffer, 0, len);
                     downloadLength += len;
                     downloadInfo.setDownloadPosition(downloadLength);
@@ -266,7 +276,10 @@ public class DownloadTask {
                 //关闭IO流
                 IOUtil.closeAll(inputStream, randomAccessFile);
             }
-            if (mExit) {
+            if (mDelete) { //删除操作
+                downloadInfo.setDownloadPosition(0);
+                e.onNext(downloadInfo);
+            }else if (mExit) { //stop操作
                 e.onError(new Throwable(IDownloadListener.PAUSE_STATE));
             }else {
                 e.onComplete();//完成

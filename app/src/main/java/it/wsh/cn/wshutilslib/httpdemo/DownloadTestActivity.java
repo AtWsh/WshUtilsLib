@@ -49,6 +49,9 @@ public class DownloadTestActivity extends AppCompatActivity {
     private String mDownloadUrl2 = "https://qd.myapp.com/myapp/qqteam/AndroidQQ/mobileqq_android.apk";
     private String mDownloadUrl3 = "http://downapp.baidu.com/baidusearch/AndroidPhone/10.11.0.13.1/1/757p/20180826161341/baidusearch_AndroidPhone_10-11-0-13-1_757p.apk?responseContentDisposition=attachment%3Bfilename%3D%22baidusearch_AndroidPhone_757p.apk%22&responseContentType=application%2Fvnd.android.package-archive&request_id=1535362308_7026252018&type=static";
 
+    private int mKey1 = -1;
+    private int mKey2 = -1;
+    private int mKey3 = -1;
     public static void luanchActivity(Activity context){
         Intent intent = new Intent(context, DownloadTestActivity.class);
         context.startActivity(intent);
@@ -113,14 +116,11 @@ public class DownloadTestActivity extends AppCompatActivity {
     private View.OnClickListener mDeleteClickListener1 = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            String fileName = "123.apk";
-            String path = Environment.getExternalStorageDirectory().getPath();
-            String downloadPath = path + "/111/";
-            String downloadUrl = mDownloadUrl1;
-            boolean deleteDownloadTask = DownloadManager.getInstance().delete(downloadUrl, fileName, downloadPath);
+            boolean deleteDownloadTask = DownloadManager.getInstance().delete(mKey1);
             if (deleteDownloadTask) {
                 Toast.makeText(DownloadTestActivity.this, "成功删除", Toast.LENGTH_SHORT).show();
                 mProgressBar1.setProgress(0);
+                Log.d("wsh_log", "delete success");
             }else {
                 Toast.makeText(DownloadTestActivity.this, "删除失败或者任务不存在", Toast.LENGTH_SHORT).show();
             }
@@ -162,11 +162,7 @@ public class DownloadTestActivity extends AppCompatActivity {
     private View.OnClickListener mPauseClickListener1 = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            String fileName = "123.apk";
-            String path = Environment.getExternalStorageDirectory().getPath();
-            String downloadPath = path + "/111/";
-            String downloadUrl = mDownloadUrl1;
-            DownloadManager.getInstance().stop(downloadUrl, fileName, downloadPath);
+            DownloadManager.getInstance().stop(mKey1);
         }
     };
 
@@ -202,7 +198,7 @@ public class DownloadTestActivity extends AppCompatActivity {
             String downloadUrl = mDownloadUrl1;
             //boolean start = DownloadManager.getInstance().start(downloadUrl);
             //Log.d("wsh_log", "start = " + start);
-            DownloadManager.getInstance().start(downloadUrl, fileName, downloadPath/*, new IDownloadListener() {
+            mKey1 = DownloadManager.getInstance().start(downloadUrl, fileName, downloadPath/*, new IDownloadListener() {
 
                 @Override
                 public void onProgress(int progress) {
@@ -219,7 +215,7 @@ public class DownloadTestActivity extends AppCompatActivity {
                     Log.d("wsh_log", "onPause");
                 }
             }*/);
-            DownloadManager.getInstance().addDownloadListener(downloadUrl, fileName, downloadPath, mProcessListener1);
+            DownloadManager.getInstance().addDownloadListener(mKey1, mProcessListener1);
         }
     };
 
@@ -288,6 +284,7 @@ public class DownloadTestActivity extends AppCompatActivity {
         @Override
         public void onProgress(DownloadInfo info) {
             mProgressBar1.setProgress(info.getProcess());
+            Log.d("wsh_log", "onProgress");
         }
 
         @Override

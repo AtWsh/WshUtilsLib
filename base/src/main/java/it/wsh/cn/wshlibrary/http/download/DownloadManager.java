@@ -291,7 +291,11 @@ public class DownloadManager {
      * @return
      */
     public boolean delete(int key) {
-        stop(key);
+        DownloadTask task = mDownloadTasks.get(key);
+        if (task != null) {
+            task.delete();
+            removeDownloadTask(key);
+        }
         return clearDownloadData(key);
     }
 
