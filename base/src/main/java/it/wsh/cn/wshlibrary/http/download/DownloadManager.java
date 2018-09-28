@@ -126,8 +126,8 @@ public class DownloadManager {
      * @param callBack
      * @return
      */
-    public int start(String downloadUrl, String fileName, String savePath, IDownloadListener callBack) {
-
+    public int start(String downloadUrl, String fileName, String savePath,
+                     IDownloadListener callBack) {
         //1.构建DownloadInfo
         DownloadInfo info = getDownloadInfo(downloadUrl, fileName, savePath);
         if (info == null) {
@@ -151,8 +151,8 @@ public class DownloadManager {
      * @param downloadUrl
      * @param processListener
      */
-    public void addDownloadListener(String downloadUrl, IDownloadListener processListener) {
-        addDownloadListener(downloadUrl, "", "", processListener);
+    public boolean addDownloadListener(String downloadUrl, IDownloadListener processListener) {
+        return addDownloadListener(downloadUrl, "", "", processListener);
     }
 
 

@@ -91,14 +91,17 @@ public class DownloadTask {
     //下载
     public void start() {
 
-        Observable.just(mDownloadInfo).flatMap(new Function<DownloadInfo, Observable<DownloadInfo>>() {
+        Observable.just(mDownloadInfo).flatMap(new Function<DownloadInfo,
+                Observable<DownloadInfo>>() {
             @Override
-            public Observable<DownloadInfo> apply(DownloadInfo info) throws Exception {
+            public Observable<DownloadInfo> apply(DownloadInfo info)
+                    throws Exception {
                 return Observable.just(createDownInfo(info));
             }
         }).flatMap(new Function<DownloadInfo, Observable<DownloadInfo>>() {
             @Override
-            public Observable<DownloadInfo> apply(DownloadInfo downloadInfo) throws Exception {
+            public Observable<DownloadInfo> apply(DownloadInfo downloadInfo)
+                    throws Exception {
                 return Observable.create(new DownloadSubscribe(downloadInfo));
             }
         }).observeOn(AndroidSchedulers.mainThread())//在主线程回调
@@ -215,6 +218,7 @@ public class DownloadTask {
 
         @Override
         public void subscribe(ObservableEmitter<DownloadInfo> e) throws Exception {
+
             String url = downloadInfo.getUrl();
             long downloadLength = downloadInfo.getDownloadPosition();//已经下载好的长度
             long responseLength = downloadInfo.getTotalSize();//文件的总长度, 注意此处可能为0
@@ -233,7 +237,8 @@ public class DownloadTask {
 
             Request.Builder builder = new Request.Builder().url(url);
             if (responseLength != 0) {
-                builder.addHeader("RANGE", "bytes=" + downloadLength + "-" + responseLength);
+                builder.addHeader("RANGE", "bytes=" +
+                        downloadLength + "-" + responseLength);
             }
             Request request = builder.build();
             Call call = mClient.newCall(request);
@@ -254,9 +259,9 @@ public class DownloadTask {
                 e.onComplete();//完成
                 return;
             }
+
             RandomAccessFile randomAccessFile = null;
             InputStream inputStream = null;
-
             try {
                 randomAccessFile = new RandomAccessFile(saveFile, "rwd");
                 randomAccessFile.seek(downloadLength);
