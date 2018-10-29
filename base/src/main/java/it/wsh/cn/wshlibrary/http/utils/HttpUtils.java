@@ -1,8 +1,11 @@
-package it.wsh.cn.wshlibrary.http;
+package it.wsh.cn.wshlibrary.http.utils;
 
 import android.text.TextUtils;
 
 import java.util.Map;
+
+import it.wsh.cn.wshlibrary.http.HttpConfig;
+
 
 /**
  * author: wenshenghui
@@ -18,7 +21,7 @@ public class HttpUtils {
      * @param mHttpCustomConfig
      * @return
      */
-    public static String getDisposableCacheKey(String path, Map<String, String> mapHeader, Map<String, String> params, Object bodyObject, HttpConfig mHttpCustomConfig) {
+    public static int getHttpKey(String path, Map<String, String> mapHeader, Map<String, String> params, Object bodyObject, HttpConfig mHttpCustomConfig) {
         StringBuffer keyBuffer = new StringBuffer("");
         if (!TextUtils.isEmpty(path)) {
             keyBuffer.append(path);
@@ -38,6 +41,6 @@ public class HttpUtils {
             keyBuffer.append(mHttpCustomConfig.toString());
         }
 
-        return keyBuffer.toString();
+        return keyBuffer.toString().hashCode();
     }
 }

@@ -7,7 +7,6 @@ import com.alibaba.android.arouter.launcher.ARouter;
 import it.wsh.cn.componentbase.application.ApplicationConfig;
 import it.wsh.cn.componentbase.application.BaseApplication;
 import it.wsh.cn.wshlibrary.database.utils.GreenDaoDatabase;
-import it.wsh.cn.wshlibrary.http.HttpClient;
 import it.wsh.cn.wshlibrary.http.HttpManager;
 
 /**

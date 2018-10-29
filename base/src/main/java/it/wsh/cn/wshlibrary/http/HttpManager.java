@@ -3,6 +3,7 @@ package it.wsh.cn.wshlibrary.http;
 import android.content.Context;
 
 import it.wsh.cn.wshlibrary.http.download.DownloadManager;
+import it.wsh.cn.wshlibrary.http.oss.OssUploadManager;
 
 /**
  * author: wenshenghui
@@ -12,7 +13,8 @@ import it.wsh.cn.wshlibrary.http.download.DownloadManager;
 public class HttpManager {
 
     public static void init(Context context) {
-        HttpClient.getInstance().init(context);
         DownloadManager.getInstance().init(context);
+        OssUploadManager.getInstance().init(context);
+        HttpClientManager.getInstance().init(context);
     }
 }

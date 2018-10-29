@@ -132,6 +132,9 @@ public class HttpDemoActivity extends AppCompatActivity implements  View.OnClick
 
 
         HttpConfig httpConfig = HttpConfig.create(false);
+        httpConfig.connectTimeout(5);
+        httpConfig.readTimeout(5);
+        httpConfig.writeTimeout(5);
         HashMap<String, String> map = new HashMap<>();
         map.put("req_id", "6");
         map.put("method", "isValidRouter");
@@ -165,7 +168,7 @@ public class HttpDemoActivity extends AppCompatActivity implements  View.OnClick
 
         new RouteInfoResponse.Builder().addBodyMap(map)
                 .addHeader("name", "wsh")
-                .build(new HttpCallBack<RouteInfoResponse>() {
+                .build(true, new HttpCallBack<RouteInfoResponse>() {
             @Override
             public void onSuccess(RouteInfoResponse RouteInfoResponse) {
                 Toast.makeText(HttpDemoActivity.this, "请求成功！  " + RouteInfoResponse.toString(), Toast.LENGTH_LONG).show();
@@ -216,7 +219,7 @@ public class HttpDemoActivity extends AppCompatActivity implements  View.OnClick
         jsonObject.addProperty("currentPage", 1);
         jsonObject.addProperty("pageSize", 5);
 
-        new NoticeListResponse.Builder().addBodyJsonObject(jsonObject).build(new HttpCallBack<NoticeListResponse>() {
+        new NoticeListResponse.Builder().addBodyObj(jsonObject).build(new HttpCallBack<NoticeListResponse>() {
             @Override
             public void onSuccess(NoticeListResponse noticeListResponse) {
                 Toast.makeText(HttpDemoActivity.this, "请求成功！  " + noticeListResponse.toString(), Toast.LENGTH_LONG).show();
@@ -266,7 +269,7 @@ public class HttpDemoActivity extends AppCompatActivity implements  View.OnClick
         map.put("ak","94Tmshjhp03oul7xy95Gu3wwHkjGZvkk");
         map.put("mcode","EE:0C:C8:50:54:53:96:5A:55:8C:23:2F:93:7E:EB:AE:D8:C8:1B:F1;com.example.tangdekun.androidannotationsdemo");
 
-        new WeatherResponse.Builder().setTag(this)
+        new WeatherResponse.Builder().setTag(HttpDemoActivity.this)
                 .addParamsMap(map)
                 .build(new HttpCallBack<WeatherResponse>() {
                     @Override

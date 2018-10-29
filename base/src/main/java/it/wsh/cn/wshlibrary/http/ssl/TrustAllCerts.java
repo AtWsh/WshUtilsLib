@@ -1,4 +1,4 @@
-package it.wsh.cn.wshlibrary.http.https;
+package it.wsh.cn.wshlibrary.http.ssl;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;

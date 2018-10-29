@@ -97,7 +97,7 @@ public class LifeCircleTestActivity extends AppCompatActivity implements  View.O
         httpConfig.connectTimeout(10);
         mHttpBuilder.setTag(LifeCircleTestActivity.this)
                 .setHttpCustomConfig(httpConfig)
-                .addBodyJsonObject(jsonObject)
+                .addBodyObj(jsonObject)
                 .build(new HttpCallBack<NoticeListResponse>() {
             @Override
             public void onSuccess(NoticeListResponse noticeListResponse) {

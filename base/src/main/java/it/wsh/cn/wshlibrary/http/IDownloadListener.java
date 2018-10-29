@@ -1,4 +1,4 @@
-package it.wsh.cn.wshlibrary.http.download;
+package it.wsh.cn.wshlibrary.http;
 
 import it.wsh.cn.wshlibrary.database.bean.DownloadInfo;
 
@@ -12,7 +12,8 @@ public interface IDownloadListener {
     String PAUSE_STATE = "pause";
     int PAUSE = 1;
     int ERROR_DOWNLOAD_RETROFIT = 1001;
+    int ERROR_DOWNLOAD_OSSTASK_CREATE = 1002;
 
-    void onProgress(DownloadInfo info);
+    void onProgress(IProcessInfo info);
     void onComplete(int stateCode, String info);
 }

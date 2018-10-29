@@ -9,9 +9,12 @@ import okhttp3.MediaType;
  */
 public class HttpConstants {
 
-    public static final MediaType sJsonType = MediaType.parse("application/json; charset=utf-8");
-
-    public static final MediaType sTextType = MediaType.parse("text/plain");
+    //JSON类型
+    public static final MediaType JSON_TYPE = MediaType.parse("application/json; charset=utf-8");
+    //文本类型
+    public static final MediaType TEXT_TYPE = MediaType.parse("text/plain");
+    //表单类型
+    public static final MediaType FORM_TYPE = MediaType.parse("application/x-www-form-urlencoded;charset=utf-8");
 
     public static final String FILE_NAME = "file\"; filename=\"";
     public static final String FILE_DES = "file\"; filedes=\"";
@@ -24,4 +27,6 @@ public class HttpConstants {
 
     //下载相关
     public final static String DOWNLOAD_DIR = "/downlaod/";
+
+    public final static int MAX_CACHE_SIZE = 100;
 }

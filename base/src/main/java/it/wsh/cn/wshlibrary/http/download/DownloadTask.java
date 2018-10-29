@@ -2,7 +2,6 @@ package it.wsh.cn.wshlibrary.http.download;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,8 +23,9 @@ import it.wsh.cn.wshlibrary.database.bean.DownloadInfo;
 import it.wsh.cn.wshlibrary.database.daohelper.DownloadInfoDaoHelper;
 import it.wsh.cn.wshlibrary.http.HttpConfig;
 import it.wsh.cn.wshlibrary.http.HttpConstants;
-import it.wsh.cn.wshlibrary.http.IOUtil;
-import it.wsh.cn.wshlibrary.http.https.SslContextFactory;
+import it.wsh.cn.wshlibrary.http.IDownloadListener;
+import it.wsh.cn.wshlibrary.http.ssl.SslContextFactory;
+import it.wsh.cn.wshlibrary.http.utils.IOUtil;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -65,7 +65,6 @@ public class DownloadTask {
 
         HttpConfig config = HttpConfig.create(true);
 
-        long currentTimeMillis = System.currentTimeMillis();
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .connectTimeout(config.getConnectTimeout(), TimeUnit.SECONDS)
                 .readTimeout(config.getReadTimeout(), TimeUnit.SECONDS)
@@ -83,8 +82,6 @@ public class DownloadTask {
                     });
         }
         mClient = builder.build();
-        long currentTimeMillis2 = System.currentTimeMillis();
-        Log.d("wsh_log", "mClient 创建时间差： " + (currentTimeMillis2 - currentTimeMillis));
         return;
     }
 

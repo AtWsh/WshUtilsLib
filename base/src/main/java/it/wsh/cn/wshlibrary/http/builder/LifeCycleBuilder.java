@@ -1,10 +1,6 @@
 package it.wsh.cn.wshlibrary.http.builder;
 
 
-import android.arch.lifecycle.LifecycleOwner;
-
-import it.wsh.cn.wshlibrary.http.HttpClient;
-
 /**
  * author: wenshenghui
  * created on: 2018/8/7 10:15
@@ -24,20 +20,9 @@ public abstract class LifeCycleBuilder<T> extends CommonBuilder<T> {
      * @return
      */
     public CommonBuilder<T> setTag(Object tag) {
-        registerLifecycle(tag);
+        mTag = tag;
         mTagHash = tag == null ? TAG.hashCode() : tag.hashCode();
         return this;
-    }
-
-    /**
-     * @param tag
-     */
-    public void registerLifecycle(Object tag) {
-        LifecycleOwner owner;
-        if (tag instanceof LifecycleOwner) {
-            owner = (LifecycleOwner) tag;
-            owner.getLifecycle().addObserver(HttpClient.getInstance());
-        }
     }
 
     @Override

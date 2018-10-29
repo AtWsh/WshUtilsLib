@@ -8,6 +8,8 @@ import java.util.Map;
  * author: wenshenghui
  * created on: 2018/8/3 12:13
  * description:
+ * http请求的配置：请求头，超时配置，缓存配置
+ * sDefaultConfig 为默认配置
  */
 public class HttpConfig {
 
@@ -26,6 +28,8 @@ public class HttpConfig {
 
     private boolean mNeedNetWorkCache = true; //是否需要有网络时的缓存
     private boolean mNeedNoNetWorkCache = true; // 是否需要离线缓存
+
+    private static HttpConfig sDefaultConfig = create(true);
 
 
 
@@ -51,12 +55,8 @@ public class HttpConfig {
         mHeaders.put("FrontType", "egc-mobile-ui");
         mHeaders.put("charset", "UTF-8");
         mHeaders.put("terminalVersion", "1.1.0");
-        //mHeaders.put("versionCode", BuildConfig.VERSION_CODE + "");
-        //mHeaders.put("versionName", BuildConfig.VERSION_NAME);
         mHeaders.put("traceId", String.format("%s0200%s00000000000000000000000000000000",
                 System.currentTimeMillis(), String.valueOf((int) ((Math.random()*9+1)*Math.pow(10, 6)))));
-        //todo Token
-        //mHeaders.put("Authorization", "");
     }
 
     public HttpConfig addHeader(String name, String value) {
@@ -173,5 +173,10 @@ public class HttpConfig {
                 ", mUserWriteTimeout='" + mUserWriteTimeout + '\'' +
                 mHeaders.toString()+
                 '}';
+    }
+
+
+    public static HttpConfig getDefault() {
+        return sDefaultConfig;
     }
 }

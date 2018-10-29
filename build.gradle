@@ -67,6 +67,7 @@ buildscript {
                 'mta_visual'                   : 'com.qq.visual:visual:3.3.1-release',
                 'arouter_compiler'             : 'com.alibaba:arouter-compiler:1.1.4',
                 'arouter'                      : 'com.alibaba:arouter-api:1.3.1',
+                'oss'                          : 'com.aliyun.dpa:oss-android-sdk:2.4.4',
         ]
 
         try {

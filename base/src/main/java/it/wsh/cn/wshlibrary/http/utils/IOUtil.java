@@ -1,4 +1,4 @@
-package it.wsh.cn.wshlibrary.http;
+package it.wsh.cn.wshlibrary.http.utils;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class IOUtil {
                 try {
                     closeable.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    HttpLog.w(e);
                 }
             }
         }

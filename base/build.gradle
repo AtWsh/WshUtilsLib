@@ -63,4 +63,5 @@ dependencies {
     api deps.gson
     api deps.eventbus
     api deps.greendao
+    api deps.oss
 }

@@ -1,4 +1,4 @@
-package it.wsh.cn.wshlibrary.http.https;
+package it.wsh.cn.wshlibrary.http.ssl;
 
 import android.content.Context;
 import android.util.Log;

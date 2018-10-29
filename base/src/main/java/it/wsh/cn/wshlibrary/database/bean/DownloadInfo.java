@@ -8,13 +8,15 @@ import org.greenrobot.greendao.annotation.Transient;
 import org.greenrobot.greendao.annotation.Unique;
 import org.greenrobot.greendao.annotation.Generated;
 
+import it.wsh.cn.wshlibrary.http.IProcessInfo;
+
 /**
  * author: wenshenghui
  * created on: 2018/8/31 9:49
  * description:
  */
 @Entity
-public class DownloadInfo {
+public class DownloadInfo implements IProcessInfo {
 
     @Unique
     private int key;
@@ -49,6 +51,7 @@ public class DownloadInfo {
 
     }
 
+    @Override
     public String getUrl() {
         return this.url;
     }
@@ -65,6 +68,7 @@ public class DownloadInfo {
         this.savePath = savePath;
     }
 
+    @Override
     public long getTotalSize() {
         return this.totalSize;
     }
@@ -73,6 +77,7 @@ public class DownloadInfo {
         this.totalSize = totalSize;
     }
 
+    @Override
     public long getDownloadPosition() {
         return downloadPosition;
     }
@@ -97,6 +102,7 @@ public class DownloadInfo {
         this.key = key;
     }
 
+    @Override
     public int getProcess() {
         return process;
     }

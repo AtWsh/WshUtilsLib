@@ -1,37 +1,40 @@
-package it.wsh.cn.wshlibrary.http.download;
+package it.wsh.cn.wshlibrary.http.oss;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import it.wsh.cn.wshlibrary.database.bean.DownloadInfo;
+import it.wsh.cn.wshlibrary.database.bean.OssInfo;
+import it.wsh.cn.wshlibrary.http.download.DownloadManager;
 import it.wsh.cn.wshlibrary.http.IDownloadListener;
 
 /**
  * author: wenshenghui
- * created on: 2018/9/27 18:16
+ * created on: 2018/10/12 09:16
  * description:
  */
-public class DownloadObserver implements Observer<DownloadInfo> {
+public class OssObserver implements Observer<OssInfo> {
 
     private int mKey;
     private List<IDownloadListener> mListeners = new ArrayList<>();
 
-    public DownloadObserver(int key) {
+    public OssObserver(int key) {
         mKey = key;
     }
+
+    protected Disposable d;//可以用于取消注册的监听者
 
     @Override
     public void onSubscribe(Disposable d) {}
 
     @Override
-    public void onNext(DownloadInfo downloadInfo) {
-        long downloadedLength = downloadInfo.getDownloadPosition();
-        long totalSize = downloadInfo.getTotalSize();
+    public void onNext(OssInfo ossInfo) {
+        long downloadedLength = ossInfo.getDownloadPosition();
+        long totalSize = ossInfo.getTotalSize();
         int progress = (int) (downloadedLength * 100 / totalSize);
-        downloadInfo.setProcess(progress);
-        notifyProcessUpdate(downloadInfo);
+        ossInfo.setProcess(progress);
+        notifyProcessUpdate(ossInfo);
     }
 
     @Override
@@ -41,12 +44,12 @@ public class DownloadObserver implements Observer<DownloadInfo> {
         } else {
             notifyError(e);
         }
-        DownloadManager.getInstance().removeDownloadTask(mKey, false);
+        DownloadManager.getInstance().removeDownloadTask(mKey, true);
     }
 
     @Override
     public void onComplete() {
-        DownloadManager.getInstance().removeDownloadTask(mKey, false);
+        DownloadManager.getInstance().removeDownloadTask(mKey, true);
     }
 
     /**
@@ -81,14 +84,14 @@ public class DownloadObserver implements Observer<DownloadInfo> {
     /**
      * 通知所有的DownloadProcessListener更新
      *
-     * @param downloadInfo
+     * @param ossInfo
      */
-    private void notifyProcessUpdate(DownloadInfo downloadInfo) {
+    private void notifyProcessUpdate(OssInfo ossInfo) {
         if (mListeners == null || mListeners.size() == 0) {
             return;
         }
         for (IDownloadListener listener : mListeners) {
-            listener.onProgress(downloadInfo);
+            listener.onProgress(ossInfo);
         }
     }
 

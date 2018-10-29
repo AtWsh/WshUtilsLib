@@ -43,11 +43,11 @@ public class ConvertFactory extends Converter.Factory {
         @Override
         public RequestBody convert(Object o) throws IOException {
             if (o instanceof String) {
-                return RequestBody.create(HttpConstants.sJsonType, (String) o);
+                return RequestBody.create(HttpConstants.JSON_TYPE, (String) o);
             } else if (o instanceof RequestBody) {
                 return (RequestBody) o;
             } else {
-                return RequestBody.create(HttpConstants.sJsonType, gson.toJson(o));
+                return RequestBody.create(HttpConstants.JSON_TYPE, gson.toJson(o));
             }
         }
     }

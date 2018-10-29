@@ -7,13 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import it.wsh.cn.wshlibrary.http.HttpCallBack;
-import it.wsh.cn.wshlibrary.http.HttpClient;
 import it.wsh.cn.wshlibrary.http.HttpConstants;
 import it.wsh.cn.wshlibrary.http.HttpMethod;
-import it.wsh.cn.wshlibrary.http.HttpStateCode;
-import it.wsh.cn.wshlibrary.http.HttpUtils;
+import it.wsh.cn.wshlibrary.http.HttpClientManager;
+import it.wsh.cn.wshlibrary.http.utils.HttpLog;
+import it.wsh.cn.wshlibrary.http.utils.HttpUtils;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
@@ -33,10 +32,11 @@ public abstract class UploadBuilder<T> extends LifeCycleBuilder<T> {
      */
     public void addImgAndDescribe(File file, String des) {
         if (file == null) {
+            HttpLog.e("UploadBuilder： Error! addImgAndDescribe : file == null !" );
             return;
         }
         RequestBody imgBody = RequestBody.create(MultipartBody.FORM, file);
-        RequestBody textBody = RequestBody.create(HttpConstants.sTextType, des);
+        RequestBody textBody = RequestBody.create(HttpConstants.TEXT_TYPE, des);
         mPartMap.put(HttpConstants.FILE_NAME + file.getName(), imgBody);
         mPartMap.put(HttpConstants.FILE_NAME + file.getName(), textBody);
     }
@@ -48,10 +48,11 @@ public abstract class UploadBuilder<T> extends LifeCycleBuilder<T> {
      */
     public void addImgAndDescribe(String fileKey, File file, String desKey, String des) {
         if (file == null || TextUtils.isEmpty(des)) {
+            HttpLog.e("UploadBuilder： Error! addImgAndDescribe : file == null || TextUtils.isEmpty(des) !" );
             return;
         }
         RequestBody imgBody = RequestBody.create(MultipartBody.FORM, file);
-        RequestBody textBody = RequestBody.create(HttpConstants.sTextType, des);
+        RequestBody textBody = RequestBody.create(HttpConstants.TEXT_TYPE, des);
         mPartMap.put(fileKey, imgBody);
         mPartMap.put(desKey, textBody);
     }
@@ -67,6 +68,7 @@ public abstract class UploadBuilder<T> extends LifeCycleBuilder<T> {
 
     public void addFiles(List<File> files) {
         if (files == null || files.size() == 0) {
+            HttpLog.e("UploadBuilder： Error! addFiles : files == null || files.size() == 0 !" );
             return;
         }
         for (File file : files) {
@@ -76,22 +78,21 @@ public abstract class UploadBuilder<T> extends LifeCycleBuilder<T> {
 
     public void addPartMap(Map<String, RequestBody> partMap) {
         if (partMap == null) {
+            HttpLog.e("UploadBuilder： Error! addPartMap : partMap == null !" );
             return;
         }
         mPartMap = partMap;
     }
 
     @Override
-    protected void request(boolean onUiCallBack, final HttpCallBack<T> callback){
-        HttpClient client = getHttpClient(callback);
-        if (client == null) {
-            callback.onError(HttpStateCode.ERROR_HTTPCLIENT_CREATE_FAILED, null);
-            return;
-        }
+    protected int request(boolean onUiCallBack, final HttpCallBack<T> callback){
+        HttpClientManager clientManager = HttpClientManager.getInstance();
         callback.onStart();
-        mDisposableCacheKey = HttpUtils.getDisposableCacheKey(getPath(), mHttpHeader, null, mPartMap, mHttpCustomConfig);
+        int disposableCacheKey = HttpUtils.getHttpKey(getPath(), mHttpHeader, null, mPartMap, mHttpCustomConfig);
 
-        client.upload(getPath(), mDisposableCacheKey, mHttpHeader, mPartMap, getTagHash(), callback);
+        return clientManager.upload(
+                getBaseUrl(), getPath(), disposableCacheKey, mHttpHeader, mPartMap, getTagHash(),
+                mRetryTimes, mRetryDelayMillis, mHttpCustomConfig, callback);
     }
 
     @Override
