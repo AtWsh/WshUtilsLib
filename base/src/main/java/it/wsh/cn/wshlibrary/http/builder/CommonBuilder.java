@@ -27,7 +27,7 @@ import okhttp3.RequestBody;
  */
 public abstract class CommonBuilder<T> {
 
-    private String TAG = "AsyncBuilder";
+    private String TAG = "CommonBuilder";
 
     protected Map<String, String> mHttpParams;
     protected Map<String, String> mHttpHeader;

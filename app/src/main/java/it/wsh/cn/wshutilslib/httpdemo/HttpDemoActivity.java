@@ -290,7 +290,7 @@ public class HttpDemoActivity extends AppCompatActivity implements  View.OnClick
      * GET 无参数请求测试  获取知乎新闻
      */
     private void requestZhihuInfo() {
-        new StoriesResponse.Builder().build(new HttpCallBack<StoriesResponse>() {
+        new StoriesResponse.Builder().setTag(this).build(new HttpCallBack<StoriesResponse>() {
             @Override
             public void onSuccess(StoriesResponse storiesResponse) {
                 Toast.makeText(HttpDemoActivity.this, "请求成功！  " + storiesResponse.toString(), Toast.LENGTH_LONG).show();

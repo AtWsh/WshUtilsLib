@@ -3,6 +3,7 @@ package it.wsh.cn.wshutilslib.application;
 import android.app.Application;
 
 import com.alibaba.android.arouter.launcher.ARouter;
+import com.squareup.leakcanary.LeakCanary;
 
 import it.wsh.cn.componentbase.application.ApplicationConfig;
 import it.wsh.cn.componentbase.application.BaseApplication;
@@ -22,6 +23,13 @@ public class MianApplication extends BaseApplication{
 
         initModule(this);
         initModuleData(this);
+
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(this);
 
         // 打印日志
         ARouter.openLog();

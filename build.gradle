@@ -68,6 +68,9 @@ buildscript {
                 'arouter_compiler'             : 'com.alibaba:arouter-compiler:1.1.4',
                 'arouter'                      : 'com.alibaba:arouter-api:1.3.1',
                 'oss'                          : 'com.aliyun.dpa:oss-android-sdk:2.4.4',
+                'leakcanary_debug'             : 'com.squareup.leakcanary:leakcanary-android:1.6.2',
+                'leakcanary_release'           : 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2',
+                'leakcanary_support'           : 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.2',
         ]
 
         try {
