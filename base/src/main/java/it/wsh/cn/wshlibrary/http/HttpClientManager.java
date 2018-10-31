@@ -43,48 +43,61 @@ public class HttpClientManager<T> implements IHttpClient<T> {
 
     /**
      * 获取缓存的Retrofit对象，如果没有缓存，则会返回null
-     *
+     * 决定一个HttpClient 靠baseUrl和HttpConfig
      * @param baseUrl
+     * @param config
      * @return
      */
-    public HttpClient getCacheHttpClient(String baseUrl) {
-        if (TextUtils.isEmpty(baseUrl)) {
-            HttpLog.d("HttpClientManager: getCacheHttpClient, baseUrl is empty");
-            return mHttpClientMap.get(-1);
-        }
-        return mHttpClientMap.get(baseUrl.hashCode());
+    public HttpClient getCacheHttpClient(String baseUrl, HttpConfig config) {
+        int key = getHttpClientKey(baseUrl, config);
+        HttpLog.d("getCacheHttpClient key = " + key);
+        return mHttpClientMap.get(key);
     }
 
     /**
-     * 获取缓存的Retrofit对象，如果没有缓存，则会返回null
+     * 缓存HttpClient
      *
      * @param baseUrl
      * @return
      */
-    private void saveCacheHttpClient(String baseUrl, HttpClient httpClient) {
+    private void saveCacheHttpClient(HttpClient httpClient, String baseUrl, HttpConfig config) {
         if (mHttpClientMap.size() > HttpConstants.MAX_CACHE_SIZE) {
             mHttpClientMap.clear();
         }
+        int key = getHttpClientKey(baseUrl, config);
+        mHttpClientMap.put(key, httpClient);
+        HttpLog.d("saveCacheHttpClient key = " + key);
+    }
+
+    private int getHttpClientKey(String baseUrl, HttpConfig config) {
+        String url;
+        String configToStr;
         if (TextUtils.isEmpty(baseUrl)) {
-            mHttpClientMap.put(-1, httpClient);
+            url = "";
         }else {
-            mHttpClientMap.put(baseUrl.hashCode(), httpClient);
+            url = baseUrl;
         }
+        if (config == null) {
+            configToStr = "";
+        }else {
+            configToStr = config.createStrKey();
+        }
+        int key = (url + configToStr).hashCode();
+        return key;
     }
 
     /**
      * 获取HttpClient，没有缓存则创建 然后缓存
      * @param baseUrl
      * @param httpConfig
-     * @param callback
      * @return
      */
-    private HttpClient getHttpClientAndCache(String baseUrl, HttpConfig httpConfig, HttpCallBack<T> callback) {
-        HttpClient httpClient = getCacheHttpClient(baseUrl);
+    private HttpClient getHttpClientAndCache(String baseUrl, HttpConfig httpConfig) {
+        HttpClient httpClient = getCacheHttpClient(baseUrl, httpConfig);
         if (httpClient == null) {
             HttpLog.d("HttpClientManager: getHttpClientAndCache, getCacheHttpClient is null");
-            httpClient = new HttpClient(mContext, baseUrl, httpConfig, mGson, callback);
-            saveCacheHttpClient(baseUrl, httpClient);
+            httpClient = new HttpClient(mContext, baseUrl, httpConfig, mGson);
+            saveCacheHttpClient(httpClient, baseUrl, httpConfig);
         }else {
             HttpLog.d("HttpClientManager: getCacheHttpClient, get cacheHttpClient success!");
         }
@@ -94,7 +107,7 @@ public class HttpClientManager<T> implements IHttpClient<T> {
     @Override
     public int post(String baseUrl, String path, int httpKey, int tagHash, int retryTimes,
                     int retryDelayMillis, boolean onUiCallBack, HttpConfig httpConfig, HttpCallBack<T> callback) {
-        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig, callback);
+        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig);
         return httpClient.post(path, httpKey, tagHash, retryTimes, retryDelayMillis, onUiCallBack,
                     callback);
 
@@ -104,7 +117,7 @@ public class HttpClientManager<T> implements IHttpClient<T> {
     public int postWithParamsMap(String baseUrl, String path, int httpKey, Map<String, String> params,
                                  int tagHash, int retryTimes, int retryDelayMillis,
                                  boolean onUiCallBack, HttpConfig httpConfig, HttpCallBack<T> callback) {
-        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig, callback);
+        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig);
         return httpClient.postWithParamsMap(path, httpKey, params, tagHash,
                     retryTimes, retryDelayMillis, onUiCallBack, callback);
 
@@ -114,7 +127,7 @@ public class HttpClientManager<T> implements IHttpClient<T> {
     public int post(String baseUrl, String path, int httpKey, Object bodyJson, int tagHash,
                     int retryTimes, int retryDelayMillis, boolean onUiCallBack,
                     HttpConfig httpConfig, HttpCallBack<T> callback) {
-        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig, callback);
+        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig);
         return httpClient.post(path, httpKey, bodyJson, tagHash,
                     retryTimes, retryDelayMillis, onUiCallBack, callback);
 
@@ -124,7 +137,7 @@ public class HttpClientManager<T> implements IHttpClient<T> {
     public int postWithHeaderMap(String baseUrl, String path, int httpKey, Map mapHeader,
                                  int tagHash, int retryTimes, int retryDelayMillis,
                                  boolean onUiCallBack, HttpConfig httpConfig, HttpCallBack<T> callback) {
-        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig, callback);
+        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig);
         return httpClient.postWithHeaderMap(path, httpKey, mapHeader, tagHash,
                     retryTimes, retryDelayMillis, onUiCallBack, callback);
     }
@@ -133,7 +146,7 @@ public class HttpClientManager<T> implements IHttpClient<T> {
     public int postParamsAndObj(String baseUrl, String path, int httpKey, Map<String, String> params,
                                 Object bodyJson, int tagHash, int retryTimes, int retryDelayMillis,
                                 boolean onUiCallBack, HttpConfig httpConfig, HttpCallBack<T> callback) {
-        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig, callback);
+        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig);
         return httpClient.postParamsAndObj(path, httpKey, params, bodyJson, tagHash,
                     retryTimes, retryDelayMillis, onUiCallBack, callback);
     }
@@ -142,7 +155,7 @@ public class HttpClientManager<T> implements IHttpClient<T> {
     public int post(String baseUrl, String path, int httpKey, Map<String, String> params,
                     Map<String, String> mapHeader, int tagHash, int retryTimes,
                     int retryDelayMillis, boolean onUiCallBack, HttpConfig httpConfig, HttpCallBack<T> callback) {
-        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig, callback);
+        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig);
         return httpClient.post(path, httpKey, params, mapHeader, tagHash,
                     retryTimes, retryDelayMillis, onUiCallBack, callback);
     }
@@ -152,7 +165,7 @@ public class HttpClientManager<T> implements IHttpClient<T> {
                                    Map<String, String> mapHeader, Object bodyJson, int tagHash,
                                    int retryTimes, int retryDelayMillis, boolean onUiCallBack,
                                    HttpConfig httpConfig, HttpCallBack<T> callback) {
-        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig, callback);
+        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig);
         return httpClient.postMapHeaderAndObj(path, httpKey, mapHeader, bodyJson, tagHash,
                     retryTimes, retryDelayMillis, onUiCallBack, callback);
     }
@@ -161,7 +174,7 @@ public class HttpClientManager<T> implements IHttpClient<T> {
     public int post(String baseUrl, String path, int httpKey, Map<String, String> params,
                     Map<String, String> mapHeader, Object bodyJson, int tagHash,
                     int retryTimes, int retryDelayMillis, boolean onUiCallBack, HttpConfig httpConfig, HttpCallBack<T> callback) {
-        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig, callback);
+        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig);
         return httpClient.post(path, httpKey, params, mapHeader, bodyJson, tagHash,
                     retryTimes, retryDelayMillis, onUiCallBack, callback);
     }
@@ -173,7 +186,7 @@ public class HttpClientManager<T> implements IHttpClient<T> {
     @Override
     public int get(String baseUrl, String path, int httpKey, int tagHash, int retryTimes,
                    int retryDelayMillis, boolean onUiCallBack, HttpConfig httpConfig, HttpCallBack<T> callback) {
-        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig, callback);
+        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig);
         return httpClient.get(path, httpKey, tagHash, retryTimes, retryDelayMillis,
                     onUiCallBack, callback);
     }
@@ -182,7 +195,7 @@ public class HttpClientManager<T> implements IHttpClient<T> {
     public int getWithParamsMap(String baseUrl, String path, int httpKey, Map<String, String> params,
                                 int tagHash, int retryTimes, int retryDelayMillis,
                                 boolean onUiCallBack, HttpConfig httpConfig, HttpCallBack<T> callback) {
-        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig, callback);
+        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig);
         return httpClient.getWithParamsMap(path, httpKey, params, tagHash, retryTimes, retryDelayMillis,
                     onUiCallBack, callback);
     }
@@ -191,7 +204,7 @@ public class HttpClientManager<T> implements IHttpClient<T> {
     public int getWithHeaderMap(String baseUrl, String path, int httpKey, Map<String, String> mapHeader,
                                 int tagHash, int retryTimes, int retryDelayMillis, boolean onUiCallBack,
                                 HttpConfig httpConfig, HttpCallBack<T> callback) {
-        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig, callback);
+        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig);
         return httpClient.getWithHeaderMap(path, httpKey, mapHeader, tagHash, retryTimes, retryDelayMillis,
                     onUiCallBack, callback);
     }
@@ -200,7 +213,7 @@ public class HttpClientManager<T> implements IHttpClient<T> {
     public int get(String baseUrl, String path, int httpKey, Map<String, String> params,
                    Map<String, String> authHeader, int tagHash, int retryTimes, int retryDelayMillis,
                    boolean onUiCallBack, HttpConfig httpConfig, HttpCallBack<T> callback) {
-        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig, callback);
+        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig);
         return httpClient.get(path, httpKey, params, authHeader, tagHash,
                     retryTimes, retryDelayMillis, onUiCallBack, callback);
     }
@@ -210,7 +223,7 @@ public class HttpClientManager<T> implements IHttpClient<T> {
     public int upload(String baseUrl, String path, int httpKey, Map<String, String> mapHeader,
                       Map<String, RequestBody> partMap, int tagHash, int retryTimes,
                       int retryDelayMillis, HttpConfig httpConfig, HttpCallBack<T> callback) {
-        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig, callback);
+        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig);
         return httpClient.upload(path, httpKey, mapHeader, partMap, tagHash,
                     retryTimes, retryDelayMillis, callback);
     }
@@ -222,8 +235,8 @@ public class HttpClientManager<T> implements IHttpClient<T> {
      * @param httpKey
      * @return
      */
-    public boolean dispose(String baseUrl, int tagHash, int httpKey) {
-        HttpClient httpClient = getCacheHttpClient(baseUrl);
+    public boolean dispose(String baseUrl, int tagHash, int httpKey, HttpConfig config) {
+        HttpClient httpClient = getCacheHttpClient(baseUrl, config);
         if (httpClient != null) {
             return httpClient.dispose(tagHash, httpKey);
         }

@@ -29,11 +29,19 @@ public class HttpConfig {
     private boolean mNeedNetWorkCache = true; //是否需要有网络时的缓存
     private boolean mNeedNoNetWorkCache = true; // 是否需要离线缓存
 
+    private static final String TRACEID = "traceId";
+
     private static HttpConfig sDefaultConfig = create(true);
 
 
 
     private Map<String, String> mHeaders = new HashMap<>();
+    /**
+     * 需要剔除的字段：决定每个请求都不同的key。如果包含，会导致createStrKey每次生成都不一样，
+     * 达不到缓存HttpClient的效果
+     * 比如“traceId”
+     */
+    private Map<String, String> mHeaderKeys = new HashMap<>();
 
     public static HttpConfig create(boolean needDefaultConfig) {
         HttpConfig httpConfig = new HttpConfig();
@@ -55,12 +63,16 @@ public class HttpConfig {
         mHeaders.put("FrontType", "egc-mobile-ui");
         mHeaders.put("charset", "UTF-8");
         mHeaders.put("terminalVersion", "1.1.0");
-        mHeaders.put("traceId", String.format("%s0200%s00000000000000000000000000000000",
+        mHeaderKeys.putAll(mHeaders);
+        mHeaders.put(TRACEID, String.format("%s0200%s00000000000000000000000000000000",
                 System.currentTimeMillis(), String.valueOf((int) ((Math.random()*9+1)*Math.pow(10, 6)))));
     }
 
     public HttpConfig addHeader(String name, String value) {
         mHeaders.put(name, value);
+        if (!TRACEID.equals(name)) {
+            mHeaderKeys.put(name, value);
+        }
         return this;
     }
 
@@ -74,6 +86,9 @@ public class HttpConfig {
     public void clear() {
         if (mHeaders != null) {
             mHeaders.clear();
+        }
+        if (mHeaderKeys != null) {
+            mHeaderKeys.clear();
         }
     }
 
@@ -171,7 +186,20 @@ public class HttpConfig {
                 "mUserConnectTimeout='" + mUserConnectTimeout + '\'' +
                 ", mUserReadTimeout='" + mUserReadTimeout + '\'' +
                 ", mUserWriteTimeout='" + mUserWriteTimeout + '\'' +
+                ", mNeedNetWorkCache='" + mNeedNetWorkCache + '\'' +
+                ", mNeedNoNetWorkCache='" + mNeedNoNetWorkCache + '\'' +
                 mHeaders.toString()+
+                '}';
+    }
+
+    public String createStrKey() {
+        return "HttpConfig{" +
+                "mUserConnectTimeout='" + mUserConnectTimeout + '\'' +
+                ", mUserReadTimeout='" + mUserReadTimeout + '\'' +
+                ", mUserWriteTimeout='" + mUserWriteTimeout + '\'' +
+                ", mNeedNetWorkCache='" + mNeedNetWorkCache + '\'' +
+                ", mNeedNoNetWorkCache='" + mNeedNoNetWorkCache + '\'' +
+                mHeaderKeys.toString()+
                 '}';
     }
 

@@ -24,20 +24,12 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
-
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import it.wsh.cn.wshlibrary.http.HttpCallBack;
-import it.wsh.cn.wshlibrary.http.HttpConfig;
-import it.wsh.cn.wshlibrary.http.HttpConstants;
-import it.wsh.cn.wshlibrary.http.HttpServices;
-import it.wsh.cn.wshlibrary.http.HttpStateCode;
-import it.wsh.cn.wshlibrary.http.ProgressRequestBody;
-import it.wsh.cn.wshlibrary.http.RetryFunction;
 import it.wsh.cn.wshlibrary.http.converter.ConvertFactory;
 import it.wsh.cn.wshlibrary.http.ssl.SslContextFactory;
 import it.wsh.cn.wshlibrary.http.utils.HttpLog;
@@ -65,21 +57,20 @@ public class HttpClient<T> implements GenericLifecycleObserver {
 
     private String mBaseUrl = "";
 
-    public HttpClient(Context context, String baseUrl, HttpConfig httpConfig,
-                      Gson gson, HttpCallBack<T> callBack) {
+    public HttpClient(Context context, String baseUrl, HttpConfig httpConfig, Gson gson) {
         mContext = context;
         if (!TextUtils.isEmpty(baseUrl)) {
             mBaseUrl = baseUrl;
         }
-        if(httpConfig == null) {
+        if (httpConfig == null) {
             httpConfig = HttpConfig.getDefault();
         }
         mGson = gson;
-        init(callBack, httpConfig);
+        init(httpConfig);
     }
 
-    public void init(HttpCallBack<T> callBack, HttpConfig httpConfig) {
-        OkHttpClient client = getOkHttpClient(httpConfig, callBack);
+    public void init(HttpConfig httpConfig) {
+        OkHttpClient client = getOkHttpClient(httpConfig);
         try {
             mCurrentRetrofit = new Retrofit.Builder()
                     .client(client)
@@ -96,7 +87,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
         mCurrentServices = mCurrentRetrofit.create(HttpServices.class);
     }
 
-    private OkHttpClient getOkHttpClient(HttpConfig httpConfig, HttpCallBack<T> callback) {
+    private OkHttpClient getOkHttpClient(HttpConfig httpConfig) {
         if (mContext == null) {
             HttpLog.e("HttpClient: getOkHttpClient, mContext == null");
             return null;
@@ -109,7 +100,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                 .connectTimeout(httpConfig.getConnectTimeout(), TimeUnit.SECONDS)
                 .readTimeout(httpConfig.getReadTimeout(), TimeUnit.SECONDS)
                 .writeTimeout(httpConfig.getWriteTimeout(), TimeUnit.SECONDS)
-                .addInterceptor(getHttpInterceptor(httpConfig, callback))
+                .addInterceptor(getHttpInterceptor(httpConfig))
                 .addInterceptor(getLogInterceptor())
                 .cache(cache);
 
@@ -125,7 +116,6 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                         }
                     });
         }
-
         return builder.build();
     }
 
@@ -145,7 +135,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
         return logInterceptor;
     }
 
-    private Interceptor getHttpInterceptor(final HttpConfig config, final HttpCallBack<T> callback) {
+    private Interceptor getHttpInterceptor(final HttpConfig config) {
         Interceptor interceptor = new Interceptor() {
             @Override
             public okhttp3.Response intercept(Chain chain) throws IOException {
@@ -154,9 +144,10 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                 Request.Builder builder;
                 if (body != null) {
                     ProgressRequestBody prb = new ProgressRequestBody(body);
-                    prb.setProgressListener(callback);
+                    //prb.setProgressListener(callback);
                     builder = okHttpRequest.newBuilder().method(okHttpRequest.method(), prb);
-                }else {
+                    //chachProgressRequestBody(prb, tagHash, tagHash);
+                } else {
                     builder = okHttpRequest.newBuilder();
                 }
 
@@ -497,7 +488,6 @@ public class HttpClient<T> implements GenericLifecycleObserver {
     }
 
     /**
-     *
      * @param tagHash
      * @param httpKey
      * @return 返回是否成功删除

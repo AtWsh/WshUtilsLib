@@ -15,7 +15,6 @@ import okio.Okio;
 
 public class ProgressRequestBody extends RequestBody implements Handler.Callback {
 
-    private static final String TAG = "xxx";
     private Handler mUiHandler;
     private RequestBody mBody;
 

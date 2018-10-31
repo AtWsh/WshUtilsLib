@@ -230,8 +230,8 @@ public abstract class CommonBuilder<T> {
                 key = processGetQuest(onUiCallBack, callback, httpKey);
                 break;
         }
-        mKey = key;
         registerLifecycle();
+        mKey = key;
         return key;
     }
 
@@ -245,7 +245,7 @@ public abstract class CommonBuilder<T> {
         }
         LifecycleOwner owner;
         if (mTag instanceof LifecycleOwner) {
-            HttpClient cacheHttpClient = HttpClientManager.getInstance().getCacheHttpClient(getBaseUrl());
+            HttpClient cacheHttpClient = HttpClientManager.getInstance().getCacheHttpClient(getBaseUrl(), mHttpCustomConfig);
             if (cacheHttpClient == null) {
                 HttpLog.e("CommonBuilder: registerLifecycle, cacheHttpClient == null");
                 return;
@@ -336,6 +336,6 @@ public abstract class CommonBuilder<T> {
      * 上层主动取消请求
      */
     public boolean dispose() {
-        return HttpClientManager.getInstance().dispose(getBaseUrl(), getTagHash(), mKey);
+        return HttpClientManager.getInstance().dispose(getBaseUrl(), getTagHash(), mKey, mHttpCustomConfig);
     }
 }
