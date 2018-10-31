@@ -4,6 +4,8 @@ import android.arch.lifecycle.GenericLifecycleObserver;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -158,7 +160,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                     }
                 }
 
-                boolean networkAvailable = NetWorkUtils.isNetworkAvailable(mContext);
+                boolean networkAvailable = isNetworkAvailable(mContext);
                 if (networkAvailable && config.isNeedNetWorkCache()) { //有网络连接，看是否有配置，没配置，则走默认不缓存
                     CacheControl cacheControl = new CacheControl.Builder()
                             .maxAge(config.getNetWorkCacheTimeout(), TimeUnit.SECONDS)
@@ -177,6 +179,31 @@ public class HttpClient<T> implements GenericLifecycleObserver {
             }
         };
         return interceptor;
+    }
+
+    /**
+     * 检查网络是否可用
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isNetworkAvailable(Context context) {
+
+        ConnectivityManager manager = (ConnectivityManager) context
+                .getApplicationContext().getSystemService(
+                        Context.CONNECTIVITY_SERVICE);
+
+        if (manager == null) {
+            return false;
+        }
+
+        NetworkInfo networkinfo = manager.getActiveNetworkInfo();
+
+        if (networkinfo == null || !networkinfo.isAvailable()) {
+            return false;
+        }
+
+        return true;
     }
 
 
