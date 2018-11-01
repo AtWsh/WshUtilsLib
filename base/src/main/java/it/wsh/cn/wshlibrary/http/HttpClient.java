@@ -133,7 +133,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                 HttpLog.d("HttpClient: request or response data =  " + message);
             }
         });
-        logInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+        logInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         return logInterceptor;
     }
 
