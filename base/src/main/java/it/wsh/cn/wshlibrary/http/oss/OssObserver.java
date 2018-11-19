@@ -6,8 +6,8 @@ import java.util.List;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import it.wsh.cn.wshlibrary.database.bean.OssInfo;
+import it.wsh.cn.wshlibrary.http.IProcessListener;
 import it.wsh.cn.wshlibrary.http.download.DownloadManager;
-import it.wsh.cn.wshlibrary.http.IDownloadListener;
 
 /**
  * author: wenshenghui
@@ -17,7 +17,7 @@ import it.wsh.cn.wshlibrary.http.IDownloadListener;
 public class OssObserver implements Observer<OssInfo> {
 
     private int mKey;
-    private List<IDownloadListener> mListeners = new ArrayList<>();
+    private List<IProcessListener> mListeners = new ArrayList<>();
 
     public OssObserver(int key) {
         mKey = key;
@@ -30,7 +30,7 @@ public class OssObserver implements Observer<OssInfo> {
 
     @Override
     public void onNext(OssInfo ossInfo) {
-        long downloadedLength = ossInfo.getDownloadPosition();
+        long downloadedLength = ossInfo.getCurrentPosition();
         long totalSize = ossInfo.getTotalSize();
         int progress = (int) (downloadedLength * 100 / totalSize);
         ossInfo.setProcess(progress);
@@ -39,17 +39,17 @@ public class OssObserver implements Observer<OssInfo> {
 
     @Override
     public void onError(Throwable e) {
-        if (e != null && IDownloadListener.PAUSE_STATE.equals(e.getMessage())) {
+        if (e != null && IProcessListener.PAUSE_STATE.equals(e.getMessage())) {
             notifyPause();
         } else {
             notifyError(e);
         }
-        DownloadManager.getInstance().removeDownloadTask(mKey, true);
+        DownloadManager.getInstance().removeDownloadTask(mKey);
     }
 
     @Override
     public void onComplete() {
-        DownloadManager.getInstance().removeDownloadTask(mKey, true);
+        DownloadManager.getInstance().removeDownloadTask(mKey);
     }
 
     /**
@@ -58,7 +58,7 @@ public class OssObserver implements Observer<OssInfo> {
      * @param listener
      * @return true： 添加成功
      */
-    public boolean addListener(IDownloadListener listener) {
+    public boolean addListener(IProcessListener listener) {
         if (listener == null) {
             return false;
         }
@@ -74,7 +74,7 @@ public class OssObserver implements Observer<OssInfo> {
      *
      * @param listener
      */
-    public boolean removeListener(IDownloadListener listener) {
+    public boolean removeListener(IProcessListener listener) {
         if (listener == null || mListeners.size() == 0) {
             return false;
         }
@@ -90,7 +90,7 @@ public class OssObserver implements Observer<OssInfo> {
         if (mListeners == null || mListeners.size() == 0) {
             return;
         }
-        for (IDownloadListener listener : mListeners) {
+        for (IProcessListener listener : mListeners) {
             listener.onProgress(ossInfo);
         }
     }
@@ -104,8 +104,8 @@ public class OssObserver implements Observer<OssInfo> {
         if (mListeners == null || mListeners.size() == 0) {
             return;
         }
-        for (IDownloadListener listener : mListeners) {
-            listener.onComplete(IDownloadListener.ERROR_DOWNLOAD_RETROFIT, e.getMessage());
+        for (IProcessListener listener : mListeners) {
+            listener.onComplete(IProcessListener.ERROR_DOWNLOAD_RETROFIT, e.getMessage());
         }
     }
 
@@ -116,8 +116,8 @@ public class OssObserver implements Observer<OssInfo> {
         if (mListeners == null || mListeners.size() == 0) {
             return;
         }
-        for (IDownloadListener listener : mListeners) {
-            listener.onComplete(IDownloadListener.PAUSE, "");
+        for (IProcessListener listener : mListeners) {
+            listener.onComplete(IProcessListener.PAUSE, "");
         }
     }
 }

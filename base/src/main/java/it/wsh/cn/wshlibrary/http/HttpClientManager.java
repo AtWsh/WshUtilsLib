@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+import it.wsh.cn.wshlibrary.http.upload.HttpUploadClient;
+import it.wsh.cn.wshlibrary.http.upload.UploadTask;
 import it.wsh.cn.wshlibrary.http.utils.HttpLog;
 import okhttp3.RequestBody;
 
@@ -218,13 +220,13 @@ public class HttpClientManager<T> implements IHttpClient<T> {
                     retryTimes, retryDelayMillis, onUiCallBack, callback);
     }
 
-    //上传
+    //普通上传
     @Override
     public int upload(String baseUrl, String path, int httpKey, Map<String, String> mapHeader,
                       Map<String, RequestBody> partMap, int tagHash, int retryTimes,
-                      int retryDelayMillis, HttpConfig httpConfig, HttpCallBack<T> callback) {
-        HttpClient httpClient = getHttpClientAndCache(baseUrl, httpConfig);
-        return httpClient.upload(path, httpKey, mapHeader, partMap, tagHash,
+                      int retryDelayMillis, HttpConfig httpConfig, HttpCallBack<String> callback) {
+        UploadTask uploadTask = new UploadTask(mContext, baseUrl, httpConfig, mGson, callback);
+        return uploadTask.start(path, httpKey, mapHeader, partMap, tagHash,
                     retryTimes, retryDelayMillis, callback);
     }
 

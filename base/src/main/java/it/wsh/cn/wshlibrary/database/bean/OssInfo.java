@@ -67,6 +67,11 @@ public class OssInfo implements IProcessInfo {
         return savePath;
     }
 
+    @Override
+    public String getLocalPath() {
+        return savePath;
+    }
+
     public void setSavePath(String savePath) {
         this.savePath = savePath;
     }
@@ -122,7 +127,7 @@ public class OssInfo implements IProcessInfo {
     }
 
     @Override
-    public long getDownloadPosition() {
+    public long getCurrentPosition() {
         return downloadPosition;
     }
 

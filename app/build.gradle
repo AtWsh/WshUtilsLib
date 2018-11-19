@@ -44,7 +44,7 @@ dependencies {
     implementation deps.butterknife
     annotationProcessor deps.butterknifeAnnotation
     annotationProcessor deps.arouter_compiler
-    implementation project(':base')
+    api project(':base')
 
     debugImplementation deps.leakcanary_debug
     releaseImplementation deps.leakcanary_release
@@ -52,4 +52,6 @@ dependencies {
 
     runtimeOnly project(':login')
     runtimeOnly project(':share')
+    implementation deps.glide
+    annotationProcessor deps.glideAnnotation
 }

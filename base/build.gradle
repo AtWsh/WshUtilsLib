@@ -61,7 +61,6 @@ dependencies {
     api deps.rxandroid
     api deps.rxjava
     api deps.gson
-    api deps.eventbus
     api deps.greendao
     api deps.oss
 }

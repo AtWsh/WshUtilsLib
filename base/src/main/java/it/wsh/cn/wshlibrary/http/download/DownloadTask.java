@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -23,7 +24,7 @@ import it.wsh.cn.wshlibrary.database.bean.DownloadInfo;
 import it.wsh.cn.wshlibrary.database.daohelper.DownloadInfoDaoHelper;
 import it.wsh.cn.wshlibrary.http.HttpConfig;
 import it.wsh.cn.wshlibrary.http.HttpConstants;
-import it.wsh.cn.wshlibrary.http.IDownloadListener;
+import it.wsh.cn.wshlibrary.http.IProcessListener;
 import it.wsh.cn.wshlibrary.http.ssl.SslContextFactory;
 import it.wsh.cn.wshlibrary.http.utils.IOUtil;
 import okhttp3.Call;
@@ -35,7 +36,7 @@ import okhttp3.Request;
  * created on: 2018/8/25 12:51
  * description:
  */
-public class DownloadTask {
+public class DownloadTask implements IDownloadTask{
 
     private Context mContext;
     private OkHttpClient mClient;
@@ -45,7 +46,7 @@ public class DownloadTask {
     private boolean mExit = false; //控制退出
     private boolean mDelete = false; //控制删除
 
-    public DownloadTask(Context context, DownloadInfo info, IDownloadListener callBack) {
+    public DownloadTask(Context context, DownloadInfo info, IProcessListener callBack) {
         if (context == null || info == null) {
             return;
         }
@@ -54,7 +55,7 @@ public class DownloadTask {
         init(callBack);
     }
 
-    private void init(IDownloadListener callBack) {
+    private void init(IProcessListener callBack) {
 
         if (TextUtils.isEmpty(mDownloadInfo.getUrl())) {
             return;
@@ -86,6 +87,7 @@ public class DownloadTask {
     }
 
     //下载
+    @Override
     public void start() {
 
         Observable.just(mDownloadInfo).flatMap(new Function<DownloadInfo,
@@ -125,7 +127,7 @@ public class DownloadTask {
                 downloadInfo.setDownloadPosition(mSaveFile.length());
             }
 
-            if (downloadInfo.getDownloadPosition() != 0) {
+            if (downloadInfo.getCurrentPosition() != 0) {
                 long serverContentLength = getServerContentLength(url);
                 if (serverContentLength != totalSize) {
                     downloadInfo.setDownloadPosition(0);
@@ -175,37 +177,6 @@ public class DownloadTask {
         return -1;
     }
 
-    public void exit() {
-        mExit = true;
-    }
-
-    public void delete() {
-        this.mDelete = true;
-    }
-
-
-    /**
-     * 添加下载监听
-     * @param listener
-     */
-    public boolean addListener(IDownloadListener listener) {
-        if (mDownloadObserver != null) {
-            return mDownloadObserver.addListener(listener);
-        }
-        return false;
-    }
-
-    /**
-     * 删除下载监听
-     * @param listener
-     */
-    public boolean removeProcessListener(IDownloadListener listener) {
-        if (mDownloadObserver != null) {
-            return mDownloadObserver.removeListener(listener);
-        }
-        return false;
-    }
-
     private class DownloadSubscribe implements ObservableOnSubscribe<DownloadInfo> {
         private DownloadInfo downloadInfo;
 
@@ -217,7 +188,7 @@ public class DownloadTask {
         public void subscribe(ObservableEmitter<DownloadInfo> e) throws Exception {
 
             String url = downloadInfo.getUrl();
-            long downloadLength = downloadInfo.getDownloadPosition();//已经下载好的长度
+            long downloadLength = downloadInfo.getCurrentPosition();//已经下载好的长度
             long responseLength = downloadInfo.getTotalSize();//文件的总长度, 注意此处可能为0
             String saveFilePath = downloadInfo.getSavePath();
             File saveFile = new File(saveFilePath);
@@ -282,10 +253,45 @@ public class DownloadTask {
                 downloadInfo.setDownloadPosition(0);
                 e.onNext(downloadInfo);
             }else if (mExit) { //stop操作
-                e.onError(new Throwable(IDownloadListener.PAUSE_STATE));
+                e.onError(new Throwable(IProcessListener.PAUSE_STATE));
             }else {
                 e.onComplete();//完成
             }
         }
+    }
+
+    @Override
+    public void exit() {
+        mExit = true;
+    }
+
+    @Override
+    public void delete() {
+        this.mDelete = true;
+    }
+
+
+    /**
+     * 添加下载监听
+     * @param listener
+     */
+    @Override
+    public boolean addListener(IProcessListener listener) {
+        if (mDownloadObserver != null) {
+            return mDownloadObserver.addListener(listener);
+        }
+        return false;
+    }
+
+    /**
+     * 删除下载监听
+     * @param listener
+     */
+    @Override
+    public boolean removeProcessListener(IProcessListener listener) {
+        if (mDownloadObserver != null) {
+            return mDownloadObserver.removeListener(listener);
+        }
+        return false;
     }
 }

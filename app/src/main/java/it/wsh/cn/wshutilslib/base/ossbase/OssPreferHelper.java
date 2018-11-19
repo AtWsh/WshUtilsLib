@@ -1,4 +1,4 @@
-package it.wsh.cn.wshlibrary.http.oss;
+package it.wsh.cn.wshutilslib.base.ossbase;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,6 +6,7 @@ import android.text.TextUtils;
 
 import com.alibaba.sdk.android.oss.common.auth.OSSFederationToken;
 
+import it.wsh.cn.wshlibrary.http.oss.OssConfigInfo;
 import it.wsh.cn.wshlibrary.utils.SharedPreferenceHelper;
 
 /**

@@ -32,7 +32,7 @@ import it.wsh.cn.wshutilslib.httpdemo.bean.WeatherResponse;
  */
 public class HttpDemoActivity extends AppCompatActivity implements  View.OnClickListener {
 
-    private String TAG = "HttpTestActivity";
+    private static String TAG = "HttpTestActivity";
 
     // Butter Knife
     private Unbinder bind;
@@ -40,14 +40,14 @@ public class HttpDemoActivity extends AppCompatActivity implements  View.OnClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("wsh", "HttpTestActivity onCreate");
+        Log.d(TAG, "HttpTestActivity onCreate");
         setContentView(R.layout.activity_http_test);
         bind = ButterKnife.bind(this);
     }
 
 
     public static void luanchActivity(Activity context){
-        Log.d("wsh", "openHttp click");
+        Log.d(TAG, "openHttp click");
         Intent intent = new Intent(context, HttpDemoActivity.class);
         context.startActivity(intent);
     }

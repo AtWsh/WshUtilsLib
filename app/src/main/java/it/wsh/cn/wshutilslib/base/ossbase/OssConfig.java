@@ -1,4 +1,4 @@
-package it.wsh.cn.wshlibrary.http.oss;
+package it.wsh.cn.wshutilslib.base.ossbase;
 
 /**
  * author: wenshenghui
@@ -6,46 +6,6 @@ package it.wsh.cn.wshlibrary.http.oss;
  * description:
  */
 public class OssConfig {
-
-    private static String sStsTokenUrl;
-    private static String sSuffix = "";
-
-    /**
-     * 应用初始化时赋值
-     * @param env
-     */
-    public static void init(String env) {
-        if (ENV_SOFT_TEST.equals(env)) {// 没有设置，默认也是开发环境
-            sStsTokenUrl = STSTOKEN_SERVER_URl_TEST;
-        } else if (ENV_DEV.equals(env)) {
-            sStsTokenUrl = STSTOKEN_SERVER_URl_DEV;
-        } else if (ENV_HARD_TEST.equals(env)) {
-            sStsTokenUrl = STSTOKEN_SERVER_URl_HARDWARE_TEST;
-        } else if (ENV_BOSS.equals(env)) {
-            sStsTokenUrl = STSTOKEN_SERVER_URl_BOSS;
-        } else if (ENV_YUFABU.equals(env)) {
-            sStsTokenUrl = STSTOKEN_SERVER_URl_YUFABU;
-        } else if (ENV_SANDBOX.equals(env)) {
-            sStsTokenUrl = STSTOKEN_SERVER_URl_SANDBOX;
-        } else if (ENV_JIAJU.equals(env)) {
-            sStsTokenUrl = STSTOKEN_SERVER_URl_JIAJU;
-        } else {
-            sStsTokenUrl = STSTOKEN_SERVER_URl_DEV;
-        }
-    }
-
-    public static void setSuffix(String sSuffix) {
-        OssConfig.sSuffix = sSuffix;
-    }
-
-    public static String getSuffix() {
-        return sSuffix;
-    }
-
-    public static String getStsTokenUrl() {
-        return sStsTokenUrl;
-    }
-
 
     // 开放平台后缀
     public static String SUFFIX_OPEN_PLATFORM = "?type=open";
@@ -98,4 +58,43 @@ public class OssConfig {
      * 家居体验环境
      */
     public static final String ENV_JIAJU = "Jiaju";
+    private static String sStsTokenUrl = STSTOKEN_SERVER_URl_DEV;
+    private static String sSuffix = "?type=open";
+
+    /**
+     * 应用初始化时赋值
+     * @param env
+     */
+    public static void init(String env) {
+        if (ENV_SOFT_TEST.equals(env)) {// 没有设置，默认也是开发环境
+            sStsTokenUrl = STSTOKEN_SERVER_URl_TEST;
+        } else if (ENV_DEV.equals(env)) {
+            sStsTokenUrl = STSTOKEN_SERVER_URl_DEV;
+        } else if (ENV_HARD_TEST.equals(env)) {
+            sStsTokenUrl = STSTOKEN_SERVER_URl_HARDWARE_TEST;
+        } else if (ENV_BOSS.equals(env)) {
+            sStsTokenUrl = STSTOKEN_SERVER_URl_BOSS;
+        } else if (ENV_YUFABU.equals(env)) {
+            sStsTokenUrl = STSTOKEN_SERVER_URl_YUFABU;
+        } else if (ENV_SANDBOX.equals(env)) {
+            sStsTokenUrl = STSTOKEN_SERVER_URl_SANDBOX;
+        } else if (ENV_JIAJU.equals(env)) {
+            sStsTokenUrl = STSTOKEN_SERVER_URl_JIAJU;
+        } else {
+            sStsTokenUrl = STSTOKEN_SERVER_URl_DEV;
+        }
+    }
+
+    public static void setSuffix(String sSuffix) {
+        OssConfig.sSuffix = sSuffix;
+    }
+
+    public static String getSuffix() {
+        return sSuffix;
+    }
+
+    public static String getStsTokenUrl() {
+        return sStsTokenUrl;
+    }
+
 }

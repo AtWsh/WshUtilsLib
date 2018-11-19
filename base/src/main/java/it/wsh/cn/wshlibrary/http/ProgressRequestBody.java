@@ -66,4 +66,8 @@ public class ProgressRequestBody extends RequestBody implements Handler.Callback
     public void setProgressListener(HttpCallBack progressListener) {
         this.mProgressListener = progressListener;
     }
+
+    public void clear() {
+        mProgressListener = null;
+    }
 }

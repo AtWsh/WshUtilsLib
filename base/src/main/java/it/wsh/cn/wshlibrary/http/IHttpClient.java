@@ -63,5 +63,5 @@ public interface IHttpClient<T> {
     //上传
     int upload(String baseurl, String path, int httpKey, Map<String, String> mapHeader,
                Map<String, RequestBody> partMap, int tagHash, int retryTimes,
-               int retryDelayMillis, HttpConfig httpConfig, HttpCallBack<T> callback);
+               int retryDelayMillis, HttpConfig httpConfig, HttpCallBack<String> callback);
 }

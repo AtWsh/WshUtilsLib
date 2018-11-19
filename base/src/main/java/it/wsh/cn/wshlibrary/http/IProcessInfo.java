@@ -8,7 +8,7 @@ package it.wsh.cn.wshlibrary.http;
 public interface IProcessInfo {
     String getUrl();
     long getTotalSize();
-    long getDownloadPosition();
+    long getCurrentPosition();
     int getProcess();
-    String getSavePath();
+    String getLocalPath();
 }

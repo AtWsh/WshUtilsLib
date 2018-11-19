@@ -64,6 +64,11 @@ public class DownloadInfo implements IProcessInfo {
         return this.savePath;
     }
 
+    @Override
+    public String getLocalPath() {
+        return this.savePath;
+    }
+
     public void setSavePath(String savePath) {
         this.savePath = savePath;
     }
@@ -78,7 +83,7 @@ public class DownloadInfo implements IProcessInfo {
     }
 
     @Override
-    public long getDownloadPosition() {
+    public long getCurrentPosition() {
         return downloadPosition;
     }
 

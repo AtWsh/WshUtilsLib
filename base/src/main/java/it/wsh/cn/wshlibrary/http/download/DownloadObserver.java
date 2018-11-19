@@ -6,7 +6,8 @@ import java.util.List;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import it.wsh.cn.wshlibrary.database.bean.DownloadInfo;
-import it.wsh.cn.wshlibrary.http.IDownloadListener;
+import it.wsh.cn.wshlibrary.http.IProcessInfo;
+import it.wsh.cn.wshlibrary.http.IProcessListener;
 
 /**
  * author: wenshenghui
@@ -16,18 +17,20 @@ import it.wsh.cn.wshlibrary.http.IDownloadListener;
 public class DownloadObserver implements Observer<DownloadInfo> {
 
     private int mKey;
-    private List<IDownloadListener> mListeners = new ArrayList<>();
+    private List<IProcessListener> mListeners = new ArrayList<>();
 
     public DownloadObserver(int key) {
         mKey = key;
     }
 
     @Override
-    public void onSubscribe(Disposable d) {}
+    public void onSubscribe(Disposable d) {
+        notifyStart();
+    }
 
     @Override
     public void onNext(DownloadInfo downloadInfo) {
-        long downloadedLength = downloadInfo.getDownloadPosition();
+        long downloadedLength = downloadInfo.getCurrentPosition();
         long totalSize = downloadInfo.getTotalSize();
         int progress = (int) (downloadedLength * 100 / totalSize);
         downloadInfo.setProcess(progress);
@@ -36,17 +39,17 @@ public class DownloadObserver implements Observer<DownloadInfo> {
 
     @Override
     public void onError(Throwable e) {
-        if (e != null && IDownloadListener.PAUSE_STATE.equals(e.getMessage())) {
+        if (e != null && IProcessListener.PAUSE_STATE.equals(e.getMessage())) {
             notifyPause();
         } else {
             notifyError(e);
         }
-        DownloadManager.getInstance().removeDownloadTask(mKey, false);
+        DownloadManager.getInstance().removeDownloadTask(mKey);
     }
 
     @Override
     public void onComplete() {
-        DownloadManager.getInstance().removeDownloadTask(mKey, false);
+        DownloadManager.getInstance().removeDownloadTask(mKey);
     }
 
     /**
@@ -55,7 +58,7 @@ public class DownloadObserver implements Observer<DownloadInfo> {
      * @param listener
      * @return true： 添加成功
      */
-    public boolean addListener(IDownloadListener listener) {
+    public boolean addListener(IProcessListener listener) {
         if (listener == null) {
             return false;
         }
@@ -71,7 +74,7 @@ public class DownloadObserver implements Observer<DownloadInfo> {
      *
      * @param listener
      */
-    public boolean removeListener(IDownloadListener listener) {
+    public boolean removeListener(IProcessListener listener) {
         if (listener == null || mListeners.size() == 0) {
             return false;
         }
@@ -83,12 +86,24 @@ public class DownloadObserver implements Observer<DownloadInfo> {
      *
      * @param downloadInfo
      */
-    private void notifyProcessUpdate(DownloadInfo downloadInfo) {
+    private void notifyProcessUpdate(IProcessInfo downloadInfo) {
         if (mListeners == null || mListeners.size() == 0) {
             return;
         }
-        for (IDownloadListener listener : mListeners) {
+        for (IProcessListener listener : mListeners) {
             listener.onProgress(downloadInfo);
+        }
+    }
+
+    /**
+     * 通知所有的DownloadProcessListener开始
+     */
+    private void notifyStart() {
+        if (mListeners == null || mListeners.size() == 0) {
+            return;
+        }
+        for (IProcessListener listener : mListeners) {
+            listener.onStart();
         }
     }
 
@@ -101,8 +116,8 @@ public class DownloadObserver implements Observer<DownloadInfo> {
         if (mListeners == null || mListeners.size() == 0) {
             return;
         }
-        for (IDownloadListener listener : mListeners) {
-            listener.onComplete(IDownloadListener.ERROR_DOWNLOAD_RETROFIT, e.getMessage());
+        for (IProcessListener listener : mListeners) {
+            listener.onComplete(IProcessListener.ERROR_DOWNLOAD_RETROFIT, e.getMessage());
         }
     }
 
@@ -113,8 +128,8 @@ public class DownloadObserver implements Observer<DownloadInfo> {
         if (mListeners == null || mListeners.size() == 0) {
             return;
         }
-        for (IDownloadListener listener : mListeners) {
-            listener.onComplete(IDownloadListener.PAUSE, "");
+        for (IProcessListener listener : mListeners) {
+            listener.onComplete(IProcessListener.PAUSE, "");
         }
     }
 }

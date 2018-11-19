@@ -17,8 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import it.wsh.cn.wshlibrary.database.bean.DownloadInfo;
-import it.wsh.cn.wshlibrary.http.IDownloadListener;
+import it.wsh.cn.wshlibrary.http.IProcessListener;
 import it.wsh.cn.wshlibrary.http.IProcessInfo;
 import it.wsh.cn.wshlibrary.http.download.DownloadManager;
 import it.wsh.cn.wshutilslib.R;
@@ -117,7 +116,7 @@ public class DownloadTestActivity extends AppCompatActivity {
     private View.OnClickListener mDeleteClickListener1 = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            boolean deleteDownloadTask = DownloadManager.getInstance().delete(mKey1, false);
+            boolean deleteDownloadTask = DownloadManager.getInstance().delete(mKey1);
             if (deleteDownloadTask) {
                 Toast.makeText(DownloadTestActivity.this, "成功删除", Toast.LENGTH_SHORT).show();
                 mProgressBar1.setProgress(0);
@@ -133,7 +132,7 @@ public class DownloadTestActivity extends AppCompatActivity {
         public void onClick(View v) {
 
             String downloadUrl = mDownloadUrl1;
-            boolean deleteDownloadTask = DownloadManager.getInstance().delete(downloadUrl, false);
+            boolean deleteDownloadTask = DownloadManager.getInstance().delete(downloadUrl);
             if (deleteDownloadTask) {
                 Toast.makeText(DownloadTestActivity.this, "成功删除", Toast.LENGTH_SHORT).show();
                 mProgressBar2.setProgress(0);
@@ -150,7 +149,7 @@ public class DownloadTestActivity extends AppCompatActivity {
             String path = Environment.getExternalStorageDirectory().getPath();
             String downloadPath = path + "/111/";
             String downloadUrl = mDownloadUrl1;
-            boolean deleteDownloadTask = DownloadManager.getInstance().delete(downloadUrl, "", downloadPath, false);
+            boolean deleteDownloadTask = DownloadManager.getInstance().delete(downloadUrl, "", downloadPath);
             if (deleteDownloadTask) {
                 Toast.makeText(DownloadTestActivity.this, "成功删除", Toast.LENGTH_SHORT).show();
                 mProgressBar3.setProgress(0);
@@ -163,7 +162,7 @@ public class DownloadTestActivity extends AppCompatActivity {
     private View.OnClickListener mPauseClickListener1 = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            DownloadManager.getInstance().stop(mKey1, false);
+            DownloadManager.getInstance().stop(mKey1);
         }
     };
 
@@ -182,7 +181,7 @@ public class DownloadTestActivity extends AppCompatActivity {
             String path = Environment.getExternalStorageDirectory().getPath();
             String downloadPath = path + "/111/";
             String downloadUrl = mDownloadUrl1;
-            DownloadManager.getInstance().stop(downloadUrl, "", downloadPath, false);
+            DownloadManager.getInstance().stop(downloadUrl, "", downloadPath);
         }
     };
 
@@ -199,7 +198,7 @@ public class DownloadTestActivity extends AppCompatActivity {
             String downloadUrl = mDownloadUrl1;
             //boolean start = DownloadManager.getInstance().start(downloadUrl);
             //Log.d("wsh_log", "start = " + start);
-            mKey1 = DownloadManager.getInstance().start(downloadUrl, fileName, downloadPath/*, new IDownloadListener() {
+            mKey1 = DownloadManager.getInstance().start(downloadUrl, fileName, downloadPath/*, new IProcessListener() {
 
                 @Override
                 public void onProgress(int progress) {
@@ -216,7 +215,7 @@ public class DownloadTestActivity extends AppCompatActivity {
                     Log.d("wsh_log", "onPause");
                 }
             }*/);
-            DownloadManager.getInstance().addDownloadListener(mKey1, mProcessListener1, false);
+            DownloadManager.getInstance().addDownloadListener(mKey1, mProcessListener1);
         }
     };
 
@@ -230,7 +229,12 @@ public class DownloadTestActivity extends AppCompatActivity {
 
 
             String downloadUrl = mDownloadUrl1;
-            DownloadManager.getInstance().startWithName(downloadUrl, "tengxun.apk", new IDownloadListener() {
+            DownloadManager.getInstance().startWithName(downloadUrl, "tengxun.apk", new IProcessListener() {
+
+                @Override
+                public void onStart() {
+
+                }
 
                 @Override
                 public void onProgress(IProcessInfo info) {
@@ -239,7 +243,7 @@ public class DownloadTestActivity extends AppCompatActivity {
 
                 @Override
                 public void onComplete(int stateCode, String info) {
-                    if (stateCode == IDownloadListener.PAUSE) {
+                    if (stateCode == IProcessListener.PAUSE) {
                         Log.d("wsh_log", "onPause");
                     }else {
                         Toast.makeText(DownloadTestActivity.this, "下载失败：" + info, Toast.LENGTH_SHORT).show();
@@ -260,7 +264,12 @@ public class DownloadTestActivity extends AppCompatActivity {
 
 
             String downloadUrl = mDownloadUrl1;
-            DownloadManager.getInstance().startWithPath(downloadUrl, downloadPath, new IDownloadListener() {
+            DownloadManager.getInstance().startWithPath(downloadUrl, downloadPath, new IProcessListener() {
+
+                @Override
+                public void onStart() {
+
+                }
 
                 @Override
                 public void onProgress(IProcessInfo info) {
@@ -269,7 +278,7 @@ public class DownloadTestActivity extends AppCompatActivity {
 
                 @Override
                 public void onComplete(int stateCode, String info) {
-                    if (stateCode == IDownloadListener.PAUSE) {
+                    if (stateCode == IProcessListener.PAUSE) {
                         Log.d("wsh_log", "onPause");
                     }else {
                         Toast.makeText(DownloadTestActivity.this, "下载失败：" + info, Toast.LENGTH_SHORT).show();
@@ -281,7 +290,12 @@ public class DownloadTestActivity extends AppCompatActivity {
         }
     };
 
-    private IDownloadListener mProcessListener1 = new IDownloadListener() {
+    private IProcessListener mProcessListener1 = new IProcessListener() {
+        @Override
+        public void onStart() {
+
+        }
+
         @Override
         public void onProgress(IProcessInfo info) {
             mProgressBar1.setProgress(info.getProcess());
@@ -290,7 +304,7 @@ public class DownloadTestActivity extends AppCompatActivity {
 
         @Override
         public void onComplete(int stateCode, String info) {
-            if (stateCode == IDownloadListener.PAUSE) {
+            if (stateCode == IProcessListener.PAUSE) {
                 Log.d("wsh_log", "onPause");
             }else {
                 Toast.makeText(DownloadTestActivity.this, "下载失败：" + info, Toast.LENGTH_SHORT).show();
@@ -298,7 +312,12 @@ public class DownloadTestActivity extends AppCompatActivity {
         }
     };
 
-    private IDownloadListener mProcessListener2 = new IDownloadListener() {
+    private IProcessListener mProcessListener2 = new IProcessListener() {
+        @Override
+        public void onStart() {
+
+        }
+
         @Override
         public void onProgress(IProcessInfo info) {
             mProgressBar2.setProgress(info.getProcess());
@@ -306,7 +325,7 @@ public class DownloadTestActivity extends AppCompatActivity {
 
         @Override
         public void onComplete(int stateCode, String info) {
-            if (stateCode == IDownloadListener.PAUSE) {
+            if (stateCode == IProcessListener.PAUSE) {
                 Log.d("wsh_log", "onPause");
             }else {
                 Toast.makeText(DownloadTestActivity.this, "下载失败：" + info, Toast.LENGTH_SHORT).show();
@@ -314,7 +333,12 @@ public class DownloadTestActivity extends AppCompatActivity {
         }
     };
 
-    private IDownloadListener mProcessListener3 = new IDownloadListener() {
+    private IProcessListener mProcessListener3 = new IProcessListener() {
+        @Override
+        public void onStart() {
+
+        }
+
         @Override
         public void onProgress(IProcessInfo info) {
             mProgressBar3.setProgress(info.getProcess());
@@ -322,7 +346,7 @@ public class DownloadTestActivity extends AppCompatActivity {
 
         @Override
         public void onComplete(int stateCode, String info) {
-            if (stateCode == IDownloadListener.PAUSE) {
+            if (stateCode == IProcessListener.PAUSE) {
                 Log.d("wsh_log", "onPause");
             }else {
                 Toast.makeText(DownloadTestActivity.this, "下载失败：" + info, Toast.LENGTH_SHORT).show();
@@ -360,8 +384,8 @@ public class DownloadTestActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        DownloadManager.getInstance().removeDownloadListener(mDownloadUrl1, mProcessListener1, false);
-        DownloadManager.getInstance().removeDownloadListener(mDownloadUrl2, mProcessListener2, false);
-        DownloadManager.getInstance().removeDownloadListener(mDownloadUrl3, mProcessListener3, false);
+        DownloadManager.getInstance().removeDownloadListener(mDownloadUrl1, mProcessListener1);
+        DownloadManager.getInstance().removeDownloadListener(mDownloadUrl2, mProcessListener2);
+        DownloadManager.getInstance().removeDownloadListener(mDownloadUrl3, mProcessListener3);
     }
 }

@@ -10,6 +10,8 @@ import com.alibaba.android.arouter.launcher.ARouter;
 
 import it.wsh.cn.wshlibrary.utils.RouteUtils;
 import it.wsh.cn.wshutilslib.httpdemo.HttpDemoActivity;
+import it.wsh.cn.wshutilslib.ossdemo.OssDemoActivity;
+import it.wsh.cn.wshutilslib.rxjavademo.RxjavaTestActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,11 +62,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 跳 FragmentActivity
+     * 跳 HttpDemoActivity
      *
      * @param view
      */
     public void httpTest(View view) {
         HttpDemoActivity.luanchActivity(this);
+    }
+
+    /**
+     * 跳 FragmentActivity
+     *
+     * @param view
+     */
+    public void rxjavaTest(View view) {
+        RxjavaTestActivity.luanchActivity(this);
+    }
+
+    /**
+     * 跳 FragmentActivity
+     *
+     * @param view
+     */
+    public void ossTest(View view) {
+        OssDemoActivity.luanchActivity(this);
     }
 }

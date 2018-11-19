@@ -1,4 +1,4 @@
-package it.wsh.cn.wshlibrary.http;
+package it.wsh.cn.wshlibrary.http.upload;
 
 import android.arch.lifecycle.GenericLifecycleObserver;
 import android.arch.lifecycle.Lifecycle;
@@ -32,6 +32,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import it.wsh.cn.wshlibrary.http.HttpCallBack;
+import it.wsh.cn.wshlibrary.http.HttpConfig;
+import it.wsh.cn.wshlibrary.http.HttpConstants;
+import it.wsh.cn.wshlibrary.http.HttpServices;
+import it.wsh.cn.wshlibrary.http.HttpStateCode;
+import it.wsh.cn.wshlibrary.http.ProgressRequestBody;
+import it.wsh.cn.wshlibrary.http.RetryFunction;
 import it.wsh.cn.wshlibrary.http.converter.ConvertFactory;
 import it.wsh.cn.wshlibrary.http.ssl.SslContextFactory;
 import it.wsh.cn.wshlibrary.http.utils.HttpLog;
@@ -47,18 +54,17 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
-public class HttpClient<T> implements GenericLifecycleObserver {
-
+public class HttpUploadClient<T> implements GenericLifecycleObserver {
     private Context mContext;
     private Retrofit mCurrentRetrofit;
     private HttpServices mCurrentServices;
     private Gson mGson;
     //由tagKey 和httpKey 共同维护的mDisposableCache
-    private final HashMap<Integer, List<Pair<Integer, Disposable>>> mDisposableCache = new HashMap<>();
+    private Disposable mDisposable;
 
     private String mBaseUrl = "";
 
-    public HttpClient(Context context, String baseUrl, HttpConfig httpConfig, Gson gson) {
+    public HttpUploadClient(Context context, String baseUrl, HttpConfig httpConfig, Gson gson, HttpCallBack<T> callback) {
         mContext = context;
         if (!TextUtils.isEmpty(baseUrl)) {
             mBaseUrl = baseUrl;
@@ -67,11 +73,11 @@ public class HttpClient<T> implements GenericLifecycleObserver {
             httpConfig = HttpConfig.getDefault();
         }
         mGson = gson;
-        init(httpConfig);
+        init(httpConfig,callback);
     }
 
-    public void init(HttpConfig httpConfig) {
-        OkHttpClient client = getOkHttpClient(httpConfig);
+    public void init(HttpConfig httpConfig, HttpCallBack<T> callback) {
+        OkHttpClient client = getOkHttpClient(httpConfig, callback);
         try {
             mCurrentRetrofit = new Retrofit.Builder()
                     .client(client)
@@ -88,7 +94,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
         mCurrentServices = mCurrentRetrofit.create(HttpServices.class);
     }
 
-    private OkHttpClient getOkHttpClient(HttpConfig httpConfig) {
+    private OkHttpClient getOkHttpClient(HttpConfig httpConfig, HttpCallBack<T> callback) {
         if (mContext == null) {
             HttpLog.e("HttpClient: getOkHttpClient, mContext == null");
             return null;
@@ -101,7 +107,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                 .connectTimeout(httpConfig.getConnectTimeout(), TimeUnit.SECONDS)
                 .readTimeout(httpConfig.getReadTimeout(), TimeUnit.SECONDS)
                 .writeTimeout(httpConfig.getWriteTimeout(), TimeUnit.SECONDS)
-                .addInterceptor(getHttpInterceptor(httpConfig))
+                .addInterceptor(getHttpInterceptor(httpConfig, callback))
                 .addInterceptor(getLogInterceptor())
                 .cache(cache);
 
@@ -136,7 +142,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
         return logInterceptor;
     }
 
-    private Interceptor getHttpInterceptor(final HttpConfig config) {
+    private Interceptor getHttpInterceptor(final HttpConfig config, final HttpCallBack<T> callback) {
         Interceptor interceptor = new Interceptor() {
             @Override
             public okhttp3.Response intercept(Chain chain) throws IOException {
@@ -145,9 +151,8 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                 Request.Builder builder;
                 if (body != null) {
                     ProgressRequestBody prb = new ProgressRequestBody(body);
-                    //prb.setProgressListener(callback);
+                    prb.setProgressListener(callback);
                     builder = okHttpRequest.newBuilder().method(okHttpRequest.method(), prb);
-                    //chachProgressRequestBody(prb, tagHash, tagHash);
                 } else {
                     builder = okHttpRequest.newBuilder();
                 }
@@ -203,152 +208,6 @@ public class HttpClient<T> implements GenericLifecycleObserver {
         }
 
         return true;
-    }
-
-
-    public int post(String path, int httpKey, int tagHash, int retryTimes,
-                    int retryDelayMillis, boolean onUiCallBack, HttpCallBack<T> callback) {
-        if (mCurrentServices == null) {
-            return -1;
-        }
-        Observable<Response<String>> observable = mCurrentServices.post(path);
-        return doSubscribe(httpKey, tagHash, observable, retryTimes, retryDelayMillis,
-                onUiCallBack, callback);
-    }
-
-
-    public int postWithParamsMap(String path, int httpKey, Map<String, String> params,
-                                 int tagHash, int retryTimes, int retryDelayMillis,
-                                 boolean onUiCallBack, HttpCallBack<T> callback) {
-        if (mCurrentServices == null) {
-            return -1;
-        }
-        Observable<Response<String>> observable = mCurrentServices.postWithParamsMap(path, params);
-        return doSubscribe(httpKey, tagHash, observable, retryTimes, retryDelayMillis,
-                onUiCallBack, callback);
-    }
-
-
-    public int post(String path, int httpKey, Object bodyJson, int tagHash,
-                    int retryTimes, int retryDelayMillis, boolean onUiCallBack,
-                    HttpCallBack<T> callback) {
-        if (mCurrentServices == null) {
-            return -1;
-        }
-        Observable<Response<String>> observable = mCurrentServices.post(path, bodyJson);
-        return doSubscribe(httpKey, tagHash, observable, retryTimes, retryDelayMillis,
-                onUiCallBack, callback);
-    }
-
-
-    public int postWithHeaderMap(String path, int httpKey, Map mapHeader,
-                                 int tagHash, int retryTimes, int retryDelayMillis,
-                                 boolean onUiCallBack, HttpCallBack<T> callback) {
-        if (mCurrentServices == null) {
-            return -1;
-        }
-        Observable<Response<String>> observable = mCurrentServices.postWithHeaderMap(path, mapHeader);
-        return doSubscribe(httpKey, tagHash, observable, retryTimes, retryDelayMillis,
-                onUiCallBack, callback);
-    }
-
-
-    public int postParamsAndObj(String path, int httpKey, Map<String, String> params,
-                                Object bodyJson, int tagHash, int retryTimes, int retryDelayMillis,
-                                boolean onUiCallBack, HttpCallBack<T> callback) {
-        if (mCurrentServices == null) {
-            return -1;
-        }
-        Observable<Response<String>> observable = mCurrentServices.post(path, params, bodyJson);
-        return doSubscribe(httpKey, tagHash, observable, retryTimes, retryDelayMillis,
-                onUiCallBack, callback);
-    }
-
-
-    public int post(String path, int httpKey, Map<String, String> params,
-                    Map<String, String> mapHeader, int tagHash, int retryTimes,
-                    int retryDelayMillis, boolean onUiCallBack, HttpCallBack<T> callback) {
-        if (mCurrentServices == null) {
-            return -1;
-        }
-        Observable<Response<String>> observable = mCurrentServices.post(path, params, mapHeader);
-        return doSubscribe(httpKey, tagHash, observable, retryTimes, retryDelayMillis,
-                onUiCallBack, callback);
-    }
-
-    public int postMapHeaderAndObj(String path, int httpKey,
-                                   Map<String, String> mapHeader, Object bodyJson, int tagHash,
-                                   int retryTimes, int retryDelayMillis, boolean onUiCallBack,
-                                   HttpCallBack<T> callback) {
-        if (mCurrentServices == null) {
-            return -1;
-        }
-
-        Observable<Response<String>> observable = mCurrentServices.post(path, bodyJson, mapHeader);
-        return doSubscribe(httpKey, tagHash, observable, retryTimes, retryDelayMillis,
-                onUiCallBack, callback);
-    }
-
-    public int post(String path, int httpKey, Map<String, String> params,
-                    Map<String, String> mapHeader, Object bodyJson, int tagHash,
-                    int retryTimes, int retryDelayMillis, boolean onUiCallBack, HttpCallBack<T> callback) {
-        if (mCurrentServices == null) {
-            return -1;
-        }
-
-        Observable<Response<String>> observable = mCurrentServices.post(path, params, bodyJson, mapHeader);
-        return doSubscribe(httpKey, tagHash, observable, retryTimes, retryDelayMillis,
-                onUiCallBack, callback);
-    }
-
-    /**
-     * @param path
-     * @param callback
-     */
-    public int get(String path, int httpKey, int tagHash, int retryTimes,
-                   int retryDelayMillis, boolean onUiCallBack, HttpCallBack<T> callback) {
-        if (mCurrentServices == null) {
-            return -1;
-        }
-
-        Observable<Response<String>> observable = mCurrentServices.get(path);
-        return doSubscribe(httpKey, tagHash, observable, retryTimes, retryDelayMillis,
-                onUiCallBack, callback);
-    }
-
-    public int getWithParamsMap(String path, int httpKey, Map<String, String> params,
-                                int tagHash, int retryTimes, int retryDelayMillis,
-                                boolean onUiCallBack, HttpCallBack<T> callback) {
-        if (mCurrentServices == null) {
-            return -1;
-        }
-
-        Observable<Response<String>> observable = mCurrentServices.getWithParamsMap(path, params);
-        return doSubscribe(httpKey, tagHash, observable, retryTimes, retryDelayMillis, onUiCallBack, callback);
-    }
-
-    public int getWithHeaderMap(String path, int httpKey, Map<String, String> mapHeader,
-                                int tagHash, int retryTimes, int retryDelayMillis, boolean onUiCallBack,
-                                HttpCallBack<T> callback) {
-        if (mCurrentServices == null) {
-            return -1;
-        }
-
-        Observable<Response<String>> observable = mCurrentServices.getWithHeaderMap(path, mapHeader);
-        return doSubscribe(httpKey, tagHash, observable, retryTimes, retryDelayMillis,
-                onUiCallBack, callback);
-    }
-
-    public int get(String path, int httpKey, Map<String, String> params,
-                   Map<String, String> authHeader, int tagHash, int retryTimes, int retryDelayMillis,
-                   boolean onUiCallBack, HttpCallBack<T> callback) {
-        if (mCurrentServices == null) {
-            return -1;
-        }
-
-        Observable<Response<String>> observable = mCurrentServices.get(path, params, authHeader);
-        return doSubscribe(httpKey, tagHash, observable, retryTimes, retryDelayMillis,
-                onUiCallBack, callback);
     }
 
     //上传
@@ -430,7 +289,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
 
                     @Override
                     public void onSubscribe(Disposable disposable) {
-                        cacheDisposableIfNeed(disposable, tagHash, httpKey);
+                        mDisposable = disposable;
                     }
 
                     @Override
@@ -449,7 +308,9 @@ public class HttpClient<T> implements GenericLifecycleObserver {
 
                     @Override
                     public void onError(Throwable throwable) {
-                        dispose(tagHash, httpKey);
+                        if (mDisposable != null) {
+                            mDisposable.dispose();
+                        }
                         if (onUiCallBack) {
                             callback.onError(HttpStateCode.ERROR_SUBSCRIBE_ERROR, throwable == null
                                     ? "" : throwable.getMessage());
@@ -458,34 +319,14 @@ public class HttpClient<T> implements GenericLifecycleObserver {
 
                     @Override
                     public void onComplete() {
-                        dispose(tagHash, httpKey);
+                        if (mDisposable != null) {
+                            mDisposable.dispose();
+                        }
                         callback.onComplete();
                     }
                 });
 
         return httpKey;
-    }
-
-    /**
-     * 缓存Disposable
-     *
-     * @param disposable
-     * @param tagHash
-     * @param httpKey
-     */
-    private void cacheDisposableIfNeed(Disposable disposable, int tagHash, int httpKey) {
-        if (disposable == null) {
-            HttpLog.e("HttpClient: cacheDisposableIfNeed, disposable == null");
-            return;
-        }
-        HttpLog.d("HttpClient: cacheDisposableIfNeed");
-        Pair<Integer, Disposable> pair = Pair.create(httpKey, disposable);
-        List<Pair<Integer, Disposable>> list = mDisposableCache.get(tagHash);
-        if (list == null) {
-            list = new ArrayList<>();
-        }
-        list.add(pair);
-        mDisposableCache.put(tagHash, list);
     }
 
     public Class<T> getParameterizedTypeClass(Object obj) {
@@ -497,54 +338,14 @@ public class HttpClient<T> implements GenericLifecycleObserver {
         return null;
     }
 
-    /**
-     * @param tag 请求时传入的tag
-     */
-    public void cancel(Object tag) {
-        if (tag == null) return;
-        HttpLog.d("HttpClient: cancel  tag = " + tag);
-        List<Pair<Integer, Disposable>> disposableList;
-        disposableList = mDisposableCache.get(tag.hashCode());
-        if (disposableList != null) {
-            for (Pair<Integer, Disposable> pair : disposableList) {
-                pair.second.dispose();
-            }
-            mDisposableCache.remove(tag.hashCode());
-        }
-    }
-
-    /**
-     * @param tagHash
-     * @param httpKey
-     * @return 返回是否成功删除
-     */
-    public boolean dispose(int tagHash, @NonNull int httpKey) {
-        HttpLog.d("HttpClient: cancel  dispose ");
-        List<Pair<Integer, Disposable>> list = mDisposableCache.get(tagHash);
-        Pair<Integer, Disposable> removePair = null;
-        if (list != null) {
-            for (Pair<Integer, Disposable> pair : list) {
-                if (httpKey == pair.first) {
-                    pair.second.dispose();
-                    removePair = pair;
-                    break;
-                }
-            }
-        }
-        if (list != null && removePair != null) {
-            list.remove(removePair);
-            HttpLog.d("HttpClient: cancel  list.remove(removePair); ");
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public void onStateChanged(LifecycleOwner source, Lifecycle.Event event) {
         if (source.getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
             HttpLog.d("HttpClient: onStateChanged LifecycleOwner = " + source.toString());
             source.getLifecycle().removeObserver(this);
-            cancel(source);
+            if (mDisposable != null) {
+                mDisposable.dispose();
+            }
         }
     }
 }

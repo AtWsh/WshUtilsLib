@@ -8,18 +8,13 @@ import com.alibaba.sdk.android.oss.ClientException;
 import com.alibaba.sdk.android.oss.OSS;
 import com.alibaba.sdk.android.oss.OSSClient;
 import com.alibaba.sdk.android.oss.ServiceException;
-import com.alibaba.sdk.android.oss.callback.OSSCompletedCallback;
-import com.alibaba.sdk.android.oss.callback.OSSProgressCallback;
 import com.alibaba.sdk.android.oss.common.auth.OSSCredentialProvider;
 import com.alibaba.sdk.android.oss.common.auth.OSSFederationToken;
 import com.alibaba.sdk.android.oss.common.auth.OSSStsTokenCredentialProvider;
-import com.alibaba.sdk.android.oss.internal.OSSAsyncTask;
 import com.alibaba.sdk.android.oss.model.GetObjectRequest;
 import com.alibaba.sdk.android.oss.model.GetObjectResult;
 import com.alibaba.sdk.android.oss.model.HeadObjectRequest;
 import com.alibaba.sdk.android.oss.model.HeadObjectResult;
-import com.alibaba.sdk.android.oss.model.PutObjectRequest;
-import com.alibaba.sdk.android.oss.model.PutObjectResult;
 import com.alibaba.sdk.android.oss.model.Range;
 
 import java.io.File;
@@ -35,7 +30,8 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import it.wsh.cn.wshlibrary.database.bean.OssInfo;
 import it.wsh.cn.wshlibrary.database.daohelper.OssInfoDaoHelper;
-import it.wsh.cn.wshlibrary.http.IDownloadListener;
+import it.wsh.cn.wshlibrary.http.IProcessListener;
+import it.wsh.cn.wshlibrary.http.download.IDownloadTask;
 import it.wsh.cn.wshlibrary.http.utils.IOUtil;
 
 /**
@@ -43,18 +39,19 @@ import it.wsh.cn.wshlibrary.http.utils.IOUtil;
  * created on: 2018/10/11 14:42
  * description:
  */
-public class OssTask {
+public class OssDownloadTask implements IDownloadTask {
 
     private Context mContext;
     private OSS mOss;
     private OSSCredentialProvider mCredentialProvider;
     private File mSaveFile; //存储路径
     private OssObserver mOssObserver; //回调
+    private OssInputStreamObserver mOssInputStreamObserver;
     private OssInfo mOssInfo;
     private boolean mExit = false; //控制退出
     private boolean mDelete = false; //控制删除
 
-    public OssTask(Context context, OssInfo info, IDownloadListener callBack) {
+    public OssDownloadTask(Context context, OssInfo info, IProcessListener callBack) {
         if (context == null || info == null) {
             return;
         }
@@ -63,16 +60,54 @@ public class OssTask {
         init(callBack);
     }
 
-    //todo 上传专用  待完善
-    public OssTask() {
-
+    public OssDownloadTask(Context context, OssInfo info, InputStreamCallBack callBack) {
+        if (context == null || info == null) {
+            return;
+        }
+        mContext = context.getApplicationContext();
+        mOssInfo = info;
+        init(callBack);
     }
 
     /**
      * 初始化OssClient
      * callback可以为null
      */
-    private void init(IDownloadListener callBack) {
+    private void init(InputStreamCallBack callBack) {
+        if (mContext == null || mOssInfo == null) {
+            if (callBack != null) {
+                callBack.onError();
+            }
+            return;
+        }
+        String endpoint = mOssInfo.getEndpoint();
+        mOssInputStreamObserver = new OssInputStreamObserver();
+        mOssInputStreamObserver.setCallBack(callBack);
+        initCredentialProvider();
+        if (mCredentialProvider == null) {
+            if (callBack != null) {
+                callBack.onError();
+            }
+            return;
+        }
+        if (mOss == null) {
+            ClientConfiguration conf = new ClientConfiguration();
+            conf.setConnectionTimeout(15 * 1000); // 连接超时，默认15秒
+            conf.setSocketTimeout(15 * 1000); // socket超时，默认15秒
+            conf.setMaxConcurrentRequest(5); // 最大并发请求书，默认5个
+            conf.setMaxErrorRetry(2); // 失败后最大重试次数，默认2次
+            //OSSLog.enableLog(); //这个开启会支持写入手机sd卡中的一份日志文件位置在SD_path\OSSLog\logs.csv
+            mOss = new OSSClient(mContext, endpoint, mCredentialProvider, conf);
+        } else {
+            mOss.updateCredentialProvider(mCredentialProvider);
+        }
+    }
+
+    /**
+     * 初始化OssClient
+     * callback可以为null
+     */
+    private void init(IProcessListener callBack) {
         if (mContext == null || mOssInfo == null) {
             notifyCreateError(callBack);
             return;
@@ -103,9 +138,9 @@ public class OssTask {
      *
      * @param callBack
      */
-    private void notifyCreateError(IDownloadListener callBack) {
+    private void notifyCreateError(IProcessListener callBack) {
         if (callBack != null) {
-            callBack.onComplete(IDownloadListener.ERROR_DOWNLOAD_OSSTASK_CREATE, null);
+            callBack.onComplete(IProcessListener.ERROR_DOWNLOAD_OSSTASK_CREATE, null);
         }
     }
 
@@ -122,36 +157,10 @@ public class OssTask {
     }
 
     /**
-     * 文件上传到阿里服务器
-     */
-    public void startUpload() {
-        /*PutObjectRequest request = new PutObjectRequest(mBucketName, objectKey, localPath);
-        request.setObjectKey(taskKey);
-        request.setProgressCallback(new OSSProgressCallback<PutObjectRequest>() {
-            @Override
-            public void onProgress(PutObjectRequest request, long currentSize, long totalSize) {
-                String objectKey = request.getObjectKey();
-                BHLog.i(TAG, "ossUploadFile onProgress request: " + request.getObjectKey() + " currentSize: " + currentSize + " totalSize: " + totalSize);
-                mMainExecutor.callOnProgress(mOssDownloadTasksMap.get(objectKey), currentSize, totalSize);
-            }
-        });
-        OSSAsyncTask task = mOss.asyncPutObject(request, new OSSCompletedCallback<PutObjectRequest, PutObjectResult>() {
-            @Override
-            public void onSuccess(PutObjectRequest request, PutObjectResult result) {
-
-            }
-
-            @Override
-            public void onFailure(PutObjectRequest request, ClientException clientException, ServiceException serviceException) {
-
-            }
-        });*/
-    }
-
-    /**
      * 从阿里服务器下载文件
      */
-    public void startDownload() {
+    @Override
+    public void start() {
 
         Observable.just(mOssInfo).flatMap(new Function<OssInfo,
                 Observable<OssInfo>>() {
@@ -172,6 +181,22 @@ public class OssTask {
     }
 
     /**
+     * 从阿里服务器下载文件
+     */
+    public void startDownloadPic() {
+
+        Observable.just(mOssInfo).flatMap(new Function<OssInfo, Observable<InputStream>>() {
+            @Override
+            public Observable<InputStream> apply(OssInfo ossInfo)
+                    throws Exception {
+                return Observable.create(new DownloadPicSubscribe(ossInfo));
+            }
+        }).observeOn(AndroidSchedulers.mainThread())//在主线程回调
+                .subscribeOn(Schedulers.io())//在子线程执行
+                .subscribe(mOssInputStreamObserver);
+    }
+
+    /**
      * 创建DownInfo
      *
      * @param ossInfo 请求网址
@@ -180,9 +205,11 @@ public class OssTask {
     private OssInfo createOssInfo(OssInfo ossInfo) {
 
         int key = ossInfo.getKey();
+        String bucketName = ossInfo.getBucketName();
         OssInfo info = OssInfoDaoHelper.queryTask(key);
         if (info != null) {
             ossInfo = info;
+            ossInfo.setBucketName(bucketName);
             mSaveFile = new File(info.getSavePath());
             long totalSize = ossInfo.getTotalSize();
             String md5 = ossInfo.getRemoteMd5();
@@ -190,7 +217,7 @@ public class OssTask {
                 ossInfo.setDownloadPosition(mSaveFile.length());
             }
 
-            if (ossInfo.getDownloadPosition() != 0) { //此种情况下开启断点续传的
+            if (ossInfo.getCurrentPosition() != 0) { //此种情况下开启断点续传的
                 ServerInfo serverInfo = getServerInfo(ossInfo);
                 if (!md5.equals(serverInfo.mServerMd5) || totalSize != serverInfo.mServerLength) {
                     ossInfo.setDownloadPosition(0);
@@ -253,6 +280,29 @@ public class OssTask {
         return serverInfo;
     }
 
+    private class DownloadPicSubscribe implements ObservableOnSubscribe<InputStream> {
+        private OssInfo ossInfo;
+
+        public DownloadPicSubscribe(OssInfo ossInfo) {
+            this.ossInfo = ossInfo;
+        }
+
+        @Override
+        public void subscribe(ObservableEmitter<InputStream> e) throws Exception {
+            try{
+                String url = ossInfo.getUrl();
+                String bucketName = ossInfo.getBucketName();
+                GetObjectRequest request = new GetObjectRequest(bucketName, url);
+                request.setObjectKey(url);
+                GetObjectResult result = mOss.getObject(request);
+                e.onNext(result.getObjectContent());
+            }catch(Exception exception) {
+                e.onError(exception);
+            }
+
+        }
+    }
+
     private class DownloadSubscribe implements ObservableOnSubscribe<OssInfo> {
         private OssInfo ossInfo;
 
@@ -264,7 +314,7 @@ public class OssTask {
         public void subscribe(ObservableEmitter<OssInfo> e) throws Exception {
 
             String url = ossInfo.getUrl();
-            long downloadLength = ossInfo.getDownloadPosition();//已经下载好的长度
+            long downloadLength = ossInfo.getCurrentPosition();//已经下载好的长度
             long responseLength = ossInfo.getTotalSize();//文件的总长度, 注意此处可能为0
             String saveFilePath = ossInfo.getSavePath();
             String serverMd5 = ossInfo.getRemoteMd5();
@@ -326,17 +376,19 @@ public class OssTask {
                 ossInfo.setDownloadPosition(0);
                 e.onNext(ossInfo);
             } else if (mExit) { //stop操作
-                e.onError(new Throwable(IDownloadListener.PAUSE_STATE));
+                e.onError(new Throwable(IProcessListener.PAUSE_STATE));
             } else {
                 e.onComplete();//完成
             }
         }
     }
 
+    @Override
     public void exit() {
         mExit = true;
     }
 
+    @Override
     public void delete() {
         this.mDelete = true;
     }
@@ -345,7 +397,8 @@ public class OssTask {
      * 添加下载监听
      * @param listener
      */
-    public boolean addListener(IDownloadListener listener) {
+    @Override
+    public boolean addListener(IProcessListener listener) {
         if (mOssObserver != null) {
             return mOssObserver.addListener(listener);
         }
@@ -356,7 +409,8 @@ public class OssTask {
      * 删除下载监听
      * @param listener
      */
-    public boolean removeProcessListener(IDownloadListener listener) {
+    @Override
+    public boolean removeProcessListener(IProcessListener listener) {
         if (mOssObserver != null) {
             return mOssObserver.removeListener(listener);
         }
