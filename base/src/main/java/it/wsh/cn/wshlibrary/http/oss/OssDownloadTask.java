@@ -148,12 +148,14 @@ public class OssDownloadTask implements IDownloadTask {
      * 初始化mCredentialProvider
      */
     private void initCredentialProvider() {
-        if (mOssInfo == null || mOssInfo.getStsToken() == null) {
+        if (mOssInfo == null) {
             return;
         }
-        OSSFederationToken strToken = mOssInfo.getStsToken();
-        mCredentialProvider = new OSSStsTokenCredentialProvider(strToken.getTempAK(),
-                strToken.getTempSK(), strToken.getSecurityToken());
+        OSSFederationToken ossFederationToken = new OSSFederationToken(mOssInfo.getAccessKeyId(),
+                mOssInfo.getAccessKeySecret(), mOssInfo.getSecurityToken(),
+                mOssInfo.getExpiration());
+        mCredentialProvider = new OSSStsTokenCredentialProvider(ossFederationToken.getTempAK(),
+                ossFederationToken.getTempSK(), ossFederationToken.getSecurityToken());
     }
 
     /**

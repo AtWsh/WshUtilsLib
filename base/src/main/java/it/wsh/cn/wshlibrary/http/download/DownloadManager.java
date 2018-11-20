@@ -139,9 +139,12 @@ public class DownloadManager{
         if (info == null) {
             return false;
         }
-        info.setStsToken(configInfo.mStsToken);
         info.setBucketName(configInfo.mBucketName);
         info.setEndpoint(configInfo.mEndpoint);
+        info.setAccessKeyId(configInfo.AccessKeyId);
+        info.setAccessKeySecret(configInfo.AccessKeySecret);
+        info.setExpiration(configInfo.Expiration);
+        info.setSecurityToken(configInfo.SecurityToken);
         //2.创建OssTask 下载用Task
         OssDownloadTask task = getOssTask(mContext, info, callBack);
         if (task == null) {
@@ -171,7 +174,10 @@ public class DownloadManager{
         }
         info.setBucketName(configInfo.mBucketName);
         info.setEndpoint(configInfo.mEndpoint);
-        info.setStsToken(configInfo.mStsToken);
+        info.setAccessKeyId(configInfo.AccessKeyId);
+        info.setAccessKeySecret(configInfo.AccessKeySecret);
+        info.setExpiration(configInfo.Expiration);
+        info.setSecurityToken(configInfo.SecurityToken);
         //2.创建OssTask 下载用Task
         OssDownloadTask task = getOssTask(mContext, info, callBack);
         if (task == null) {

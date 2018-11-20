@@ -46,8 +46,10 @@ public class OssPreferHelper {
                 (TextUtils.isEmpty(suffix) ? "" : suffix), "");
         long expiration = sp.getLong(KEY_STS_EXPIRATION +
                 (TextUtils.isEmpty(suffix) ? "" : suffix), 0);
-        ossConfigInfo.mStsToken = new OSSFederationToken(accessKeyId, accessKeySecret,
-                securityToken, expiration);
+        ossConfigInfo.AccessKeyId = accessKeyId;
+        ossConfigInfo.AccessKeySecret = accessKeySecret;
+        ossConfigInfo.SecurityToken = securityToken;
+        ossConfigInfo.Expiration = expiration;
         ossConfigInfo.mEndpoint = sp.getString(KEY_STS_ENDPOINT +
                 (TextUtils.isEmpty(suffix) ? "" : suffix), ALIYUN_OSS_ENDPOINT);
         ossConfigInfo.mBucketName = sp.getString(KEY_STS_BUCKET +
@@ -60,19 +62,19 @@ public class OssPreferHelper {
      * 将ststoken保存
      */
     public static void saveStsToken(Context context, String suffix, OssConfigInfo ossConfigInfo) {
-        if (context == null || ossConfigInfo == null || ossConfigInfo.mStsToken == null) {
+        if (context == null || ossConfigInfo == null) {
             return;
         }
         SharedPreferences.Editor editor = SharedPreferenceHelper.getEditor(context,
                 SP_STSTOKEN_FILE_NAME + (TextUtils.isEmpty(suffix) ? "" : suffix));
         editor.putString(KEY_STS_ACCESSKEY_ID + (TextUtils.isEmpty(suffix) ? "" : suffix),
-                ossConfigInfo.mStsToken.getTempAK());
+                ossConfigInfo.AccessKeyId);
         editor.putString(KEY_STS_ACCESSKEY_SECRET + (TextUtils.isEmpty(suffix) ? "" : suffix),
-                ossConfigInfo.mStsToken.getTempSK());
+                ossConfigInfo.AccessKeySecret);
         editor.putString(KEY_STS_TOKENKEY + (TextUtils.isEmpty(suffix) ? "" : suffix),
-                ossConfigInfo.mStsToken.getSecurityToken());
+                ossConfigInfo.SecurityToken);
         editor.putLong(KEY_STS_EXPIRATION + (TextUtils.isEmpty(suffix) ? "" : suffix),
-                ossConfigInfo.mStsToken.getExpiration());
+                ossConfigInfo.Expiration);
         editor.putString(KEY_STS_ENDPOINT + (TextUtils.isEmpty(suffix) ? "" : suffix),
                 ossConfigInfo.mEndpoint);
         editor.putString(KEY_STS_BUCKET + (TextUtils.isEmpty(suffix) ? "" : suffix),

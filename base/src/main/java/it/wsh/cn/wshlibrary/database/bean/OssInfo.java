@@ -39,7 +39,13 @@ public class OssInfo implements IProcessInfo {
     @Transient
     private String bucketName;//由网络上取，存储在SP的值，用于OSS初始化
     @Transient
-    private OSSFederationToken stsToken; //Token 存储过期等信息, 用于OSS初始化
+    private String AccessKeyId;
+    @Transient
+    private String AccessKeySecret;
+    @Transient
+    private String SecurityToken;
+    @Transient
+    private long Expiration;
 
     @Generated(hash = 1482315147)
     public OssInfo(int key, String url, String savePath, long totalSize,
@@ -53,6 +59,38 @@ public class OssInfo implements IProcessInfo {
 
     @Generated(hash = 1915390878)
     public OssInfo() {
+    }
+
+    public String getAccessKeyId() {
+        return AccessKeyId;
+    }
+
+    public void setAccessKeyId(String accessKeyId) {
+        AccessKeyId = accessKeyId;
+    }
+
+    public String getAccessKeySecret() {
+        return AccessKeySecret;
+    }
+
+    public void setAccessKeySecret(String accessKeySecret) {
+        AccessKeySecret = accessKeySecret;
+    }
+
+    public String getSecurityToken() {
+        return SecurityToken;
+    }
+
+    public void setSecurityToken(String securityToken) {
+        SecurityToken = securityToken;
+    }
+
+    public long getExpiration() {
+        return Expiration;
+    }
+
+    public void setExpiration(long expiration) {
+        Expiration = expiration;
     }
 
     public String getFileName() {
@@ -82,14 +120,6 @@ public class OssInfo implements IProcessInfo {
 
     public void setRemoteMd5(String remoteMd5) {
         this.remoteMd5 = remoteMd5;
-    }
-
-    public OSSFederationToken getStsToken() {
-        return stsToken;
-    }
-
-    public void setStsToken(OSSFederationToken stsToken) {
-        this.stsToken = stsToken;
     }
 
     public String getBucketName() {

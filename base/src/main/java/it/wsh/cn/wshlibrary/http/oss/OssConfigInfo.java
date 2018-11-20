@@ -9,7 +9,10 @@ import com.alibaba.sdk.android.oss.common.auth.OSSFederationToken;
  */
 public class OssConfigInfo {
 
-    public OSSFederationToken mStsToken;
+    public String AccessKeyId;
+    public String AccessKeySecret;
+    public String SecurityToken;
+    public long Expiration;
     public String mEndpoint;
     public String mBucketName;
 

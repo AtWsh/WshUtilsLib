@@ -153,17 +153,20 @@ public class OssHelper {
     public static void getOssConfigInfo(QueryTokenCallBack callBack) {
         String suffix = OssConfig.getSuffix();
         OssConfigInfo ossConfigInfo = OssPreferHelper.getOssConfigInfo(MianApplication.getContext(), suffix);
-        OSSFederationToken stsToken = ossConfigInfo.mStsToken;
+        long expiration = 0;
+        if (ossConfigInfo != null) {
+            expiration = ossConfigInfo.Expiration;
+        }
         long currentTime = System.currentTimeMillis() / 1000;
-        if (stsToken == null || stsToken.getExpiration() <= currentTime) {
+        if (expiration <= currentTime) {
             new StsConfigResponse.AsyncQuery().build(new HttpCallBack<StsConfigResponse>() {
                 @Override
                 public void onSuccess(StsConfigResponse stsConfigResponse) {
-                    OSSFederationToken ossFederationToken = new OSSFederationToken(stsConfigResponse.result.AccessKeyId,
-                            stsConfigResponse.result.AccessKeySecret, stsConfigResponse.result.SecurityToken,
-                            stsConfigResponse.result.Expiration);
                     OssConfigInfo configInfo = new OssConfigInfo();
-                    configInfo.mStsToken = ossFederationToken;
+                    configInfo.AccessKeyId = stsConfigResponse.result.AccessKeyId;
+                    configInfo.AccessKeySecret = stsConfigResponse.result.AccessKeySecret;
+                    configInfo.SecurityToken = stsConfigResponse.result.SecurityToken;
+                    configInfo.Expiration = stsConfigResponse.result.Expiration;
                     configInfo.mBucketName = stsConfigResponse.result.bucket;
                     configInfo.mEndpoint = stsConfigResponse.result.endpoint;
                     OssPreferHelper.saveStsToken(MianApplication.getContext(), suffix, configInfo);

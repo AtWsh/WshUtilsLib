@@ -61,7 +61,9 @@ public class OssUploadTask implements GenericLifecycleObserver {
         conf.setMaxConcurrentRequest(5); // 最大并发请求书，默认5个
         conf.setMaxErrorRetry(2); // 失败后最大重试次数，默认2次
         //OSSLog.enableLog(); //这个开启会支持写入手机sd卡中的一份日志文件位置在SD_path\OSSLog\logs.csv
-        OSSFederationToken stsToken = mOssConfigInfo.mStsToken;
+        OSSFederationToken stsToken = new OSSFederationToken(mOssConfigInfo.AccessKeyId,
+                mOssConfigInfo.AccessKeySecret, mOssConfigInfo.SecurityToken,
+                mOssConfigInfo.Expiration);
         OSSStsTokenCredentialProvider credentialProvider = new OSSStsTokenCredentialProvider(
                 stsToken.getTempAK(), stsToken.getTempSK(), stsToken.getSecurityToken());
         mOss = new OSSClient(mContext, mOssConfigInfo.mEndpoint, credentialProvider, conf);
