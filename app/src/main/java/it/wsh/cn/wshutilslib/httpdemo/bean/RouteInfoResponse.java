@@ -1,8 +1,11 @@
 package it.wsh.cn.wshutilslib.httpdemo.bean;
 
 
+import java.util.List;
+
 import it.wsh.cn.wshlibrary.http.HttpMethod;
 import it.wsh.cn.wshlibrary.http.builder.CommonBuilder;
+import it.wsh.cn.wshlibrary.http.builder.LifeCycleBuilder;
 
 /**
  * author: wenshenghui
@@ -42,6 +45,24 @@ public class RouteInfoResponse {
         @Override
         protected String getBaseUrl() {
             //return "https://61.141.236.30:443/api/notice/";
+            return "http://192.168.10.1/cgi-bin/";
+        }
+
+        @Override
+        protected String getMethod() {
+            return HttpMethod.POST;
+        }
+    }
+
+    public static class ListBuilder extends LifeCycleBuilder<List<RouteInfoResponse>> {
+
+        @Override
+        protected String getPath() {
+            return "test1";
+        }
+
+        @Override
+        protected String getBaseUrl() {
             return "http://192.168.10.1/cgi-bin/";
         }
 

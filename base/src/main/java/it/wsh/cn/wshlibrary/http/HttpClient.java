@@ -12,6 +12,9 @@ import android.util.Pair;
 
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
@@ -388,8 +391,8 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                                 if (response.isSuccessful()) {
                                     String data = response.body();
                                     if (data != null) {
-                                        Class<T> cls = getParameterizedTypeClass(callback);
-                                        T t = mGson.fromJson(data, cls);
+                                        Type type = getParameterizedTypeClass(callback);
+                                        T t = mGson.fromJson(data, type);
                                         if (t != null) {
                                             pair = new Pair<>(data, t);
                                         } else {
@@ -488,11 +491,15 @@ public class HttpClient<T> implements GenericLifecycleObserver {
         mDisposableCache.put(tagHash, list);
     }
 
-    public Class<T> getParameterizedTypeClass(Object obj) {
+    public Type getParameterizedTypeClass(Object obj) {
         ParameterizedType pt = (ParameterizedType) obj.getClass().getGenericSuperclass();
         Type[] atr = pt.getActualTypeArguments();
-        if (atr != null && atr.length > 0) {
-            return (Class<T>) atr[0];
+        try {
+            if (atr != null && atr.length > 0) {
+                return  atr[0];
+            }
+        }catch (Exception e) {
+            HttpLog.d("getParameterizedTypeClass error");
         }
         return null;
     }

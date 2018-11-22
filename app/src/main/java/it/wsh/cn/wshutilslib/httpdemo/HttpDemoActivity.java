@@ -10,7 +10,9 @@ import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -62,7 +64,7 @@ public class HttpDemoActivity extends AppCompatActivity implements  View.OnClick
 
     @OnClick({R.id.get_zhihu_info_btn, R.id.weather_btn, R.id.account_exist, R.id.notice_list, R.id.route_info_btn
             , R.id.route_info_add_header, R.id.route_info_set_http_config
-            ,R.id.upload, R.id.download, R.id.life_circle_test})
+            ,R.id.upload, R.id.download, R.id.life_circle_test, R.id.list_response_test})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.get_zhihu_info_btn:
@@ -120,9 +122,49 @@ public class HttpDemoActivity extends AppCompatActivity implements  View.OnClick
 
                 break;
 
+            case R.id.list_response_test:
+                doListResponseTest();
+
+                break;
+
             default:
                 break;
         }
+    }
+
+    /**
+     * 对返回数据是list的情况进行测试
+     * 测试环境，随便发起一个请求，callBack泛型为一个list<RouteInfoResponse>
+     * 修改HttpClient代码让其返回的json为多个AccountExistResponse 的jsonArray形式
+     * 正常请求这里会请求失败，需要修改HttpClient的代码 让其返回一个list
+     */
+    private void doListResponseTest() {
+        HttpConfig httpConfig = HttpConfig.create(false);
+        httpConfig.connectTimeout(5);
+        httpConfig.readTimeout(5);
+        httpConfig.writeTimeout(5);
+        HashMap<String, String> map = new HashMap<>();
+        map.put("req_id", "6");
+        map.put("method", "isValidRouter");
+        map.put("timestamp", System.currentTimeMillis() + "");
+        map.put("params", "");
+
+        new RouteInfoResponse.ListBuilder().addBodyMap(map)
+                .addHeader("name", "wsh")
+                .setHttpCustomConfig(httpConfig)
+                .build(new HttpCallBack<List<RouteInfoResponse>>() {
+                    @Override
+                    public void onSuccess(List<RouteInfoResponse> list) {
+                        Toast.makeText(HttpDemoActivity.this, "请求成功！  " + list.toString(), Toast.LENGTH_LONG).show();
+                        Log.d(TAG, list.toString());
+                    }
+
+                    @Override
+                    public void onError(int stateCode, String errorInfo) {
+                        Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " +errorInfo, Toast.LENGTH_LONG).show();
+                        Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " +errorInfo);
+                    }
+                });
     }
 
     /**
