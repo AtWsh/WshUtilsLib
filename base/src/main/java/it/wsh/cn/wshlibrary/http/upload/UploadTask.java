@@ -25,11 +25,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import it.wsh.cn.wshlibrary.http.ExceptionHandle;
 import it.wsh.cn.wshlibrary.http.HttpCallBack;
 import it.wsh.cn.wshlibrary.http.HttpConfig;
 import it.wsh.cn.wshlibrary.http.HttpConstants;
 import it.wsh.cn.wshlibrary.http.HttpServices;
-import it.wsh.cn.wshlibrary.http.HttpStateCode;
 import it.wsh.cn.wshlibrary.http.ProgressRequestBody;
 import it.wsh.cn.wshlibrary.http.RetryFunction;
 import it.wsh.cn.wshlibrary.http.converter.ConvertFactory;
@@ -259,7 +259,7 @@ public class UploadTask implements GenericLifecycleObserver {
 
                                 HttpLog.e("UploadTask: apply, msg");
                                 if (!onUiCallBack) {
-                                    callback.onError(HttpStateCode.ERROR_SUBSCRIBE_ERROR, msg);
+                                    callback.onError(ExceptionHandle.ERROR.UNKNOWN, msg);
                                 }
                                 return msg;
                             }
@@ -283,7 +283,7 @@ public class UploadTask implements GenericLifecycleObserver {
                         if (data != null) {
                             callback.onSuccess(data);
                         } else {
-                            callback.onError(HttpStateCode.ERROR_ONNEXT_NULL, data);
+                            callback.onError(ExceptionHandle.ERROR.UNKNOWN, data);
                         }
                     }
 
@@ -293,7 +293,8 @@ public class UploadTask implements GenericLifecycleObserver {
                             mDisposable.dispose();
                         }
                         if (onUiCallBack) {
-                            callback.onError(HttpStateCode.ERROR_SUBSCRIBE_ERROR, throwable == null
+                            ExceptionHandle.ResponeThrowable responeThrowable = ExceptionHandle.handleException(throwable);
+                            callback.onError(responeThrowable.code, throwable == null
                                     ? "" : throwable.getMessage());
                         }
                     }

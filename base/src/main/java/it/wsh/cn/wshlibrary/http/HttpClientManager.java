@@ -8,8 +8,6 @@ import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.Map;
 
-
-import it.wsh.cn.wshlibrary.http.upload.HttpUploadClient;
 import it.wsh.cn.wshlibrary.http.upload.UploadTask;
 import it.wsh.cn.wshlibrary.http.utils.HttpLog;
 import okhttp3.RequestBody;

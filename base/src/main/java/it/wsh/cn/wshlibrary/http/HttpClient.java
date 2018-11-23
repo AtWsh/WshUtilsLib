@@ -402,7 +402,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                                         if (!onUiCallBack && t != null) { //子线程返回
                                             callback.onSuccess(t);
                                         } else if (!onUiCallBack && t == null) {
-                                            callback.onError(HttpStateCode.ERROR_SUBSCRIBE_ERROR, msg);
+                                            callback.onError(ExceptionHandle.ERROR.PARSE_ERROR, ExceptionHandle.STR_PARSE_ERROR);
                                         }
                                         return pair;
                                     } else {
@@ -420,7 +420,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                                 HttpLog.e("HttpClient: apply, msg");
                                 pair = new Pair<>(msg, null);
                                 if (!onUiCallBack) {
-                                    callback.onError(HttpStateCode.ERROR_SUBSCRIBE_ERROR, msg);
+                                    callback.onError(ExceptionHandle.ERROR.UNKNOWN, msg);
                                 }
                                 return pair;
                             }
@@ -446,7 +446,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                         if (t != null) {
                             callback.onSuccess(t);
                         } else {
-                            callback.onError(HttpStateCode.ERROR_ONNEXT_NULL, info);
+                            callback.onError(ExceptionHandle.ERROR.UNKNOWN, info);
                         }
                     }
 
@@ -454,7 +454,8 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                     public void onError(Throwable throwable) {
                         dispose(tagHash, httpKey);
                         if (onUiCallBack) {
-                            callback.onError(HttpStateCode.ERROR_SUBSCRIBE_ERROR, throwable == null
+                            ExceptionHandle.ResponeThrowable responeThrowable = ExceptionHandle.handleException(throwable);
+                            callback.onError(responeThrowable.code, throwable == null
                                     ? "" : throwable.getMessage());
                         }
                     }
