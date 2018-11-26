@@ -1,4 +1,4 @@
-package it.wsh.cn.wshutilslib;
+package it.wsh.cn.wshutilslib.glide;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -9,11 +9,14 @@ import com.bumptech.glide.Registry;
 import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory;
 import com.bumptech.glide.load.engine.cache.LruResourceCache;
+import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.module.AppGlideModule;
 
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 import it.wsh.cn.wshutilslib.base.ossbase.AliyunOSSModelLoaderFactory;
+import okhttp3.OkHttpClient;
 
 @GlideModule
 public class CustomGlideModule extends AppGlideModule {
@@ -26,6 +29,13 @@ public class CustomGlideModule extends AppGlideModule {
 
     @Override
     public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry) {
+        // 设置长时间读取和断线重连
+        OkHttpClient okhttpClient = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
+                .readTimeout(90 * 1000, TimeUnit.MILLISECONDS)
+                .build();
+        registry.prepend(GlideUrl.class, InputStream.class, new WshOkHttpUrlLoader.Factory(okhttpClient));
         registry.prepend(String.class, InputStream.class, new AliyunOSSModelLoaderFactory());
     }
 

@@ -54,4 +54,5 @@ dependencies {
     runtimeOnly project(':share')
     implementation deps.glide
     annotationProcessor deps.glideAnnotation
+    implementation deps.okhttp3_integration //只有此处才能依赖，其他地方不需要依赖。
 }

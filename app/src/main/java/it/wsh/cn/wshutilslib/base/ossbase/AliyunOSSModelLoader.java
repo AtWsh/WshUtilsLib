@@ -25,6 +25,8 @@ public class AliyunOSSModelLoader implements ModelLoader<String, InputStream> {
         if (TextUtils.isEmpty(model)) {
             return false;
         }
+        Log.i(TAG, "handles model = " + (model.startsWith("product_type") ||
+                model.startsWith("avatar")));
         return model.startsWith("product_type") ||
                 model.startsWith("avatar");
     }

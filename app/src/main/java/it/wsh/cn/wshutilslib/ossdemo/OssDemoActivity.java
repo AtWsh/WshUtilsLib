@@ -27,11 +27,9 @@ import com.bumptech.glide.request.target.Target;
 
 import it.wsh.cn.wshlibrary.http.IProcessInfo;
 import it.wsh.cn.wshlibrary.http.IProcessListener;
-import it.wsh.cn.wshlibrary.http.download.DownloadManager;
-import it.wsh.cn.wshutilslib.GlideApp;
 import it.wsh.cn.wshutilslib.R;
 import it.wsh.cn.wshutilslib.base.ossbase.OssHelper;
-import it.wsh.cn.wshutilslib.httpdemo.DownloadTestActivity;
+import it.wsh.cn.wshutilslib.glide.GlideApp;
 
 public class OssDemoActivity extends AppCompatActivity {
 
@@ -147,7 +145,8 @@ public class OssDemoActivity extends AppCompatActivity {
 
     private void doGlideShowTest() {
         Log.i(TAG, "doGlideShowTest");
-        GlideApp.with(OssDemoActivity.this).load(mTestUrl).diskCacheStrategy(DiskCacheStrategy.ALL).listener(new RequestListener<Drawable>() {
+        String url = "http://pic.58pic.com/58pic/14/70/20/10P58PICF7b_1024.jpg";
+        GlideApp.with(OssDemoActivity.this).load(url).diskCacheStrategy(DiskCacheStrategy.ALL).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                 Log.i(TAG, "doGlideShowTest  onLoadFailed");
