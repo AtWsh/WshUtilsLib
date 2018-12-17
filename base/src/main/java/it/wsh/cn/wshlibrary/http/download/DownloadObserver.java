@@ -49,6 +49,7 @@ public class DownloadObserver implements Observer<DownloadInfo> {
 
     @Override
     public void onComplete() {
+        notifyComplete();
         DownloadManager.getInstance().removeDownloadTask(mKey);
     }
 
@@ -130,6 +131,15 @@ public class DownloadObserver implements Observer<DownloadInfo> {
         }
         for (IProcessListener listener : mListeners) {
             listener.onComplete(IProcessListener.PAUSE, "");
+        }
+    }
+
+    private void notifyComplete() {
+        if (mListeners == null || mListeners.size() == 0) {
+            return;
+        }
+        for (IProcessListener listener : mListeners) {
+            listener.onComplete(IProcessListener.SUCCESS, "");
         }
     }
 }

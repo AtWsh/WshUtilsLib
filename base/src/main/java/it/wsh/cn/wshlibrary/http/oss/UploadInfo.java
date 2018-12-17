@@ -49,4 +49,9 @@ public class UploadInfo implements IProcessInfo {
     public String getLocalPath() {
         return mLocalPath;
     }
+
+    @Override
+    public String getFileName() {
+        return ""; //暂时没设置
+    }
 }

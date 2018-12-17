@@ -12,6 +12,7 @@ import retrofit2.http.HEAD;
 import retrofit2.http.Header;
 import retrofit2.http.HeaderMap;
 import retrofit2.http.Headers;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PartMap;
 import retrofit2.http.QueryMap;
@@ -66,6 +67,7 @@ public interface HttpServices {
 
     //上传
     @POST
+    @Multipart
     Observable<Response<String>> upload(
             @Url String url,
             @HeaderMap Map<String, String> headers,

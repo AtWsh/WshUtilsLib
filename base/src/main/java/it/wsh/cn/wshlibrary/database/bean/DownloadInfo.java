@@ -91,6 +91,7 @@ public class DownloadInfo implements IProcessInfo {
         this.downloadPosition = downloadPosition;
     }
 
+    @Override
     public String getFileName() {
         return fileName;
     }

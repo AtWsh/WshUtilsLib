@@ -11,7 +11,7 @@ public interface IProcessListener {
 
     String PAUSE_STATE = "pause";
     int PAUSE = 1;
-    int SECCESS = 200;
+    int SUCCESS = 200;
     int ERROR_DOWNLOAD_RETROFIT = 1001;
     int ERROR_DOWNLOAD_OSSTASK_CREATE = 1002;
 

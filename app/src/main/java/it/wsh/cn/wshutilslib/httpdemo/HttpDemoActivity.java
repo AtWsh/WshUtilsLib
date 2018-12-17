@@ -3,6 +3,7 @@ package it.wsh.cn.wshutilslib.httpdemo;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +26,7 @@ import it.wsh.cn.wshutilslib.httpdemo.bean.NoticeListResponse;
 import it.wsh.cn.wshutilslib.httpdemo.bean.RouteInfoResponse;
 import it.wsh.cn.wshutilslib.httpdemo.bean.StoriesResponse;
 import it.wsh.cn.wshutilslib.httpdemo.bean.WeatherResponse;
+import it.wsh.cn.wshutilslib.httpdemo.builder.RemoteLogUploadBuilder;
 
 
 /**
@@ -108,8 +110,7 @@ public class HttpDemoActivity extends AppCompatActivity implements  View.OnClick
                 break;
 
             case R.id.upload:
-                //todo
-                Toast.makeText(HttpDemoActivity.this, "开发中...", Toast.LENGTH_SHORT).show();
+                testUpload();
                 break;
 
             case R.id.download:
@@ -130,6 +131,29 @@ public class HttpDemoActivity extends AppCompatActivity implements  View.OnClick
             default:
                 break;
         }
+    }
+
+    private void testUpload() {
+        String path = Environment.getExternalStorageDirectory().getPath();
+        String uploadPath = path + "/111/vip0.txt";
+        new RemoteLogUploadBuilder("http://www.oss_web.com/upload").addFile("file", uploadPath).build(new HttpCallBack() {
+
+            @Override
+            public void onProgress(int progress) {
+                super.onProgress(progress);
+                Log.d("wsh_log", "onProgress ：" + progress);
+            }
+
+            @Override
+            public void onSuccess(Object o) {
+                Log.d("wsh_log", "onSuccess ：");
+            }
+
+            @Override
+            public void onError(int stateCode, String errorInfo) {
+                Log.d("wsh_log", "onError ：");
+            }
+        });
     }
 
     /**

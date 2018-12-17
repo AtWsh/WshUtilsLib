@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 
 import java.util.concurrent.Executor;
 
-import it.wsh.cn.wshlibrary.http.HttpCallBack;
 import it.wsh.cn.wshlibrary.http.IProcessInfo;
 import it.wsh.cn.wshlibrary.http.IProcessListener;
 
@@ -42,7 +41,7 @@ public class MainThreadExecutor implements Executor {
         this.execute(new Runnable() {
             @Override
             public void run() {
-                listener.onComplete(IProcessListener.SECCESS, msg);
+                listener.onComplete(IProcessListener.SUCCESS, msg);
             }
         });
     }

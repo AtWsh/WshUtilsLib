@@ -30,15 +30,16 @@ public abstract class UploadBuilder<T> extends LifeCycleBuilder<T> {
      * @param file
      * @param des
      */
-    public void addImgAndDescribe(File file, String des) {
+    public UploadBuilder addImgAndDescribe(File file, String des) {
         if (file == null) {
             HttpLog.e("UploadBuilder： Error! addImgAndDescribe : file == null !" );
-            return;
+            return null;
         }
         RequestBody imgBody = RequestBody.create(MultipartBody.FORM, file);
         RequestBody textBody = RequestBody.create(HttpConstants.TEXT_TYPE, des);
         mPartMap.put(HttpConstants.FILE_NAME + file.getName(), imgBody);
         mPartMap.put(HttpConstants.FILE_NAME + file.getName(), textBody);
+        return this;
     }
 
     /**
@@ -46,42 +47,66 @@ public abstract class UploadBuilder<T> extends LifeCycleBuilder<T> {
      * @param file
      * @param des
      */
-    public void addImgAndDescribe(String fileKey, File file, String desKey, String des) {
+    public UploadBuilder addImgAndDescribe(String fileKey, File file, String desKey, String des) {
         if (file == null || TextUtils.isEmpty(des)) {
             HttpLog.e("UploadBuilder： Error! addImgAndDescribe : file == null || TextUtils.isEmpty(des) !" );
-            return;
+            return null;
         }
         RequestBody imgBody = RequestBody.create(MultipartBody.FORM, file);
         RequestBody textBody = RequestBody.create(HttpConstants.TEXT_TYPE, des);
         mPartMap.put(fileKey, imgBody);
         mPartMap.put(desKey, textBody);
+        return this;
     }
 
-    public void addFile(File file) {
+    public UploadBuilder addFile(File file) {
         if (file == null) {
-            return;
+            return null;
         }
 
         RequestBody requestBody = RequestBody.create(MultipartBody.FORM, file);
         mPartMap.put(HttpConstants.FILE_NAME + file.getName(), requestBody);
+        return this;
     }
 
-    public void addFiles(List<File> files) {
+    public UploadBuilder addFile(String key, File file) {
+        if (file == null) {
+            return null;
+        }
+
+        RequestBody requestBody = RequestBody.create(MultipartBody.FORM, file);
+        mPartMap.put(key, requestBody);
+        return this;
+    }
+
+    public UploadBuilder addFile(String key, String filePath) {
+        if (TextUtils.isEmpty(filePath)) {
+            return null;
+        }
+        File file = new File(filePath);
+        RequestBody requestBody = RequestBody.create(MultipartBody.FORM, file);
+        mPartMap.put(key, requestBody);
+        return this;
+    }
+
+    public UploadBuilder addFiles(List<File> files) {
         if (files == null || files.size() == 0) {
             HttpLog.e("UploadBuilder： Error! addFiles : files == null || files.size() == 0 !" );
-            return;
+            return null;
         }
         for (File file : files) {
             addFile(file);
         }
+        return this;
     }
 
-    public void addPartMap(Map<String, RequestBody> partMap) {
+    public UploadBuilder addPartMap(Map<String, RequestBody> partMap) {
         if (partMap == null) {
             HttpLog.e("UploadBuilder： Error! addPartMap : partMap == null !" );
-            return;
+            return null;
         }
         mPartMap = partMap;
+        return this;
     }
 
     @Override

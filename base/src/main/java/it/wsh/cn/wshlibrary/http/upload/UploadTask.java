@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -211,6 +212,9 @@ public class UploadTask implements GenericLifecycleObserver {
                       int retryDelayMillis, final HttpCallBack<String> callback) {
         if (mCurrentServices == null) {
             return -1;
+        }
+        if (mapHeader == null) {
+            mapHeader = new HashMap<>();
         }
         Observable<Response<String>> observable = mCurrentServices.upload(path, mapHeader, partMap);
         return doSubscribe(httpKey, tagHash, observable, retryTimes, retryDelayMillis,

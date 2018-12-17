@@ -354,18 +354,6 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                 onUiCallBack, callback);
     }
 
-    //上传
-    public int upload(String path, int httpKey, Map<String, String> mapHeader,
-                      Map<String, RequestBody> partMap, int tagHash, int retryTimes,
-                      int retryDelayMillis, final HttpCallBack<T> callback) {
-        if (mCurrentServices == null) {
-            return -1;
-        }
-        Observable<Response<String>> observable = mCurrentServices.upload(path, mapHeader, partMap);
-        return doSubscribe(httpKey, tagHash, observable, retryTimes, retryDelayMillis,
-                true, callback);
-    }
-
     /**
      * 处理请求，并回调结果
      *

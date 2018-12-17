@@ -120,6 +120,7 @@ public class DownloadTask implements IDownloadTask{
         String url = downloadInfo.getUrl();
         DownloadInfo info = DownloadInfoDaoHelper.queryTask(key);
         if (info != null) {
+            info.setFileName(downloadInfo.getFileName());
             downloadInfo = info;
             mSaveFile = new File(info.getSavePath());
             long totalSize = downloadInfo.getTotalSize();

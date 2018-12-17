@@ -11,4 +11,5 @@ public interface IProcessInfo {
     long getCurrentPosition();
     int getProcess();
     String getLocalPath();
+    String getFileName();
 }

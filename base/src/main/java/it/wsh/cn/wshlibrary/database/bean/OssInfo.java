@@ -93,6 +93,7 @@ public class OssInfo implements IProcessInfo {
         Expiration = expiration;
     }
 
+    @Override
     public String getFileName() {
         return fileName;
     }
