@@ -60,5 +60,4 @@ dependencies {
     api deps.gson
     api deps.greendao
     implementation deps.greendao
-    api deps.oss
 }
