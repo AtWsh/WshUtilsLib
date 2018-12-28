@@ -13,8 +13,8 @@ import com.google.gson.JsonObject;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import it.wsh.cn.wshlibrary.http.HttpCallBack;
-import it.wsh.cn.wshlibrary.http.HttpConfig;
+import it.wsh.cn.common_http.http.HttpCallBack;
+import it.wsh.cn.common_http.http.HttpConfig;
 import it.wsh.cn.wshutilslib.R;
 import it.wsh.cn.wshutilslib.httpdemo.bean.NoticeListResponse;
 

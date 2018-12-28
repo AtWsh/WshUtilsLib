@@ -48,8 +48,10 @@ dependencies {
     implementation deps.butterknife
     annotationProcessor deps.butterknifeAnnotation
     annotationProcessor deps.arouter_compiler
-    api project(':base')
-    api project(':common_http')
+    implementation project(':common_utils')
+    implementation project(':common_http')
+    implementation project(path: ':componentbase')
+    implementation deps.arouter
 
     debugImplementation deps.leakcanary_debug
     releaseImplementation deps.leakcanary_release

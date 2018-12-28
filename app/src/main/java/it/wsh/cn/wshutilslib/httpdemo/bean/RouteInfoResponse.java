@@ -3,9 +3,9 @@ package it.wsh.cn.wshutilslib.httpdemo.bean;
 
 import java.util.List;
 
-import it.wsh.cn.wshlibrary.http.HttpMethod;
-import it.wsh.cn.wshlibrary.http.builder.CommonBuilder;
-import it.wsh.cn.wshlibrary.http.builder.LifeCycleBuilder;
+import it.wsh.cn.common_http.http.HttpMethod;
+import it.wsh.cn.common_http.http.builder.CommonBuilder;
+import it.wsh.cn.common_http.http.builder.LifeCycleBuilder;
 
 /**
  * author: wenshenghui

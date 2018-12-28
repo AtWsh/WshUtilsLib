@@ -2,15 +2,13 @@ package it.wsh.cn.wshutilslib.base.ossbase;
 
 import android.text.TextUtils;
 
-import com.alibaba.sdk.android.oss.common.auth.OSSFederationToken;
-
-import it.wsh.cn.wshlibrary.http.HttpCallBack;
-import it.wsh.cn.wshlibrary.http.IProcessListener;
-import it.wsh.cn.wshlibrary.http.download.DownloadManager;
-import it.wsh.cn.wshlibrary.http.oss.InputStreamCallBack;
-import it.wsh.cn.wshlibrary.http.oss.OssConfigInfo;
-import it.wsh.cn.wshlibrary.http.upload.UploadCacheHelper;
-import it.wsh.cn.wshlibrary.http.upload.UploadManager;
+import it.wsh.cn.common_http.http.HttpCallBack;
+import it.wsh.cn.common_http.http.IProcessListener;
+import it.wsh.cn.common_http.http.download.DownloadManager;
+import it.wsh.cn.common_http.http.oss.InputStreamCallBack;
+import it.wsh.cn.common_http.http.oss.OssConfigInfo;
+import it.wsh.cn.common_http.http.upload.UploadCacheHelper;
+import it.wsh.cn.common_http.http.upload.UploadManager;
 import it.wsh.cn.wshutilslib.MianApplication;
 
 public class OssHelper {

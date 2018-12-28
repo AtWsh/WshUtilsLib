@@ -6,7 +6,7 @@ import android.widget.Toast;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
 
-import it.wsh.cn.wshlibrary.utils.RouteUtils;
+import it.wsh.cn.common_utils.utils.RouteUtils;
 
 @Route(path = RouteUtils.LOGIN)
 public class LoginActivity extends AppCompatActivity {

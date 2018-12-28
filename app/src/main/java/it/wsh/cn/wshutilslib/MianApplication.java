@@ -2,25 +2,14 @@ package it.wsh.cn.wshutilslib;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.annotation.NonNull;
 
 import com.alibaba.android.arouter.launcher.ARouter;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.GlideBuilder;
-import com.bumptech.glide.Registry;
-import com.bumptech.glide.annotation.GlideModule;
-import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory;
-import com.bumptech.glide.load.engine.cache.LruResourceCache;
-import com.bumptech.glide.module.AppGlideModule;
 import com.squareup.leakcanary.LeakCanary;
 
-import java.io.InputStream;
-
+import it.wsh.cn.common_http.http.HttpManager;
+import it.wsh.cn.common_http.http.database.utils.GreenDaoDatabase;
 import it.wsh.cn.componentbase.application.ApplicationConfig;
 import it.wsh.cn.componentbase.application.BaseApplication;
-import it.wsh.cn.wshlibrary.database.utils.GreenDaoDatabase;
-import it.wsh.cn.wshlibrary.http.HttpManager;
-import it.wsh.cn.wshutilslib.base.ossbase.AliyunOSSModelLoaderFactory;
 
 /**
  * author: wenshenghui
@@ -55,7 +44,6 @@ public class MianApplication extends BaseApplication{
         ARouter.init(this);
 
         HttpManager.init(this);
-        it.wsh.cn.common_http.http.HttpManager.init(this);
 
         GreenDaoDatabase.getInstance().initDatabase(this);
     }

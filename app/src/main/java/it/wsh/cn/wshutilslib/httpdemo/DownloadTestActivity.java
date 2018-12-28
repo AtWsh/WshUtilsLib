@@ -17,9 +17,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import it.wsh.cn.wshlibrary.http.IProcessListener;
-import it.wsh.cn.wshlibrary.http.IProcessInfo;
-import it.wsh.cn.wshlibrary.http.download.DownloadManager;
+import it.wsh.cn.common_http.http.IProcessInfo;
+import it.wsh.cn.common_http.http.IProcessListener;
+import it.wsh.cn.common_http.http.download.DownloadManager;
 import it.wsh.cn.wshutilslib.R;
 
 

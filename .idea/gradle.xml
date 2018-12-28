@@ -10,8 +10,8 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/baidumap" />
-            <option value="$PROJECT_DIR$/base" />
             <option value="$PROJECT_DIR$/commonlib/common_http" />
+            <option value="$PROJECT_DIR$/commonlib/common_utils" />
             <option value="$PROJECT_DIR$/componentbase" />
             <option value="$PROJECT_DIR$/login" />
             <option value="$PROJECT_DIR$/share" />

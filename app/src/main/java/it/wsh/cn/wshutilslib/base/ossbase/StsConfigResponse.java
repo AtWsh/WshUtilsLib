@@ -1,7 +1,8 @@
 package it.wsh.cn.wshutilslib.base.ossbase;
 
-import it.wsh.cn.wshlibrary.http.HttpMethod;
-import it.wsh.cn.wshlibrary.http.builder.LifeCycleBuilder;
+
+import it.wsh.cn.common_http.http.HttpMethod;
+import it.wsh.cn.common_http.http.builder.LifeCycleBuilder;
 
 /**
  * author: wenshenghui

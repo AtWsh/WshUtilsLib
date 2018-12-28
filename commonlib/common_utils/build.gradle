@@ -1,8 +1,9 @@
 apply plugin: 'com.android.library'
-apply plugin: 'org.greenrobot.greendao'
 
 android {
     compileSdkVersion versions.compileSdk
+
+
 
     defaultConfig {
         minSdkVersion versions.minSdk
@@ -34,12 +35,6 @@ android {
         targetCompatibility versions.javaVersion
     }
 
-    greendao {
-        schemaVersion 1
-        daoPackage 'it.wsh.cn.common_http.http.database.greendao'
-        //targetGenDir 'src/main/java'
-    }
-
 }
 
 dependencies {
@@ -47,18 +42,4 @@ dependencies {
     testImplementation deps.test.junit
     androidTestImplementation deps.support.test.runner
     androidTestImplementation deps.support.test.espresso
-
-    implementation deps.support.appcompat
-
-    implementation deps.retrofit
-    implementation deps.retrofitConverterGson
-    implementation deps.retrofitAdapterRxjava
-    implementation deps.okhttpInterceptorLogging
-
-    api deps.rxandroid
-    api deps.rxjava
-    api deps.gson
-    api deps.greendao
-    implementation deps.greendao
-    api deps.oss
 }

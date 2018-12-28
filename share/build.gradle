@@ -63,6 +63,8 @@ dependencies {
 
     implementation deps.support.appcompatv7
     implementation deps.support.constraintLayout
-    implementation project(':base')
+    implementation project(':common_utils')
+    api project(':componentbase')
+    implementation deps.arouter
     annotationProcessor deps.arouter_compiler
 }

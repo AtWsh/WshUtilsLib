@@ -2,14 +2,14 @@ package it.wsh.cn.wshutilslib.httpdemo.builder;
 
 import android.text.TextUtils;
 
-import it.wsh.cn.wshlibrary.http.builder.UploadBuilder;
+import it.wsh.cn.common_http.http.builder.UploadBuilder;
 
 /**
  * author: wenshenghui
  * created on: 2018/12/13 9:08
  * description:
  */
-public class RemoteLogUploadBuilder extends UploadBuilder<String>{
+public class RemoteLogUploadBuilder extends UploadBuilder<String> {
 
     private String mUrl = "";
     public RemoteLogUploadBuilder(String url) {

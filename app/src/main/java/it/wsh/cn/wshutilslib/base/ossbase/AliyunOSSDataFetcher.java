@@ -9,7 +9,7 @@ import com.bumptech.glide.load.data.DataFetcher;
 
 import java.io.InputStream;
 
-import it.wsh.cn.wshlibrary.http.oss.InputStreamCallBack;
+import it.wsh.cn.common_http.http.oss.InputStreamCallBack;
 
 public class AliyunOSSDataFetcher implements DataFetcher<InputStream>  {
 

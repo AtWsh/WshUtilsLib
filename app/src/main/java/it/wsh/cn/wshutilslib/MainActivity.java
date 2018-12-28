@@ -8,7 +8,7 @@ import android.widget.Button;
 
 import com.alibaba.android.arouter.launcher.ARouter;
 
-import it.wsh.cn.wshlibrary.utils.RouteUtils;
+import it.wsh.cn.common_utils.utils.RouteUtils;
 import it.wsh.cn.wshutilslib.httpdemo.HttpDemoActivity;
 import it.wsh.cn.wshutilslib.ossdemo.OssDemoActivity;
 import it.wsh.cn.wshutilslib.rxjavademo.RxjavaTestActivity;
@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             ARouter.getInstance().build(RouteUtils.LOGIN).navigation();
-            ;
         }
     };
 

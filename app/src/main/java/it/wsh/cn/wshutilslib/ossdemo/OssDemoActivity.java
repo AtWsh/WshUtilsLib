@@ -25,8 +25,8 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
-import it.wsh.cn.wshlibrary.http.IProcessInfo;
-import it.wsh.cn.wshlibrary.http.IProcessListener;
+import it.wsh.cn.common_http.http.IProcessInfo;
+import it.wsh.cn.common_http.http.IProcessListener;
 import it.wsh.cn.wshutilslib.R;
 import it.wsh.cn.wshutilslib.base.ossbase.OssHelper;
 import it.wsh.cn.wshutilslib.glide.GlideApp;

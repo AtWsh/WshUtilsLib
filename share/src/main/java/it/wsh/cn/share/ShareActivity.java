@@ -4,11 +4,12 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+
 import com.alibaba.android.arouter.facade.annotation.Route;
 
+import it.wsh.cn.common_utils.utils.RouteUtils;
 import it.wsh.cn.componentbase.ServiceFactory;
 import it.wsh.cn.componentbase.services.IAccountService;
-import it.wsh.cn.wshlibrary.utils.RouteUtils;
 
 @Route(path = RouteUtils.SHARE)
 public class ShareActivity extends AppCompatActivity {

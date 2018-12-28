@@ -1,8 +1,8 @@
 package it.wsh.cn.wshutilslib.httpdemo.bean;
 
 
-import it.wsh.cn.wshlibrary.http.HttpMethod;
-import it.wsh.cn.wshlibrary.http.builder.CommonBuilder;
+import it.wsh.cn.common_http.http.HttpMethod;
+import it.wsh.cn.common_http.http.builder.CommonBuilder;
 
 /**
  * author: wenshenghui
