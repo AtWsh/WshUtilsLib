@@ -14,7 +14,7 @@ import okhttp3.RequestBody;
  * created on: 2018/12/27 16:19
  * description:
  */
-public class HttpUploadRequest<Req extends UploadBaseReqInfo, Rsp extends String> extends HttpRequest<Req, Rsp> {
+public class HttpUploadRequest<Req extends BaseUploadReqInfo, Rsp extends String> extends HttpRequest<Req, Rsp> {
 
     /**
      * 创建一个请求，并指定回调是否在UI线程
