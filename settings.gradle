@@ -4,6 +4,17 @@ project(':componentbase').projectDir = new File('componentbase')
 project(':login').projectDir = new File('login')
 project(':share').projectDir = new File('share')
 
+//base库
+include ':componentbase'
+project(':componentbase').projectDir = new File('base/componentbase')
+include ':login'
+project(':login').projectDir = new File('base/login')
+include ':share'
+project(':share').projectDir = new File('base/share')
+include ':baidumap'
+project(':baidumap').projectDir = new File('base/baidumap')
+
+//common库
 include ':common_http'
 project(':common_http').projectDir = new File('commonlib/common_http')
 include ':common_utils'
