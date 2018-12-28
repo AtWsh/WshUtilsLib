@@ -23,7 +23,7 @@ public class CustomGlideModule extends AppGlideModule {
 
     @Override
     public boolean isManifestParsingEnabled() {
-//        return super.isManifestParsingEnabled();
+        //return super.isManifestParsingEnabled();
         return false;
     }
 

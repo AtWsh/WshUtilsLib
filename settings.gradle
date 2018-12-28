@@ -1,4 +1,4 @@
-include ':app'
+include ':app', ':baidumap'
 include':base', ':componentbase', ':login',':share'
 project(':base').projectDir = new File('base')
 project(':componentbase').projectDir = new File('componentbase')
