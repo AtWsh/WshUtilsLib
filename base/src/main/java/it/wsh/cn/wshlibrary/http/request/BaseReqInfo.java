@@ -18,7 +18,7 @@ import okhttp3.RequestBody;
  * created on: 2018/12/27 14:41
  * description:
  */
-public abstract class IBaseReqInfo {
+public abstract class BaseReqInfo {
 
     //需要再url后面拼接的信息
     protected transient Map<String, String> mHttpParams;
@@ -32,7 +32,7 @@ public abstract class IBaseReqInfo {
     /**
      * 覆盖http查询参数，注意，两次调用该方法添加参数，后来添加的会将前面添加的清空
      */
-    public IBaseReqInfo addParamsMap(Map<String, String> params){
+    public BaseReqInfo addParamsMap(Map<String, String> params){
         mHttpParams = params;
         return this;
     }
@@ -43,7 +43,7 @@ public abstract class IBaseReqInfo {
      * @param mapValue
      * @return
      */
-    public IBaseReqInfo addFormDataMap(Map<String, String> mapValue) {
+    public BaseReqInfo addFormDataMap(Map<String, String> mapValue) {
         if (mapValue == null || mapValue.size() <= 0) {
             HttpLog.e("CommonBuilder：Error! input addFormDataMap mapValue = " + mapValue);
             return this;
@@ -65,7 +65,7 @@ public abstract class IBaseReqInfo {
      * @param mapValue
      * @return
      */
-    public IBaseReqInfo addBodyMap(Map<String, String> mapValue){
+    public BaseReqInfo addBodyMap(Map<String, String> mapValue){
         if(mapValue == null){
             HttpLog.e("CommonBuilder：Error! input addBodyMap mapValue == null");
             return this;
@@ -90,7 +90,7 @@ public abstract class IBaseReqInfo {
      * @param mapValue
      * @return
      */
-    public IBaseReqInfo setHeader(Map<String, String> mapValue){
+    public BaseReqInfo setHeader(Map<String, String> mapValue){
         if (mapValue == null) {
             HttpLog.e("CommonBuilder：Error! input setHeader mapValue = " + mapValue);
             return this;
@@ -104,7 +104,7 @@ public abstract class IBaseReqInfo {
      * @param mapValue
      * @return
      */
-    public IBaseReqInfo addHeader(Map<String, String> mapValue){
+    public BaseReqInfo addHeader(Map<String, String> mapValue){
         if (mapValue == null || mapValue.size() <= 0) {
             HttpLog.i("CommonBuilder：Error! input addHeader mapValue = " + mapValue);
             return this;
@@ -123,7 +123,7 @@ public abstract class IBaseReqInfo {
      * @param value
      * @return
      */
-    public IBaseReqInfo addHeader(String key, String value){
+    public BaseReqInfo addHeader(String key, String value){
         if (TextUtils.isEmpty(key)) {
             HttpLog.e("CommonBuilder：Error! input addHeader key = " + key);
             return this;
@@ -141,7 +141,7 @@ public abstract class IBaseReqInfo {
      * @param httpConfig
      * @return
      */
-    public IBaseReqInfo setHttpCustomConfig(HttpConfig httpConfig) {
+    public BaseReqInfo setHttpCustomConfig(HttpConfig httpConfig) {
         mHttpCustomConfig = httpConfig;
         return this;
     }

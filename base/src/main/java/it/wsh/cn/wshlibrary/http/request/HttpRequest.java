@@ -19,7 +19,7 @@ import okhttp3.RequestBody;
  * created on: 2018/12/27 15:23
  * description:
  */
-public class HttpRequest<Req extends IBaseReqInfo, Rsp> {
+public class HttpRequest<Req extends BaseReqInfo, Rsp> {
 
     private String TAG = "CommonBuilder";
     protected final int ERROR_KEY = -1; //传参出错导致发起请求失败

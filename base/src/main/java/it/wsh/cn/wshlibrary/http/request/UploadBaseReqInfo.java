@@ -18,7 +18,7 @@ import okhttp3.RequestBody;
  * created on: 2018/12/27 16:31
  * description:
  */
-public abstract class IUploadBaseReqInfo extends IBaseReqInfo {
+public abstract class UploadBaseReqInfo extends BaseReqInfo {
     Map<String, RequestBody> mPartMap = new HashMap<>();
 
     /**
@@ -27,7 +27,7 @@ public abstract class IUploadBaseReqInfo extends IBaseReqInfo {
      * @param file
      * @param des
      */
-    public IUploadBaseReqInfo addImgAndDescribe(File file, String des) {
+    public UploadBaseReqInfo addImgAndDescribe(File file, String des) {
         if (file == null) {
             HttpLog.e("UploadBuilder： Error! addImgAndDescribe : file == null !");
             return null;
@@ -45,7 +45,7 @@ public abstract class IUploadBaseReqInfo extends IBaseReqInfo {
      * @param file
      * @param des
      */
-    public IUploadBaseReqInfo addImgAndDescribe(String fileKey, File file, String desKey, String des) {
+    public UploadBaseReqInfo addImgAndDescribe(String fileKey, File file, String desKey, String des) {
         if (file == null || TextUtils.isEmpty(des)) {
             HttpLog.e( "UploadBuilder： Error! addImgAndDescribe : file == null || TextUtils.isEmpty(des) !");
             return null;
@@ -57,7 +57,7 @@ public abstract class IUploadBaseReqInfo extends IBaseReqInfo {
         return this;
     }
 
-    public IUploadBaseReqInfo addFile(File file) {
+    public UploadBaseReqInfo addFile(File file) {
         if (file == null) {
             return null;
         }
@@ -67,7 +67,7 @@ public abstract class IUploadBaseReqInfo extends IBaseReqInfo {
         return this;
     }
 
-    public IUploadBaseReqInfo addFile(String key, File file) {
+    public UploadBaseReqInfo addFile(String key, File file) {
         if (file == null) {
             return null;
         }
@@ -77,7 +77,7 @@ public abstract class IUploadBaseReqInfo extends IBaseReqInfo {
         return this;
     }
 
-    public IUploadBaseReqInfo addFile(String key, String filePath) {
+    public UploadBaseReqInfo addFile(String key, String filePath) {
         if (TextUtils.isEmpty(filePath)) {
             return null;
         }
@@ -87,7 +87,7 @@ public abstract class IUploadBaseReqInfo extends IBaseReqInfo {
         return this;
     }
 
-    public IUploadBaseReqInfo addFiles(List<File> files) {
+    public UploadBaseReqInfo addFiles(List<File> files) {
         if (files == null || files.size() == 0) {
             HttpLog.e("UploadBuilder： Error! addFiles : files == null || files.size() == 0 !");
             return null;
@@ -98,7 +98,7 @@ public abstract class IUploadBaseReqInfo extends IBaseReqInfo {
         return this;
     }
 
-    public IUploadBaseReqInfo addPartMap(Map<String, RequestBody> partMap) {
+    public UploadBaseReqInfo addPartMap(Map<String, RequestBody> partMap) {
         if (partMap == null) {
             HttpLog.e("UploadBuilder： Error! addPartMap : partMap == null !");
             return null;

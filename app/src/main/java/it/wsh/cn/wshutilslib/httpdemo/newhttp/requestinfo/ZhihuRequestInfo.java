@@ -1,14 +1,14 @@
 package it.wsh.cn.wshutilslib.httpdemo.newhttp.requestinfo;
 
 import it.wsh.cn.wshlibrary.http.HttpMethod;
-import it.wsh.cn.wshlibrary.http.request.IBaseReqInfo;
+import it.wsh.cn.wshlibrary.http.request.BaseReqInfo;
 
 /**
  * author: wenshenghui
  * created on: 2018/12/28 8:45
  * description:
  */
-public class ZhihuRequestInfo extends IBaseReqInfo {
+public class ZhihuRequestInfo extends BaseReqInfo {
 
 
 

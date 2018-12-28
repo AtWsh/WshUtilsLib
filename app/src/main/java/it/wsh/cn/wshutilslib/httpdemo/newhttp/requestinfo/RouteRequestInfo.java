@@ -1,17 +1,15 @@
 package it.wsh.cn.wshutilslib.httpdemo.newhttp.requestinfo;
 
-import java.util.HashMap;
-
 import it.wsh.cn.wshlibrary.http.HttpConfig;
 import it.wsh.cn.wshlibrary.http.HttpMethod;
-import it.wsh.cn.wshlibrary.http.request.IBaseReqInfo;
+import it.wsh.cn.wshlibrary.http.request.BaseReqInfo;
 
 /**
  * author: wenshenghui
  * created on: 2018/12/28 9:49
  * description:
  */
-public class RouteRequestInfo extends IBaseReqInfo {
+public class RouteRequestInfo extends BaseReqInfo {
 
     public String req_id = "";
     public String method = "";
