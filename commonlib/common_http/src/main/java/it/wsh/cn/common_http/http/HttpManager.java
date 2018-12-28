@@ -2,8 +2,8 @@ package it.wsh.cn.common_http.http;
 
 import android.content.Context;
 
+import it.wsh.cn.common_http.http.database.utils.GreenDaoDatabase;
 import it.wsh.cn.common_http.http.download.DownloadManager;
-import it.wsh.cn.common_http.http.upload.UploadManager;
 
 
 /**
@@ -14,8 +14,11 @@ import it.wsh.cn.common_http.http.upload.UploadManager;
 public class HttpManager {
 
     public static void init(Context context) {
-        DownloadManager.getInstance().init(context);
-        UploadManager.getInstance().init(context);
+        //初始化普通Http请求模块
         HttpClientManager.getInstance().init(context);
+        //初始化下载模块
+        DownloadManager.getInstance().init(context);
+        //初始化数据库(下载，断点续传用到)
+        GreenDaoDatabase.getInstance().initDatabase(context);
     }
 }

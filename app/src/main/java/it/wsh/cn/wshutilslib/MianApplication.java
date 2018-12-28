@@ -8,8 +8,12 @@ import com.squareup.leakcanary.LeakCanary;
 
 import it.wsh.cn.common_http.http.HttpManager;
 import it.wsh.cn.common_http.http.database.utils.GreenDaoDatabase;
+import it.wsh.cn.common_imageloader.GlideConfig;
+import it.wsh.cn.common_oss.OssManager;
+import it.wsh.cn.common_oss.glidemodel.AliyunOSSModelLoaderFactory;
 import it.wsh.cn.componentbase.application.ApplicationConfig;
 import it.wsh.cn.componentbase.application.BaseApplication;
+import it.wsh.cn.wshutilslib.config.OssBusinessConfig;
 
 /**
  * author: wenshenghui
@@ -42,6 +46,13 @@ public class MianApplication extends BaseApplication{
         // 开启调试模式(如果在InstantRun模式下运行，必须开启调试模式！线上版本需要关闭,否则有安全风险)
         ARouter.openDebug();
         ARouter.init(this);
+
+        //OSS环境初始化
+        OssBusinessConfig.init(BuildConfig.ENV);
+        OssManager.init(this, OssBusinessConfig.getStsTokenBaseUrl(), OssBusinessConfig.getPath());
+
+        //图片库初始化,(让Glide支持Oss图片下载)
+        GlideConfig.addModelLoaderFactory(new AliyunOSSModelLoaderFactory());
 
         HttpManager.init(this);
 

@@ -27,9 +27,9 @@ import com.bumptech.glide.request.target.Target;
 
 import it.wsh.cn.common_http.http.IProcessInfo;
 import it.wsh.cn.common_http.http.IProcessListener;
+import it.wsh.cn.common_imageloader.GlideApp;
+import it.wsh.cn.common_oss.OssManager;
 import it.wsh.cn.wshutilslib.R;
-import it.wsh.cn.wshutilslib.base.ossbase.OssHelper;
-import it.wsh.cn.wshutilslib.glide.GlideApp;
 
 public class OssDemoActivity extends AppCompatActivity {
 
@@ -110,7 +110,7 @@ public class OssDemoActivity extends AppCompatActivity {
     private void doOssUploadTest() {
         String objectKey = "avatar/10024/9a753013faad0704027cddd446dd72e7.jpg";
         String localPath = "/storage/emulated/0/xingluo/cache/temp/avatar/10024.jpg";
-        OssHelper.startUpload(objectKey, localPath, new IProcessListener() {
+        OssManager.startUpload(objectKey, localPath, new IProcessListener() {
             @Override
             public void onStart() {
                 Log.i(TAG, "doOssUploadTest onStart");
@@ -145,7 +145,7 @@ public class OssDemoActivity extends AppCompatActivity {
 
     private void doGlideShowTest() {
         Log.i(TAG, "doGlideShowTest");
-        String url = "http://pic.58pic.com/58pic/14/70/20/10P58PICF7b_1024.jpg";
+        String url = "http://img.zcool.cn/community/01f9ea56e282836ac72531cbe0233b.jpg@2o.jpg";
         GlideApp.with(OssDemoActivity.this).load(url).diskCacheStrategy(DiskCacheStrategy.ALL).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -166,7 +166,7 @@ public class OssDemoActivity extends AppCompatActivity {
         String fileName = "测试图片.png";
         String path = Environment.getExternalStorageDirectory().getPath();
         String savePath = path + "/222/";
-        OssHelper.startDownload(mTestUrl, fileName, savePath, new IProcessListener() {
+        OssManager.startDownload(mTestUrl, fileName, savePath, new IProcessListener() {
             @Override
             public void onStart() {
                 Log.i(TAG, "doNormalShowPicTest  onStart");

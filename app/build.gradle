@@ -27,10 +27,12 @@ android {
         release {
             minifyEnabled true
             consumerProguardFiles 'proguard-rules.pro'
+            buildConfigField "String", "ENV", "\"Release\"";
         }
         debug{
             minifyEnabled false
             consumerProguardFiles 'proguard-rules.pro'
+            buildConfigField "String", "ENV", "\"Dev\"";
         }
     }
 
@@ -50,7 +52,9 @@ dependencies {
     annotationProcessor deps.arouter_compiler
     implementation project(':common_utils')
     implementation project(':common_http')
-    implementation project(path: ':componentbase')
+    implementation project(':common_oss')
+    implementation project(':common_imageloader')
+    implementation project(':componentbase')
     implementation deps.arouter
 
     debugImplementation deps.leakcanary_debug
@@ -59,7 +63,4 @@ dependencies {
 
     runtimeOnly project(':login')
     runtimeOnly project(':share')
-    implementation deps.glide
-    annotationProcessor deps.glideAnnotation
-    implementation deps.okhttp3_integration //只有此处才能依赖，其他地方不需要依赖。
 }

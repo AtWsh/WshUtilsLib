@@ -12,9 +12,6 @@ import it.wsh.cn.common_http.http.database.bean.DownloadInfo;
 import it.wsh.cn.common_http.http.database.bean.OssInfo;
 import it.wsh.cn.common_http.http.database.daohelper.DownloadInfoDaoHelper;
 import it.wsh.cn.common_http.http.database.daohelper.OssInfoDaoHelper;
-import it.wsh.cn.common_http.http.oss.InputStreamCallBack;
-import it.wsh.cn.common_http.http.oss.OssConfigInfo;
-import it.wsh.cn.common_http.http.oss.OssDownloadTask;
 
 
 /**
@@ -122,69 +119,6 @@ public class DownloadManager{
      */
     public int start(String downloadUrl, String fileName, String savePath) {
         return start(downloadUrl, fileName, savePath, null);
-    }
-
-    /**
-     * 开始Oss下载
-     * @param downloadUrl
-     * @param callBack
-     */
-    public boolean startOss(String downloadUrl, String fileName, String savePath, OssConfigInfo configInfo, IProcessListener callBack) {
-
-        if (TextUtils.isEmpty(downloadUrl) || configInfo == null) {
-            return false;
-        }
-        //1.构建IDownloadInfo
-        OssInfo info = getOssInfo(downloadUrl, fileName, savePath);
-        if (info == null) {
-            return false;
-        }
-        info.setBucketName(configInfo.mBucketName);
-        info.setEndpoint(configInfo.mEndpoint);
-        info.setAccessKeyId(configInfo.AccessKeyId);
-        info.setAccessKeySecret(configInfo.AccessKeySecret);
-        info.setExpiration(configInfo.Expiration);
-        info.setSecurityToken(configInfo.SecurityToken);
-        //2.创建OssTask 下载用Task
-        OssDownloadTask task = getOssTask(mContext, info, callBack);
-        if (task == null) {
-            return false;
-        }
-        //3.保存OssTask并开始下载
-        int key = info.getKey();
-        saveDownloadTask(key, task);
-        task.start();
-        return true;
-    }
-
-    /**
-     * 开始Oss下载 图片
-     * @param downloadUrl
-     * @param callBack
-     */
-    public boolean startOss(String downloadUrl, OssConfigInfo configInfo, InputStreamCallBack callBack) {
-
-        if (TextUtils.isEmpty(downloadUrl) || configInfo == null) {
-            return false;
-        }
-        //1.构建IDownloadInfo
-        OssInfo info = getOssInfo(downloadUrl);
-        if (info == null) {
-            return false;
-        }
-        info.setBucketName(configInfo.mBucketName);
-        info.setEndpoint(configInfo.mEndpoint);
-        info.setAccessKeyId(configInfo.AccessKeyId);
-        info.setAccessKeySecret(configInfo.AccessKeySecret);
-        info.setExpiration(configInfo.Expiration);
-        info.setSecurityToken(configInfo.SecurityToken);
-        //2.创建OssTask 下载用Task
-        OssDownloadTask task = getOssTask(mContext, info, callBack);
-        if (task == null) {
-            return false;
-        }
-        task.startDownloadPic();
-        return true;
     }
 
 
@@ -367,40 +301,6 @@ public class DownloadManager{
     }
 
     /**
-     * 获取OssTask
-     * @param mContext
-     * @param info
-     * @return
-     */
-    private OssDownloadTask getOssTask(Context mContext, OssInfo info,
-                                       InputStreamCallBack callBack) {
-        if (mContext == null || info == null) {
-            return null;
-        }
-        OssDownloadTask task = new OssDownloadTask(mContext, info, callBack);
-        return task;
-    }
-
-    /**
-     * 获取OssTask
-     * @param mContext
-     * @param info
-     * @return
-     */
-    private OssDownloadTask getOssTask(Context mContext, OssInfo info,
-                                       IProcessListener callBack) {
-        if (mContext == null || info == null) {
-            return null;
-        }
-        IDownloadTask cacheTask = mDownloadTasks.get(info.getKey());
-        if (cacheTask != null ) { //在下载中
-            return null;
-        }
-        OssDownloadTask task = new OssDownloadTask(mContext, info, callBack);
-        return task;
-    }
-
-    /**
      * 获取DownloadTask
      * @param mContext
      * @param info
@@ -417,49 +317,6 @@ public class DownloadManager{
         }
         DownloadTask task = new DownloadTask(mContext, info, callBack);
         return task;
-    }
-
-    /**
-     * Oss下载之前获取OssInfo，
-     *
-     * @param downloadUrl
-     * @return
-     */
-    private OssInfo getOssInfo(String downloadUrl) {
-        if (TextUtils.isEmpty(downloadUrl)) {
-            return null;
-        }
-        OssInfo ossInfo = new OssInfo();
-        ossInfo.setUrl(downloadUrl);
-
-        return ossInfo;
-    }
-
-    /**
-     * Oss下载之前获取OssInfo，
-     *
-     * @param downloadUrl
-     * @param fileName
-     * @param downloadUrl
-     * @return
-     */
-    private OssInfo getOssInfo(String downloadUrl, String fileName, String savePath) {
-        if (TextUtils.isEmpty(downloadUrl)) {
-            return null;
-        }
-        OssInfo ossInfo = new OssInfo();
-        ossInfo.setUrl(downloadUrl);
-
-        fileName = getRealFileName(fileName, downloadUrl);
-        ossInfo.setFileName(fileName);
-
-        savePath = getRealSavePath(fileName, savePath);
-        ossInfo.setSavePath(savePath);
-
-        //判断是否在下载中
-        int key = getDownloadKey(downloadUrl, fileName, savePath);
-        ossInfo.setKey(key);
-        return ossInfo;
     }
 
     /**

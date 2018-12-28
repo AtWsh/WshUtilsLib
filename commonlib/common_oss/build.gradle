@@ -11,6 +11,12 @@ android {
 
         testInstrumentationRunner deps.support.test.instrumentationRunner
 
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [ moduleName : project.getName() ]
+            }
+        }
+
     }
 
     buildTypes {
@@ -33,6 +39,13 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation deps.test.junit
+    androidTestImplementation deps.support.test.runner
+    androidTestImplementation deps.support.test.espresso
 
-    implementation deps.support.appcompat
+    implementation project(path: ':common_http')
+    api deps.oss
+    implementation deps.rxjava
+    implementation deps.rxandroid
+    implementation deps.glide
 }

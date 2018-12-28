@@ -11,6 +11,12 @@ android {
 
         testInstrumentationRunner deps.support.test.instrumentationRunner
 
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [ moduleName : project.getName() ]
+            }
+        }
+
     }
 
     buildTypes {
@@ -28,11 +34,15 @@ android {
         sourceCompatibility versions.javaVersion
         targetCompatibility versions.javaVersion
     }
-
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation deps.test.junit
+    androidTestImplementation deps.support.test.runner
+    androidTestImplementation deps.support.test.espresso
 
-    implementation deps.support.appcompat
+    api deps.glide //只有此处才能依赖，其他地方不需要依赖。并且必须用api
+    annotationProcessor deps.glideAnnotation //只有此处才能依赖，其他地方不需要依赖。
+    implementation deps.okhttp3_integration //只有此处才能依赖，其他地方不需要依赖。
 }

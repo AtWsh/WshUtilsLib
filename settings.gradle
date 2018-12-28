@@ -1,8 +1,4 @@
-include ':app', ':baidumap'
-include ':componentbase', ':login',':share'
-project(':componentbase').projectDir = new File('componentbase')
-project(':login').projectDir = new File('login')
-project(':share').projectDir = new File('share')
+include ':app'
 
 //base库
 include ':componentbase'
@@ -19,3 +15,7 @@ include ':common_http'
 project(':common_http').projectDir = new File('commonlib/common_http')
 include ':common_utils'
 project(':common_utils').projectDir = new File('commonlib/common_utils')
+include ':common_oss'
+project(':common_oss').projectDir = new File('commonlib/common_oss')
+include ':common_imageloader'
+project(':common_imageloader').projectDir = new File('commonlib/common_imageloader')
