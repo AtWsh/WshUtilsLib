@@ -25,8 +25,12 @@ android {
 
     buildTypes {
         release {
+            minifyEnabled true
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+        debug{
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'proguard-rules.pro'
         }
     }
 
@@ -45,6 +49,7 @@ dependencies {
     annotationProcessor deps.butterknifeAnnotation
     annotationProcessor deps.arouter_compiler
     api project(':base')
+    api project(':common_http')
 
     debugImplementation deps.leakcanary_debug
     releaseImplementation deps.leakcanary_release

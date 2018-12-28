@@ -55,6 +55,7 @@ public class MianApplication extends BaseApplication{
         ARouter.init(this);
 
         HttpManager.init(this);
+        it.wsh.cn.common_http.http.HttpManager.init(this);
 
         GreenDaoDatabase.getInstance().initDatabase(this);
     }

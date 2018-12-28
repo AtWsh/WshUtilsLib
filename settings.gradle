@@ -5,3 +5,6 @@ project(':componentbase').projectDir = new File('componentbase')
 project(':login').projectDir = new File('login')
 project(':share').projectDir = new File('share')
 //project(':xlUtils').projectDir = new File('lib/common/xlUtils')
+
+include ':common_http'
+project(':common_http').projectDir = new File('commonlib/common_http')

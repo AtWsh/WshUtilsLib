@@ -1,7 +1,7 @@
 package it.wsh.cn.wshutilslib.httpdemo.newhttp.requestinfo;
 
+import it.wsh.cn.common_http.http.request.BaseReqInfo;
 import it.wsh.cn.wshlibrary.http.HttpMethod;
-import it.wsh.cn.wshlibrary.http.request.BaseReqInfo;
 
 /**
  * author: wenshenghui

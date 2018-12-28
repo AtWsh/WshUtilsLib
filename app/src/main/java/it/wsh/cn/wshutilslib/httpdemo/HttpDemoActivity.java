@@ -17,9 +17,9 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import it.wsh.cn.common_http.http.request.HttpRequest;
 import it.wsh.cn.wshlibrary.http.HttpCallBack;
 import it.wsh.cn.wshlibrary.http.HttpConfig;
-import it.wsh.cn.wshlibrary.http.request.HttpRequest;
 import it.wsh.cn.wshutilslib.R;
 import it.wsh.cn.wshutilslib.httpdemo.bean.AccountExistResponse;
 import it.wsh.cn.wshutilslib.httpdemo.bean.NoticeListResponse;
@@ -149,7 +149,8 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
     private void newHttpTest() {
 
         //Get 请求
-        /*new HttpRequest<ZhihuRequestInfo, ZhihuResponseInfo>().setTag(this).start(new ZhihuRequestInfo(), new HttpCallBack<ZhihuResponseInfo>() {
+        new HttpRequest<ZhihuRequestInfo, ZhihuResponseInfo>().setTag(this).start(
+                new ZhihuRequestInfo(), new it.wsh.cn.common_http.http.HttpCallBack<ZhihuResponseInfo>() {
             @Override
             public void onSuccess(ZhihuResponseInfo zhihuInfoResponse) {
                 Toast.makeText(HttpDemoActivity.this, "请求成功！  " + zhihuInfoResponse.toString(), Toast.LENGTH_LONG).show();
@@ -161,7 +162,7 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
                 Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
                 Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
             }
-        });*/
+        });
 
         //Post请求 在外部构建数据
         /*RouteRequestInfo routeRequestInfo = new RouteRequestInfo();
@@ -174,7 +175,7 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
         new HttpRequest<RouteRequestInfo, RouteResponseInfo>()
                 .setTag(HttpDemoActivity.this)
                 .setRetryTimes(3,2000)
-                .start(routeRequestInfo, new HttpCallBack<RouteResponseInfo>() {
+                .start(routeRequestInfo, new it.wsh.cn.common_http.http.HttpCallBack<RouteResponseInfo>() {
                     @Override
                     public void onSuccess(RouteResponseInfo responseInfo) {
                         Toast.makeText(HttpDemoActivity.this, "请求成功！  " + responseInfo.toString(), Toast.LENGTH_LONG).show();
@@ -193,7 +194,7 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
         new HttpRequest<RouteRequestInfo, RouteResponseInfo>()
                 .setTag(HttpDemoActivity.this)
                 .setRetryTimes(3,2000)
-                .start(routeRequestInfo, new HttpCallBack<RouteResponseInfo>() {
+                .start(routeRequestInfo, new it.wsh.cn.common_http.http.HttpCallBack<RouteResponseInfo>() {
                     @Override
                     public void onSuccess(RouteResponseInfo responseInfo) {
                         Toast.makeText(HttpDemoActivity.this, "请求成功！  " + responseInfo.toString(), Toast.LENGTH_LONG).show();
