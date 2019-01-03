@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'key0'
+            keyPassword 'wsh568151074'
+            storeFile file('D:/work/keystore/WshUtilsLib.jks')
+            storePassword 'wsh568151074'
+        }
+    }
     compileSdkVersion versions.compileSdk
     defaultConfig {
         applicationId "it.wsh.cn.wshutilslib"
@@ -12,30 +20,27 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = [ moduleName : project.getName() ]
+                arguments = [moduleName: project.getName()]
             }
         }
     }
-
     sourceSets {
         main {
             manifest.srcFile 'src/main/AndroidManifest.xml'
         }
     }
-
     buildTypes {
         release {
             minifyEnabled true
             consumerProguardFiles 'proguard-rules.pro'
             buildConfigField "String", "ENV", "\"Release\"";
         }
-        debug{
+        debug {
             minifyEnabled false
             consumerProguardFiles 'proguard-rules.pro'
             buildConfigField "String", "ENV", "\"Dev\"";
         }
     }
-
     compileOptions {
         sourceCompatibility versions.javaVersion
         targetCompatibility versions.javaVersion
@@ -43,10 +48,9 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation deps.support.appcompatv7
     implementation deps.support.constraintLayout
-
     implementation deps.butterknife
     annotationProcessor deps.butterknifeAnnotation
     annotationProcessor deps.arouter_compiler
@@ -56,11 +60,10 @@ dependencies {
     implementation project(':common_imageloader')
     implementation project(':componentbase')
     implementation deps.arouter
-
     debugImplementation deps.leakcanary_debug
     releaseImplementation deps.leakcanary_release
     debugImplementation deps.leakcanary_support
-
     runtimeOnly project(':login')
     runtimeOnly project(':share')
+    implementation project(':baidumap')
 }

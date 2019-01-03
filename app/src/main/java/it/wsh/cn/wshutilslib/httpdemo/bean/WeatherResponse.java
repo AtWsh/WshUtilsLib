@@ -1,7 +1,9 @@
 package it.wsh.cn.wshutilslib.httpdemo.bean;
 
 
+import it.wsh.cn.common_http.http.HttpConfig;
 import it.wsh.cn.common_http.http.HttpMethod;
+import it.wsh.cn.common_http.http.builder.CommonBuilder;
 import it.wsh.cn.common_http.http.builder.LifeCycleBuilder;
 
 /**

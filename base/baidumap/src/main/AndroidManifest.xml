@@ -1,2 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.wsh.baidumap" />
+    package="com.example.wsh.baidumap" >
+
+    <application>
+        <activity android:name=".DituDemoActivity"></activity>
+    </application>
+</manifest>

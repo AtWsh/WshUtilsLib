@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.alibaba.android.arouter.launcher.ARouter;
+import com.example.wsh.baidumap.DituDemoActivity;
 
 import it.wsh.cn.common_utils.utils.RouteUtils;
 import it.wsh.cn.wshutilslib.httpdemo.HttpDemoActivity;
@@ -85,5 +86,14 @@ public class MainActivity extends AppCompatActivity {
      */
     public void ossTest(View view) {
         OssDemoActivity.luanchActivity(this);
+    }
+
+    /**
+     * 跳 FragmentActivity
+     *
+     * @param view
+     */
+    public void dituTest(View view) {
+        DituDemoActivity.luanchActivity(this);
     }
 }

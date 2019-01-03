@@ -38,8 +38,12 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation deps.test.junit
     androidTestImplementation deps.support.test.runner
     androidTestImplementation deps.support.test.espresso
+    implementation deps.support.appcompatv7
+    implementation deps.support.constraintLayout
+    api files('libs/BaiduLBS_Android.jar')
+    implementation files('libs/IndoorscapeAlbumPlugin.jar')
 }

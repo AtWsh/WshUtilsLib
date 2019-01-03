@@ -95,4 +95,18 @@
         app:layout_constraintTop_toBottomOf="@+id/button"
         tools:ignore="OnClick" />
 
+    <TextView
+        android:id="@+id/ditu_test"
+        android:layout_width="90dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="20dp"
+        android:background="#FF0"
+        android:gravity="center"
+        android:onClick="dituTest"
+        android:text="地图测试"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/http_test"
+        tools:ignore="OnClick" />
+
 </android.support.constraint.ConstraintLayout>
