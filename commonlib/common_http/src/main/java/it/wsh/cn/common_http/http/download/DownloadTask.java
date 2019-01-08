@@ -70,7 +70,7 @@ public class DownloadTask implements IDownloadTask{
                 .readTimeout(config.getReadTimeout(), TimeUnit.SECONDS)
                 .writeTimeout(config.getWriteTimeout(), TimeUnit.SECONDS);
         //测试用  跳过所有认证
-        if (HttpConstants.HTTPS.startsWith(mDownloadInfo.getUrl())) {
+        if (mDownloadInfo.getUrl().startsWith(HttpConstants.HTTPS)) {
             //SSLSocketFactory sslSocketFactory = new SslContextFactory().getSslSocket(mContext).getSocketFactory();
             //builder.sslSocketFactory(sslSocketFactory);
             builder.sslSocketFactory(new SslContextFactory().createSSLSocketFactory())
