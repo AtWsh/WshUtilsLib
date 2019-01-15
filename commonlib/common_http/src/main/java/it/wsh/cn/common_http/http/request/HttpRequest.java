@@ -21,7 +21,7 @@ import okhttp3.RequestBody;
  */
 public class HttpRequest<Req extends BaseReqInfo, Rsp> {
 
-    private String TAG = "CommonBuilder";
+    private String TAG = "HttpRequest";
     protected final int ERROR_KEY = -1; //传参出错导致发起请求失败
 
 

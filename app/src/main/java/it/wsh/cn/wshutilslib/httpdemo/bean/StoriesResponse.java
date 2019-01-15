@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import it.wsh.cn.common_http.http.HttpMethod;
 import it.wsh.cn.common_http.http.builder.LifeCycleBuilder;
+import it.wsh.cn.wshutilslib.httpdemo.builder.BusinessBaseBuilder;
 
 
 public class StoriesResponse {
@@ -17,7 +18,7 @@ public class StoriesResponse {
                 "; top_stories = " + (top_stories == null ? "" : top_stories.toString());
     }
 
-    public static class Builder extends LifeCycleBuilder<StoriesResponse> {
+    public static class Builder extends BusinessBaseBuilder<StoriesResponse> {
         @Override
         protected String getPath() {
             return "api/4/news/latest";

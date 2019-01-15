@@ -13,6 +13,7 @@ android {
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [ moduleName : project.getName() ]
+                includeCompileClasspath = true
             }
         }
 
@@ -58,6 +59,7 @@ dependencies {
     api deps.rxandroid
     api deps.rxjava
     api deps.gson
-    api deps.greendao
     implementation deps.greendao
+
+    api project(':common_http_annotation')
 }

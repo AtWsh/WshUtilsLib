@@ -1,0 +1,17 @@
+apply plugin: 'java-library'
+
+//指定编译的编码
+tasks.withType(JavaCompile){
+    options.encoding = "UTF-8"
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation deps.google_service
+    //生成代码的一个库,比手写方便的多,功能强大,自动导包
+    implementation deps.javapoet
+    implementation project(':common_http_annotation')
+}
+
+sourceCompatibility = versions.javaVersion
+targetCompatibility = versions.javaVersion

@@ -10,6 +10,7 @@ import com.alibaba.android.arouter.launcher.ARouter;
 import com.example.wsh.baidumap.DituDemoActivity;
 
 import it.wsh.cn.common_utils.utils.RouteUtils;
+import it.wsh.cn.wshutilslib.httpanotationtest.HttpAnnotationDemoActivity;
 import it.wsh.cn.wshutilslib.httpdemo.HttpDemoActivity;
 import it.wsh.cn.wshutilslib.ossdemo.OssDemoActivity;
 import it.wsh.cn.wshutilslib.rxjavademo.RxjavaTestActivity;
@@ -95,5 +96,14 @@ public class MainActivity extends AppCompatActivity {
      */
     public void dituTest(View view) {
         DituDemoActivity.luanchActivity(this);
+    }
+
+    /**
+     * 跳 FragmentActivity
+     *
+     * @param view
+     */
+    public void httpAnnotationTest(View view) {
+        HttpAnnotationDemoActivity.luanchActivity(this);
     }
 }

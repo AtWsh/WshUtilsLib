@@ -47,6 +47,7 @@
         </activity>
         <activity android:name=".FragmentActivity"></activity>
         <activity android:name=".httpdemo.HttpDemoActivity"></activity>
+        <activity android:name=".httpanotationtest.HttpAnnotationDemoActivity"></activity>
         <activity android:name=".httpdemo.LifeCircleTestActivity"></activity>
         <activity android:name=".httpdemo.DownloadTestActivity"></activity>
         <activity android:name=".rxjavademo.RxjavaTestActivity"></activity>

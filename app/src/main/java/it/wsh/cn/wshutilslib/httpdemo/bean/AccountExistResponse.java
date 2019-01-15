@@ -3,6 +3,7 @@ package it.wsh.cn.wshutilslib.httpdemo.bean;
 
 import it.wsh.cn.common_http.http.HttpMethod;
 import it.wsh.cn.common_http.http.builder.CommonBuilder;
+import it.wsh.cn.wshutilslib.httpdemo.builder.BusinessBaseBuilder;
 
 /**
  * author: wenshenghui
@@ -22,7 +23,7 @@ public class AccountExistResponse {
                 "; message = " + message;
     }
 
-    public static class Builder extends CommonBuilder<AccountExistResponse> {
+    public static class Builder extends BusinessBaseBuilder<AccountExistResponse> {
 
         @Override
         protected String getPath() {

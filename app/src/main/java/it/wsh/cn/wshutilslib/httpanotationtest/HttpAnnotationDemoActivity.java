@@ -1,4 +1,4 @@
-package it.wsh.cn.wshutilslib.httpdemo;
+package it.wsh.cn.wshutilslib.httpanotationtest;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,37 +13,30 @@ import com.google.gson.JsonObject;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import it.wsh.cn.common_http.http.HttpCallBack;
 import it.wsh.cn.common_http.http.HttpConfig;
-import it.wsh.cn.common_http.http.request.HttpRequest;
-import it.wsh.cn.common_http.http.utils.HttpUrlEncodeUtils;
 import it.wsh.cn.wshutilslib.R;
+import it.wsh.cn.wshutilslib.httpdemo.DownloadTestActivity;
+import it.wsh.cn.wshutilslib.httpdemo.LifeCircleTestActivity;
 import it.wsh.cn.wshutilslib.httpdemo.bean.AccountExistResponse;
 import it.wsh.cn.wshutilslib.httpdemo.bean.NoticeListResponse;
 import it.wsh.cn.wshutilslib.httpdemo.bean.RouteInfoResponse;
-import it.wsh.cn.wshutilslib.httpdemo.bean.StoriesResponse;
 import it.wsh.cn.wshutilslib.httpdemo.bean.WeatherResponse;
 import it.wsh.cn.wshutilslib.httpdemo.builder.RemoteLogUploadBuilder;
-import it.wsh.cn.wshutilslib.httpdemo.newhttp.requestinfo.RouteRequestInfo;
-import it.wsh.cn.wshutilslib.httpdemo.newhttp.requestinfo.ZhihuRequestInfo;
-import it.wsh.cn.wshutilslib.httpdemo.newhttp.response.RouteResponseInfo;
-import it.wsh.cn.wshutilslib.httpdemo.newhttp.response.ZhihuResponseInfo;
-import okhttp3.Route;
 
 
 /**
  * author: wenshenghui
- * created on: 2018/8/22 10:02
+ * created on: 2018/9/29 09:29
  * description:
  */
-public class HttpDemoActivity extends AppCompatActivity implements View.OnClickListener {
+public class HttpAnnotationDemoActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static String TAG = "HttpTestActivity";
+    private static String TAG = "HttpAnnotationDemoActivity";
 
     // Butter Knife
     private Unbinder bind;
@@ -51,7 +44,7 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "HttpTestActivity onCreate");
+        Log.d(TAG, "HttpAnnotationDemoActivity onCreate");
         setContentView(R.layout.activity_http_test);
         bind = ButterKnife.bind(this);
     }
@@ -59,7 +52,7 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
 
     public static void luanchActivity(Activity context) {
         Log.d(TAG, "openHttp click");
-        Intent intent = new Intent(context, HttpDemoActivity.class);
+        Intent intent = new Intent(context, HttpAnnotationDemoActivity.class);
         context.startActivity(intent);
     }
 
@@ -73,16 +66,9 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
 
     @OnClick({R.id.get_zhihu_info_btn, R.id.weather_btn, R.id.account_exist, R.id.notice_list, R.id.route_info_btn
             , R.id.route_info_add_header, R.id.route_info_set_http_config
-            , R.id.upload, R.id.download, R.id.life_circle_test, R.id.list_response_test
-            , R.id.new_http_test})
+            , R.id.upload, R.id.download, R.id.life_circle_test, R.id.list_response_test})
     public void onClick(View view) {
         switch (view.getId()) {
-
-            case R.id.new_http_test:
-
-                newHttpTest();
-
-                break;
 
             case R.id.get_zhihu_info_btn:
 
@@ -129,12 +115,12 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.download:
-                DownloadTestActivity.luanchActivity(HttpDemoActivity.this);
+                DownloadTestActivity.luanchActivity(HttpAnnotationDemoActivity.this);
 
                 break;
 
             case R.id.life_circle_test:
-                LifeCircleTestActivity.luanchActivity(HttpDemoActivity.this);
+                LifeCircleTestActivity.luanchActivity(HttpAnnotationDemoActivity.this);
 
                 break;
 
@@ -146,71 +132,6 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
             default:
                 break;
         }
-    }
-
-    private void newHttpTest() {
-
-        //Get 请求
-       /* new HttpRequest<ZhihuRequestInfo, ZhihuResponseInfo>().setTag(this).start(
-                new ZhihuRequestInfo(), new HttpCallBack<ZhihuResponseInfo>() {
-            @Override
-            public void onSuccess(ZhihuResponseInfo zhihuInfoResponse) {
-                Toast.makeText(HttpDemoActivity.this, "请求成功！  " + zhihuInfoResponse.toString(), Toast.LENGTH_LONG).show();
-                Log.d(TAG, zhihuInfoResponse.toString());
-            }
-
-            @Override
-            public void onError(int stateCode, String errorInfo) {
-                Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
-                Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
-            }
-        });*/
-
-        //Post请求 在外部构建数据
-        /*RouteRequestInfo routeRequestInfo = new RouteRequestInfo();
-        HashMap<String, String> map = new HashMap<>();
-        map.put("req_id", "6");
-        map.put("method", "isValidRouter");
-        map.put("timestamp", System.currentTimeMillis() + "");
-        map.put("params", "");
-        routeRequestInfo.addBodyMap(map);
-        new HttpRequest<RouteRequestInfo, RouteResponseInfo>()
-                .setTag(HttpDemoActivity.this)
-                .setRetryTimes(3,2000)
-                .start(routeRequestInfo, new HttpCallBack<RouteResponseInfo>() {
-                    @Override
-                    public void onSuccess(RouteResponseInfo responseInfo) {
-                        Toast.makeText(HttpDemoActivity.this, "请求成功！  " + responseInfo.toString(), Toast.LENGTH_LONG).show();
-                        Log.d(TAG, responseInfo.toString());
-                    }
-
-                    @Override
-                    public void onError(int stateCode, String errorInfo) {
-                        Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
-                        Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
-                    }
-                });*/
-
-        //Post请求 在内部构建Obj数据
-        RouteRequestInfo routeRequestInfo = new RouteRequestInfo("6", "isValidRouter", "params");
-        new HttpRequest<RouteRequestInfo, RouteResponseInfo>()
-                .setTag(HttpDemoActivity.this)
-                .setRetryTimes(3,2000)
-                .start(routeRequestInfo, new HttpCallBack<RouteResponseInfo>() {
-                    @Override
-                    public void onSuccess(RouteResponseInfo responseInfo) {
-                        Toast.makeText(HttpDemoActivity.this, "请求成功！  " + responseInfo.toString(), Toast.LENGTH_LONG).show();
-                        Log.d(TAG, responseInfo.toString());
-                    }
-
-                    @Override
-                    public void onError(int stateCode, String errorInfo) {
-                        Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
-                        Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
-                    }
-                });
-
-        //Post请求 在内部构建BodyMap数据
     }
 
     private void testUpload() {
@@ -259,13 +180,13 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
                 .build(new HttpCallBack<List<RouteInfoResponse>>() {
                     @Override
                     public void onSuccess(List<RouteInfoResponse> list) {
-                        Toast.makeText(HttpDemoActivity.this, "请求成功！  " + list.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(HttpAnnotationDemoActivity.this, "请求成功！  " + list.toString(), Toast.LENGTH_LONG).show();
                         Log.d(TAG, list.toString());
                     }
 
                     @Override
                     public void onError(int stateCode, String errorInfo) {
-                        Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
+                        Toast.makeText(HttpAnnotationDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
                         Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
                     }
                 });
@@ -293,13 +214,13 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
                 .build(new HttpCallBack<RouteInfoResponse>() {
                     @Override
                     public void onSuccess(RouteInfoResponse RouteInfoResponse) {
-                        Toast.makeText(HttpDemoActivity.this, "请求成功！  " + RouteInfoResponse.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(HttpAnnotationDemoActivity.this, "请求成功！  " + RouteInfoResponse.toString(), Toast.LENGTH_LONG).show();
                         Log.d(TAG, RouteInfoResponse.toString());
                     }
 
                     @Override
                     public void onError(int stateCode, String errorInfo) {
-                        Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
+                        Toast.makeText(HttpAnnotationDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
                         Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
                     }
                 });
@@ -317,13 +238,13 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
                 .build(true, new HttpCallBack<RouteInfoResponse>() {
                     @Override
                     public void onSuccess(RouteInfoResponse RouteInfoResponse) {
-                        Toast.makeText(HttpDemoActivity.this, "请求成功！  " + RouteInfoResponse.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(HttpAnnotationDemoActivity.this, "请求成功！  " + RouteInfoResponse.toString(), Toast.LENGTH_LONG).show();
                         Log.d(TAG, RouteInfoResponse.toString());
                     }
 
                     @Override
                     public void onError(int stateCode, String errorInfo) {
-                        Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
+                        Toast.makeText(HttpAnnotationDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
                         Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
                     }
                 });
@@ -343,13 +264,13 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
         new RouteInfoResponse.Builder().addBodyMap(map).build(new HttpCallBack<RouteInfoResponse>() {
             @Override
             public void onSuccess(RouteInfoResponse RouteInfoResponse) {
-                Toast.makeText(HttpDemoActivity.this, "请求成功！  " + RouteInfoResponse.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(HttpAnnotationDemoActivity.this, "请求成功！  " + RouteInfoResponse.toString(), Toast.LENGTH_LONG).show();
                 Log.d(TAG, RouteInfoResponse.toString());
             }
 
             @Override
             public void onError(int stateCode, String errorInfo) {
-                Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
+                Toast.makeText(HttpAnnotationDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
                 Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
             }
         });
@@ -368,13 +289,13 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
         new NoticeListResponse.Builder().addBodyObj(jsonObject).build(new HttpCallBack<NoticeListResponse>() {
             @Override
             public void onSuccess(NoticeListResponse noticeListResponse) {
-                Toast.makeText(HttpDemoActivity.this, "请求成功！  " + noticeListResponse.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(HttpAnnotationDemoActivity.this, "请求成功！  " + noticeListResponse.toString(), Toast.LENGTH_LONG).show();
                 Log.d(TAG, noticeListResponse.toString());
             }
 
             @Override
             public void onError(int stateCode, String errorInfo) {
-                Toast.makeText(HttpDemoActivity.this, "请求失败！  errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
+                Toast.makeText(HttpAnnotationDemoActivity.this, "请求失败！  errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
                 Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
             }
         });
@@ -392,13 +313,13 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
                 .build(new HttpCallBack<AccountExistResponse>() {
                     @Override
                     public void onSuccess(AccountExistResponse accountExistResponse) {
-                        Toast.makeText(HttpDemoActivity.this, "请求成功！  " + accountExistResponse.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(HttpAnnotationDemoActivity.this, "请求成功！  " + accountExistResponse.toString(), Toast.LENGTH_LONG).show();
                         Log.d(TAG, accountExistResponse.toString());
                     }
 
                     @Override
                     public void onError(int stateCode, String errorInfo) {
-                        Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
+                        Toast.makeText(HttpAnnotationDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
                         Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
                     }
                 });
@@ -415,18 +336,18 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
         map.put("ak", "94Tmshjhp03oul7xy95Gu3wwHkjGZvkk");
         map.put("mcode", "EE:0C:C8:50:54:53:96:5A:55:8C:23:2F:93:7E:EB:AE:D8:C8:1B:F1;com.example.tangdekun.androidannotationsdemo");
 
-        new WeatherResponse.Builder().setTag(HttpDemoActivity.this)
+        new WeatherResponse.Builder().setTag(HttpAnnotationDemoActivity.this)
                 .addParamsMap(map)
                 .build(new HttpCallBack<WeatherResponse>() {
                     @Override
                     public void onSuccess(WeatherResponse weatherResponse) {
-                        Toast.makeText(HttpDemoActivity.this, "请求成功！  " + weatherResponse.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(HttpAnnotationDemoActivity.this, "请求成功！  " + weatherResponse.toString(), Toast.LENGTH_LONG).show();
                         Log.d(TAG, weatherResponse.toString());
                     }
 
                     @Override
                     public void onError(int stateCode, String errorInfo) {
-                        Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
+                        Toast.makeText(HttpAnnotationDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
                         Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
                     }
                 });
@@ -436,44 +357,20 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
      * GET 无参数请求测试  获取知乎新闻
      */
     private void requestZhihuInfo() {
-       /* HttpConfig httpConfig = HttpConfig.create(true);
-        new StoriesResponse.Builder().setTag(this).setHttpCustomConfig(httpConfig).build(new HttpCallBack<StoriesResponse>() {
+
+        /*new ZhihuStoriesReq().ZhihuStoriesReqAsyncQuery().setTag(HttpAnnotationDemoActivity.this).build(new ZhihuStoriesReq(), new HttpCallBack<ZhihuStoriesResponse>() {
             @Override
-            public void onSuccess(StoriesResponse storiesResponse) {
-                Toast.makeText(HttpDemoActivity.this, "请求成功！  " + storiesResponse.toString(), Toast.LENGTH_LONG).show();
-                Log.d(TAG, storiesResponse.toString());
+            public void onSuccess(ZhihuStoriesResponse zhihuStoriesResponse) {
+                Toast.makeText(HttpAnnotationDemoActivity.this, "请求成功！  " + zhihuStoriesResponse.toString(), Toast.LENGTH_LONG).show();
+                Log.d(TAG, zhihuStoriesResponse.toString());
             }
 
             @Override
             public void onError(int stateCode, String errorInfo) {
-                Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
+                Toast.makeText(HttpAnnotationDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
                 Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
             }
         });*/
-
-        String url = "https://uic-dev-ali.evergrande.cn:8443/v1/api/user/get_profile?appid=100001" +
-                "&timestamp=1547023340165&sig=41F8967530742D473F7E394501515653" +
-                "&access_token=njuWBlvByBlRr38b+FtPkwLCqCE4yIxIoSJ0ZVAK9rALGcFl8/NmxUDU6TEcYd5gqwgMPx8G/MGPv8K+WjdI0PIalBt7h6E9TSVtUtd6z3PsqvQunSP0KYEW6qIBPpTxgX77T6uyCkvCDT2G9a5jCmhWxY8a047kAMrQ1B9sph+DA7+g+URaSjXURG36Hp8rRQjrtsdoyS5E9gqvtfbn3t5NDp+yhMWgPfkRlae7XzY=";
-
-        Map<String,String> params = new HashMap<>();
-        params.put("timestamp", "1547023340165");
-        params.put("sig", "41F8967530742D473F7E394501515653");
-        params.put("access_token", "njuWBlvByBlRr38b+FtPkwLCqCE4yIxIoSJ0ZVAK9rALGcFl8/NmxUDU6TEcYd5gqwgMPx8G/MGPv8K+WjdI0PIalBt7h6E9TSVtUtd6z3PsqvQunSP0KYEW6qIBPpTxgX77T6uyCkvCDT2G9a5jCmhWxY8a047kAMrQ1B9sph+DA7+g+URaSjXURG36Hp8rRQjrtsdoyS5E9gqvtfbn3t5NDp+yhMWgPfkRlae7XzY=");
-        new StoriesResponse.Builder().setTag(this).setParamsMap(params).build(new HttpCallBack<StoriesResponse>() {
-            @Override
-            public void onSuccess(StoriesResponse storiesResponse) {
-                Toast.makeText(HttpDemoActivity.this, "请求成功！  " + storiesResponse.toString(), Toast.LENGTH_LONG).show();
-                Log.d(TAG, storiesResponse.toString());
-            }
-
-            @Override
-            public void onError(int stateCode, String errorInfo) {
-                Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
-                Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
-            }
-        });
-        String urlEncode = HttpUrlEncodeUtils.urlEncode(url);
-        Log.d("wsh_log", urlEncode);
     }
 }
 

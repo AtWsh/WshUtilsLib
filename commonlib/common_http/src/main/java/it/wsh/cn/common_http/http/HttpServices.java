@@ -26,7 +26,7 @@ public interface HttpServices {
     Observable<Response<String>> post(@Url String path);
 
     @POST
-    Observable<Response<String>> postWithParamsMap(@Url String path, @QueryMap Map<String, String> params);
+    Observable<Response<String>> postWithParamsMap(@Url String path, @QueryMap(encoded = true) Map<String, String> params);
 
     @POST
     Observable<Response<String>> post(@Url String path, @Body Object requestBody);
@@ -35,16 +35,16 @@ public interface HttpServices {
     Observable<Response<String>> postWithHeaderMap(@Url String path, @HeaderMap Map<String, String> headers);
 
     @POST
-    Observable<Response<String>> post(@Url String path, @QueryMap Map<String, String> params, @Body Object requestBody);
+    Observable<Response<String>> post(@Url String path, @QueryMap(encoded = true) Map<String, String> params, @Body Object requestBody);
 
     @POST
-    Observable<Response<String>> post(@Url String path, @QueryMap Map<String, String> params, @HeaderMap Map<String, String> headers);
+    Observable<Response<String>> post(@Url String path, @QueryMap(encoded = true) Map<String, String> params, @HeaderMap Map<String, String> headers);
 
     @POST
     Observable<Response<String>> post(@Url String path, @Body Object requestBody, @HeaderMap Map<String, String> headers);
 
     @POST
-    Observable<Response<String>> post(@Url String path, @QueryMap Map<String, String> params, @Body Object requestBody, @HeaderMap Map<String, String> headers);
+    Observable<Response<String>> post(@Url String path, @QueryMap(encoded = true) Map<String, String> params, @Body Object requestBody, @HeaderMap Map<String, String> headers);
 
 
     //get
@@ -52,13 +52,13 @@ public interface HttpServices {
     Observable<Response<String>> get(@Url String path);
 
     @GET
-    Observable<Response<String>> getWithParamsMap(@Url String path, @QueryMap Map<String, String> params);
+    Observable<Response<String>> getWithParamsMap(@Url String path, @QueryMap(encoded = true) Map<String, String> params);
 
     @GET
     Observable<Response<String>> getWithHeaderMap(@Url String path, @HeaderMap Map<String, String> header);
 
     @GET
-    Observable<Response<String>> get(@Url String path, @QueryMap Map<String, String> params, @HeaderMap Map<String, String> header);
+    Observable<Response<String>> get(@Url String path, @QueryMap(encoded = true) Map<String, String> params, @HeaderMap Map<String, String> header);
 
     //上传
     @POST

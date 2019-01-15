@@ -20,7 +20,8 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = [moduleName: project.getName()]
+                arguments = [moduleName: project.getName(), projectDir:project.projectDir.getAbsolutePath()]
+                includeCompileClasspath = true
             }
         }
     }
@@ -56,6 +57,7 @@ dependencies {
     annotationProcessor deps.arouter_compiler
     implementation project(':common_utils')
     implementation project(':common_http')
+    annotationProcessor project(':common_http_processor')
     implementation project(':common_oss')
     implementation project(':common_imageloader')
     implementation project(':componentbase')

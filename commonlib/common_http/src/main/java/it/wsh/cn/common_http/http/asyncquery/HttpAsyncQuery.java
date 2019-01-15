@@ -1,11 +1,10 @@
-package it.wsh.cn.common_http.http.builder;
+package it.wsh.cn.common_http.http.asyncquery;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.text.TextUtils;
 
 import com.google.gson.JsonObject;
 
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,34 +15,32 @@ import it.wsh.cn.common_http.http.HttpConfig;
 import it.wsh.cn.common_http.http.HttpConstants;
 import it.wsh.cn.common_http.http.HttpMethod;
 import it.wsh.cn.common_http.http.utils.HttpLog;
-import it.wsh.cn.common_http.http.utils.HttpUrlEncodeUtils;
 import it.wsh.cn.common_http.http.utils.HttpUtils;
 import okhttp3.RequestBody;
 
-
 /**
  * author: wenshenghui
- * created on: 2018/8/7 10:15
+ * created on: 2018/12/27 15:23
  * description:
  */
-public abstract class CommonBuilder<T> {
+public abstract class HttpAsyncQuery<Req , Rsp> {
 
-    private String TAG = "CommonBuilder";
+    private String TAG = "HttpRequest2";
 
     protected Map<String, String> mHttpParams;
     protected Map<String, String> mHttpHeader;
 
+    protected String mPath;
+    protected String mBaseUrl;
+    protected @HttpMethod.IMethed String mHttpMethod;
 
-    protected abstract String getPath();
-    protected abstract String getBaseUrl();
-    protected abstract @HttpMethod.IMethed
-    String getMethod();
     private Object mBodyObj;
     protected HttpConfig mHttpCustomConfig;
     protected int mRetryTimes;
     protected int mRetryDelayMillis;
     protected int mKey = -1;
     protected Object mTag;
+    protected int mTagHash;
 
     /**
      * 设置Rxjava重试次数和延迟时间,默认失败不重试
@@ -51,7 +48,7 @@ public abstract class CommonBuilder<T> {
      * @param retryDelayMillis 毫秒
      * @return
      */
-    public CommonBuilder<T> setRetryTimes(int retryTimes, int retryDelayMillis){
+    public HttpAsyncQuery setRetryTimes(int retryTimes, int retryDelayMillis){
         mRetryTimes = retryTimes;
         mRetryDelayMillis = retryDelayMillis;
         return this;
@@ -59,35 +56,9 @@ public abstract class CommonBuilder<T> {
 
 
     /**
-     * 批量添加http查询参数
-     */
-    public CommonBuilder<T> addParamsMap(Map<String, String> params){
-        if (mHttpParams == null) {
-            mHttpParams = new HashMap<>();
-        }
-        if (params != null) {
-            mHttpParams.putAll(params);
-        }
-        return this;
-    }
-
-    /**
-     * 逐个添加http查询参数
-     */
-    public CommonBuilder<T> addParam(String key, String value){
-        if (mHttpParams == null) {
-            mHttpParams = new HashMap<>();
-        }
-        if (!TextUtils.isEmpty(key)) {
-            mHttpParams.put(key, value);
-        }
-        return this;
-    }
-
-    /**
      * 覆盖http查询参数，注意，两次调用该方法添加参数，后来添加的会将前面添加的清空
      */
-    public CommonBuilder<T> setParamsMap(Map<String, String> params){
+    protected HttpAsyncQuery addParamsMap(Map<String, String> params){
         mHttpParams = params;
         return this;
     }
@@ -97,7 +68,7 @@ public abstract class CommonBuilder<T> {
      * @param bodyObj
      * @return
      */
-    public CommonBuilder<T> addBodyObj(Object bodyObj){
+    protected HttpAsyncQuery addBodyObj(Object bodyObj){
         mBodyObj = bodyObj;
         return this;
     }
@@ -107,7 +78,7 @@ public abstract class CommonBuilder<T> {
      * @param mapValue
      * @return
      */
-    public CommonBuilder<T> addFormDataMap(Map<String, String> mapValue) {
+    public HttpAsyncQuery addFormDataMap(Map<String, String> mapValue) {
         if (mapValue == null || mapValue.size() <= 0) {
             HttpLog.e("CommonBuilder：Error! input addFormDataMap mapValue = " + mapValue);
             return this;
@@ -128,7 +99,7 @@ public abstract class CommonBuilder<T> {
      * @param mapValue
      * @return
      */
-    public CommonBuilder<T> addBodyMap(Map<String, String> mapValue){
+    protected HttpAsyncQuery addBodyMap(Map<String, String> mapValue){
         if(mapValue == null){
             HttpLog.e("CommonBuilder：Error! input addBodyMap mapValue == null");
             return this;
@@ -153,7 +124,7 @@ public abstract class CommonBuilder<T> {
      * @param mapValue
      * @return
      */
-    public CommonBuilder<T> setHeader(Map<String, String> mapValue){
+    protected HttpAsyncQuery setHeader(Map<String, String> mapValue){
         if (mapValue == null) {
             HttpLog.e("CommonBuilder：Error! input setHeader mapValue = " + mapValue);
             return this;
@@ -167,7 +138,7 @@ public abstract class CommonBuilder<T> {
      * @param mapValue
      * @return
      */
-    public CommonBuilder<T> addHeader(Map<String, String> mapValue){
+    protected HttpAsyncQuery addHeader(Map<String, String> mapValue){
         if (mapValue == null || mapValue.size() <= 0) {
             HttpLog.e("CommonBuilder：Error! input addHeader mapValue = " + mapValue);
             return this;
@@ -186,7 +157,7 @@ public abstract class CommonBuilder<T> {
      * @param value
      * @return
      */
-    public CommonBuilder<T> addHeader(String key, String value){
+    protected HttpAsyncQuery addHeader(String key, String value){
         if (TextUtils.isEmpty(key)) {
             HttpLog.e("CommonBuilder：Error! input addHeader key = " + key);
             return this;
@@ -204,8 +175,21 @@ public abstract class CommonBuilder<T> {
      * @param httpConfig
      * @return
      */
-    public CommonBuilder<T> setHttpCustomConfig(HttpConfig httpConfig) {
+    public HttpAsyncQuery setHttpCustomConfig(HttpConfig httpConfig) {
         mHttpCustomConfig = httpConfig;
+        return this;
+    }
+
+    /**
+     * 如果要绑定生命周期，界面销毁时取消请求，
+     * 则tag需要传Activity或者Fragmeng对象   需要继承AppCompatActivity才生效
+     *
+     * @param tag
+     * @return
+     */
+    public HttpAsyncQuery setTag(Object tag) {
+        mTag = tag;
+        mTagHash = tag == null ? TAG.hashCode() : tag.hashCode();
         return this;
     }
 
@@ -217,19 +201,7 @@ public abstract class CommonBuilder<T> {
      *
      */
     protected Map<String, String> getParams(){
-        if (mHttpParams == null || mHttpParams.size() <= 0) {
-            return null;
-        }
-        Map<String, String> encodeMap = new HashMap<>();
-        for (Map.Entry<String, String> entry : mHttpParams.entrySet()) {
-            String value = entry.getValue();
-            String encodeValue = "";
-            if (!TextUtils.isEmpty(value)) {
-                encodeValue = HttpUrlEncodeUtils.urlEncode(value);
-            }
-            encodeMap.put(entry.getKey(), encodeValue);
-        }
-        return encodeMap;
+        return mHttpParams;
     }
 
     /**
@@ -237,8 +209,8 @@ public abstract class CommonBuilder<T> {
      * @param callback
      * @return key -1为判断条件失败，并未成功发起请求
      */
-    final public int build(HttpCallBack<T> callback){
-        return build(true, callback);
+    final public int build(Req req, HttpCallBack<Rsp> callback){
+        return build(true, req, callback);
     }
 
     /**
@@ -247,8 +219,13 @@ public abstract class CommonBuilder<T> {
      * @param callback
      * @return key -1为判断条件失败，并未成功发起请求
      */
-    final public int build(boolean onUiCallBack, HttpCallBack<T> callback){
+    final public int build(boolean onUiCallBack, Req req, HttpCallBack<Rsp> callback){
+        prepareData(req);
         return request(onUiCallBack, callback);
+    }
+
+    protected void prepareData(Req req) {
+        //数据赋值
     }
 
     /**
@@ -257,11 +234,11 @@ public abstract class CommonBuilder<T> {
      * @param callback
      * @return key -1为判断条件失败，并未成功发起请求
      */
-    protected int request(boolean onUiCallBack, HttpCallBack<T> callback){
+    protected int request(boolean onUiCallBack, HttpCallBack<Rsp> callback){
 
-        int httpKey = HttpUtils.getHttpKey(getPath(), mHttpHeader, getParams(), mBodyObj, mHttpCustomConfig);
+        int httpKey = HttpUtils.getHttpKey(mPath, mHttpHeader, getParams(), mBodyObj, mHttpCustomConfig);
         int key = -1;
-        switch (getMethod()){
+        switch (mHttpMethod){
             case HttpMethod.POST:
                 key = processPostQuest(onUiCallBack, callback, httpKey);
                 break;
@@ -277,14 +254,14 @@ public abstract class CommonBuilder<T> {
     /**
      *
      */
-    public void registerLifecycle() {
+    private void registerLifecycle() {
         if (mTag == null) {
             HttpLog.e("CommonBuilder: registerLifecycle, mTag == null");
             return;
         }
         LifecycleOwner owner;
         if (mTag instanceof LifecycleOwner) {
-            HttpClient cacheHttpClient = HttpClientManager.getInstance().getCacheHttpClient(getBaseUrl(), mHttpCustomConfig);
+            HttpClient cacheHttpClient = HttpClientManager.getInstance().getCacheHttpClient(mBaseUrl, mHttpCustomConfig);
             if (cacheHttpClient == null) {
                 HttpLog.e("CommonBuilder: registerLifecycle, cacheHttpClient == null");
                 return;
@@ -295,9 +272,9 @@ public abstract class CommonBuilder<T> {
         }
     }
 
-    private int processPostQuest(boolean onUiCallBack, HttpCallBack<T> callback, int httpKey) {
+    private int processPostQuest(boolean onUiCallBack, HttpCallBack<Rsp> callback, int httpKey) {
         HttpClientManager clientManager = HttpClientManager.getInstance();
-        boolean isPathEmpty = TextUtils.isEmpty(getPath());
+        boolean isPathEmpty = TextUtils.isEmpty(mPath);
         boolean paramsEmpty = getParams() == null;
         boolean bodyObjEmpty = mBodyObj == null;
         boolean mapHeaderEmpty = (mHttpHeader == null || mHttpHeader.size() <= 0);
@@ -306,28 +283,28 @@ public abstract class CommonBuilder<T> {
             return -1;
         }
         if (paramsEmpty && bodyObjEmpty && mapHeaderEmpty) {
-            return clientManager.post(getBaseUrl(), getPath(), httpKey, getTagHash(), mRetryTimes, mRetryDelayMillis,
+            return clientManager.post(mBaseUrl, mPath, httpKey, getTagHash(), mRetryTimes, mRetryDelayMillis,
                     onUiCallBack, mHttpCustomConfig, callback);
         }else if (!paramsEmpty && bodyObjEmpty && mapHeaderEmpty) {
-            return clientManager.postWithParamsMap(getBaseUrl(), getPath(), httpKey, getParams(), getTagHash(),
+            return clientManager.postWithParamsMap(mBaseUrl, mPath, httpKey, getParams(), getTagHash(),
                     mRetryTimes, mRetryDelayMillis, onUiCallBack, mHttpCustomConfig, callback);
         }else if(paramsEmpty && !bodyObjEmpty && mapHeaderEmpty){
-            return clientManager.post(getBaseUrl(), getPath(), httpKey, mBodyObj, getTagHash(),
+            return clientManager.post(mBaseUrl, mPath, httpKey, mBodyObj, getTagHash(),
                     mRetryTimes, mRetryDelayMillis, onUiCallBack, mHttpCustomConfig, callback);
         }else if(paramsEmpty && bodyObjEmpty && !mapHeaderEmpty){
-            return clientManager.postWithHeaderMap(getBaseUrl(), getPath(), httpKey, mHttpHeader, getTagHash(),
+            return clientManager.postWithHeaderMap(mBaseUrl, mPath, httpKey, mHttpHeader, getTagHash(),
                     mRetryTimes, mRetryDelayMillis, onUiCallBack, mHttpCustomConfig, callback);
         }else if(!paramsEmpty && !bodyObjEmpty && mapHeaderEmpty){
-            return clientManager.postParamsAndObj(getBaseUrl(), getPath(), httpKey, getParams(), mBodyObj,
+            return clientManager.postParamsAndObj(mBaseUrl,mPath, httpKey, getParams(), mBodyObj,
                     mRetryTimes, mRetryDelayMillis, getTagHash(), onUiCallBack, mHttpCustomConfig, callback);
         }else if(!paramsEmpty && bodyObjEmpty && !mapHeaderEmpty){
-            return clientManager.post(getBaseUrl(), getPath(), httpKey, getParams(), mHttpHeader, getTagHash(),
+            return clientManager.post(mBaseUrl, mPath, httpKey, getParams(), mHttpHeader, getTagHash(),
                     mRetryTimes, mRetryDelayMillis, onUiCallBack, mHttpCustomConfig, callback);
         }else if(paramsEmpty && !bodyObjEmpty && !mapHeaderEmpty){
-            return clientManager.postMapHeaderAndObj(getBaseUrl(), getPath(), httpKey, mHttpHeader, mBodyObj,
+            return clientManager.postMapHeaderAndObj(mBaseUrl, mPath, httpKey, mHttpHeader, mBodyObj,
                     mRetryTimes, mRetryDelayMillis, getTagHash(), onUiCallBack, mHttpCustomConfig, callback);
         }else if(!paramsEmpty && !bodyObjEmpty && !mapHeaderEmpty){
-            return clientManager.post(getBaseUrl(), getPath(), httpKey, getParams(), mHttpHeader, mBodyObj,
+            return clientManager.post(mBaseUrl, mPath, httpKey, getParams(), mHttpHeader, mBodyObj,
                     mRetryTimes, mRetryDelayMillis, getTagHash(), onUiCallBack, mHttpCustomConfig, callback);
         }else {
             HttpLog.e("CommonBuilder：Error! processPostQuest : not support request !" );
@@ -335,9 +312,9 @@ public abstract class CommonBuilder<T> {
         }
     }
 
-    private int processGetQuest(boolean onUiCallBack, HttpCallBack<T> callback, int httpKey) {
+    private int processGetQuest(boolean onUiCallBack, HttpCallBack<Rsp> callback, int httpKey) {
         HttpClientManager clientManager = HttpClientManager.getInstance();
-        boolean isPathEmpty = TextUtils.isEmpty(getPath());
+        boolean isPathEmpty = TextUtils.isEmpty(mPath);
         boolean paramsEmpty = getParams() == null;
         boolean mapHeaderEmpty = (mHttpHeader == null || mHttpHeader.size() <= 0);
         if (isPathEmpty) {
@@ -347,19 +324,19 @@ public abstract class CommonBuilder<T> {
 
         if (paramsEmpty && mapHeaderEmpty) {
             //验证Ok
-            return clientManager.get(getBaseUrl(), getPath(), httpKey, getTagHash(), mRetryTimes, mRetryDelayMillis,
+            return clientManager.get(mBaseUrl, mPath, httpKey, getTagHash(), mRetryTimes, mRetryDelayMillis,
                     onUiCallBack, mHttpCustomConfig, callback);
         }else if (!paramsEmpty && mapHeaderEmpty) {
             //验证Ok
-            return clientManager.getWithParamsMap(getBaseUrl(), getPath(), httpKey, getParams(), getTagHash(),
+            return clientManager.getWithParamsMap(mBaseUrl, mPath, httpKey, getParams(), getTagHash(),
                     mRetryTimes, mRetryDelayMillis, onUiCallBack, mHttpCustomConfig, callback);
         }else if(paramsEmpty && !mapHeaderEmpty){
             //
-            return clientManager.getWithHeaderMap(getBaseUrl(), getPath(), httpKey, mHttpHeader, getTagHash(),
+            return clientManager.getWithHeaderMap(mBaseUrl, mPath, httpKey, mHttpHeader, getTagHash(),
                     mRetryTimes, mRetryDelayMillis, onUiCallBack, mHttpCustomConfig, callback);
         }else if(!paramsEmpty && !mapHeaderEmpty){
             //
-            return clientManager.get(getBaseUrl(), getPath(), httpKey, getParams(), mHttpHeader, getTagHash(),
+            return clientManager.get(mBaseUrl, mPath, httpKey, getParams(), mHttpHeader, getTagHash(),
                     mRetryTimes, mRetryDelayMillis, onUiCallBack, mHttpCustomConfig, callback);
         }else {
             HttpLog.e("CommonBuilder：Error! processGetQuest : not support request !" );
@@ -368,13 +345,17 @@ public abstract class CommonBuilder<T> {
     }
 
     protected int getTagHash() {
-        return TAG.hashCode();
+        if (mTagHash == 0) {
+            return TAG.hashCode();
+        } else {
+            return mTagHash;
+        }
     }
 
     /**
      * 上层主动取消请求
      */
     public boolean dispose() {
-        return HttpClientManager.getInstance().dispose(getBaseUrl(), getTagHash(), mKey, mHttpCustomConfig);
+        return HttpClientManager.getInstance().dispose(mBaseUrl, getTagHash(), mKey, mHttpCustomConfig);
     }
 }

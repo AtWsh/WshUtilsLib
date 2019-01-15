@@ -14,6 +14,8 @@
             <option value="$PROJECT_DIR$/base/login" />
             <option value="$PROJECT_DIR$/base/share" />
             <option value="$PROJECT_DIR$/commonlib/common_http" />
+            <option value="$PROJECT_DIR$/commonlib/common_http_annotation" />
+            <option value="$PROJECT_DIR$/commonlib/common_http_processor" />
             <option value="$PROJECT_DIR$/commonlib/common_imageloader" />
             <option value="$PROJECT_DIR$/commonlib/common_oss" />
             <option value="$PROJECT_DIR$/commonlib/common_utils" />
