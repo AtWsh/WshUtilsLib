@@ -13,6 +13,8 @@ project(':baidumap').projectDir = new File('base/baidumap')
 //common库
 include ':common_http'
 project(':common_http').projectDir = new File('commonlib/common_http')
+include ':common_pay'
+project(':common_pay').projectDir = new File('commonlib/common_pay')
 include ':common_http_processor'
 project(':common_http_processor').projectDir = new File('commonlib/common_http_processor')
 include ':common_http_annotation'

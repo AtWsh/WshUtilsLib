@@ -73,7 +73,9 @@ buildscript {
                 'leakcanary_release'           : 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2',
                 'leakcanary_support'           : 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.2',
                 'google_service'               : 'com.google.auto.service:auto-service:1.0-rc2',
-                'javapoet'                     : 'com.squareup:javapoet:1.10.0'
+                'javapoet'                     : 'com.squareup:javapoet:1.10.0',
+                'wechat_api'                     : 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:1.4.0'
+
         ]
 
         try {

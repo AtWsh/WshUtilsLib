@@ -18,6 +18,7 @@
             <option value="$PROJECT_DIR$/commonlib/common_http_processor" />
             <option value="$PROJECT_DIR$/commonlib/common_imageloader" />
             <option value="$PROJECT_DIR$/commonlib/common_oss" />
+            <option value="$PROJECT_DIR$/commonlib/common_pay" />
             <option value="$PROJECT_DIR$/commonlib/common_utils" />
           </set>
         </option>
