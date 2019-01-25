@@ -1,11 +1,11 @@
-package it.wsh.cn.common_pay.nativepay.strategy;
+package it.wsh.cn.common_pay.pay.strategy;
 
 import android.app.Activity;
 
-import it.wsh.cn.common_pay.nativepay.PaymentOrder;
+import it.wsh.cn.common_pay.pay.PaymentOrder;
 
 
-public abstract class BasePayStrategy implements IPayStrategy {
+public abstract class BasePayStrategy{
 
     protected String payData;
     protected PaymentOrder.PayCallBack callBack;
@@ -16,6 +16,11 @@ public abstract class BasePayStrategy implements IPayStrategy {
         this.payData = payData;
         this.callBack = callBack;
     }
+
+    public void hdAuthentication() {
+
+    }
+
 
     public abstract void doPay();
 }

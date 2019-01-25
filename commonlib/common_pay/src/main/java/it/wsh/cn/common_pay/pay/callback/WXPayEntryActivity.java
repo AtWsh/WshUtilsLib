@@ -1,4 +1,4 @@
-package it.wsh.cn.common_pay.wxapi;
+package it.wsh.cn.common_pay.pay.callback;
 
 
 import android.app.Activity;
@@ -12,10 +12,12 @@ import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import static it.wsh.cn.common_pay.nativepay.strategy.WxPayStrategy.WECHAT_PAY_RESULT_ACTION;
-import static it.wsh.cn.common_pay.nativepay.strategy.WxPayStrategy.WECHAT_PAY_RESULT_EXTRA;
+import static it.wsh.cn.common_pay.pay.strategy.WxPayStrategy.WECHAT_PAY_RESULT_ACTION;
+import static it.wsh.cn.common_pay.pay.strategy.WxPayStrategy.WECHAT_PAY_RESULT_EXTRA;
 
-
+/**
+ * 此类为微信专用的回调，类名不可修改
+ */
 public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
 
 	private IWXAPI api;

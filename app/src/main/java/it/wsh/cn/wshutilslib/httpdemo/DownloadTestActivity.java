@@ -46,6 +46,7 @@ public class DownloadTestActivity extends AppCompatActivity {
     private TextView mDeleteBtn3;
 
     private String mDownloadUrl1 = "http://dldir1.qq.com/qqmi/aphone_p2p/TencentVideo_V6.0.0.14297_848.apk";
+    //private String mDownloadUrl1 = "http://dev-oss-download.egtest.cn:8880/oss/ota_download/4eOtTTnkxotc3svd/2019%2F01%2F25%2Fapp-guanfang-debug.apk";
     private String mDownloadUrl2 = "https://qd.myapp.com/myapp/qqteam/AndroidQQ/mobileqq_android.apk";
     private String mDownloadUrl3 = "http://downapp.baidu.com/baidusearch/AndroidPhone/10.11.0.13.1/1/757p/20180826161341/baidusearch_AndroidPhone_10-11-0-13-1_757p.apk?responseContentDisposition=attachment%3Bfilename%3D%22baidusearch_AndroidPhone_757p.apk%22&responseContentType=application%2Fvnd.android.package-archive&request_id=1535362308_7026252018&type=static";
 

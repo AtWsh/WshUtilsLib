@@ -1,4 +1,4 @@
-package it.wsh.cn.common_pay.nativepay.strategy;
+package it.wsh.cn.common_pay.pay.strategy;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -12,15 +12,15 @@ import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import it.wsh.cn.common_pay.nativepay.PayResultCode;
-import it.wsh.cn.common_pay.nativepay.PaymentOrder;
-import it.wsh.cn.common_pay.nativepay.model.WechatPayRes;
+import it.wsh.cn.common_pay.pay.PayConfig;
+import it.wsh.cn.common_pay.pay.PayResultCode;
+import it.wsh.cn.common_pay.pay.PaymentOrder;
+import it.wsh.cn.common_pay.pay.model.WechatPayRes;
 
 
 public class WxPayStrategy extends BasePayStrategy {
 
     private WechatPayRes wxPayRes;
-    private String weChatAppId;
 
     private LocalBroadcastManager broadcastManager;
 
@@ -47,11 +47,12 @@ public class WxPayStrategy extends BasePayStrategy {
             return;
         }
 
-        api.registerApp(weChatAppId);
+        String wxAppid = PayConfig.getWXAppid();
+        api.registerApp(wxAppid);
         registerPayResultBroadcast();
         if(wxPayRes != null){
             PayReq request = new PayReq();
-            request.appId = weChatAppId;//微信开放平台审核通过的应用APPID
+            request.appId = wxAppid;//微信开放平台审核通过的应用APPID
             request.partnerId = wxPayRes.getPartnerid();//微信支付分配的商户号
             request.prepayId = wxPayRes.getPrepayid();//微信返回的支付交易会话ID
             request.packageValue = wxPayRes.getPackageValue();//暂填写固定值Sign=WXPay
@@ -91,8 +92,4 @@ public class WxPayStrategy extends BasePayStrategy {
             unRegistPayResultBroadcast();
         }
     };
-
-    public void setWeChatAppId(String weChatAppId) {
-        this.weChatAppId = weChatAppId;
-    }
 }

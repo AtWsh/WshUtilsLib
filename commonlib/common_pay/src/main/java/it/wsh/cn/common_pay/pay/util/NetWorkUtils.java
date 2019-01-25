@@ -1,4 +1,4 @@
-package it.wsh.cn.common_pay.nativepay.util;
+package it.wsh.cn.common_pay.pay.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

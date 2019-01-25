@@ -1,12 +1,10 @@
-package it.wsh.cn.common_pay.nativepay.model;
+package it.wsh.cn.common_pay.pay.model;
 
-
-import it.wsh.cn.common_pay.nativepay.ICreatePayObj;
 
 /**
  * h5返回的支付宝支付参数信息
  */
-public class AliPayRes implements ICreatePayObj {
+public class AliPayRes {
     private String orderStr;
 
     public String getOrderStr() {

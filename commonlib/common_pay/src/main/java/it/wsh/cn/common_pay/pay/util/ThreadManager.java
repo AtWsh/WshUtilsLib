@@ -1,4 +1,4 @@
-package it.wsh.cn.common_pay.nativepay.util;
+package it.wsh.cn.common_pay.pay.util;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

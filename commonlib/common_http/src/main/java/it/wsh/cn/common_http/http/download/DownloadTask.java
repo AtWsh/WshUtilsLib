@@ -206,7 +206,7 @@ public class DownloadTask implements IDownloadTask{
             Request.Builder builder = new Request.Builder().url(url);
             if (responseLength != 0) {
                 builder.addHeader("RANGE", "bytes=" +
-                        downloadLength + "-" + responseLength);
+                        downloadLength + "-");
             }
             Request request = builder.build();
             Call call = mClient.newCall(request);

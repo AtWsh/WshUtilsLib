@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.wsh.cn.common_http.http.database.bean.DownloadInfo;
+import it.wsh.cn.common_http.http.database.greendao.DownloadInfoDao;
 import it.wsh.cn.common_http.http.database.utils.GreenDaoDatabase;
 
 
@@ -32,7 +33,7 @@ public class DownloadInfoDaoHelper {
 
         DownloadInfo info = new DownloadInfo(key, url, savePath, totalSize);
         try{
-            //todo raw = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao().insertOrReplace(info);
+            raw = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao().insertOrReplace(info);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -58,8 +59,8 @@ public class DownloadInfoDaoHelper {
         }
 
         try{
-            //todo AsyncSession asyncSession = GreenDaoDatabase.getInstance().getDaoSession().startAsyncSession();
-            //todo asyncSession.insertOrReplace(info);
+             AsyncSession asyncSession = GreenDaoDatabase.getInstance().getDaoSession().startAsyncSession();
+             asyncSession.insertOrReplace(info);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -80,7 +81,7 @@ public class DownloadInfoDaoHelper {
         }
 
         try{
-            //todo raw = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao().insertOrReplace(info);
+            raw = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao().insertOrReplace(info);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,8 +95,8 @@ public class DownloadInfoDaoHelper {
             return;
         }
         try{
-            //todo AsyncSession asyncSession = GreenDaoDatabase.getInstance().getDaoSession().startAsyncSession();
-            //todo asyncSession.insertOrReplace(info);
+             AsyncSession asyncSession = GreenDaoDatabase.getInstance().getDaoSession().startAsyncSession();
+             asyncSession.insertOrReplace(info);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,7 +113,7 @@ public class DownloadInfoDaoHelper {
         }
 
         try{
-            //todo GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao().insertOrReplaceInTx(list);
+            GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao().insertOrReplaceInTx(list);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -128,12 +129,12 @@ public class DownloadInfoDaoHelper {
         boolean delete = false;
 
         try{
-            //todo DownloadInfo info = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao()
-            //todo .queryBuilder().where(DownloadInfoDao.Properties.Key.eq(key)).unique();
-            //todo if(info != null){
-            //todo  deleteInfo(info);
-            //todo delete = true;
-            //todo }
+             DownloadInfo info = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao()
+             .queryBuilder().where(DownloadInfoDao.Properties.Key.eq(key)).unique();
+             if(info != null){
+              deleteInfo(info);
+             delete = true;
+             }
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -150,7 +151,7 @@ public class DownloadInfoDaoHelper {
             return;
         }
         try{
-            //todo GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao().delete(info);
+            GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao().delete(info);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -165,8 +166,8 @@ public class DownloadInfoDaoHelper {
         DownloadInfo info = null;
 
         try{
-            //todo info = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao().
-            //todo         queryBuilder().where(DownloadInfoDao.Properties.Key.eq(key)).unique();
+             info = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao().
+                     queryBuilder().where(DownloadInfoDao.Properties.Key.eq(key)).unique();
 
         }catch (Exception e) {
             e.printStackTrace();
@@ -180,16 +181,16 @@ public class DownloadInfoDaoHelper {
     public static List<DownloadInfo> queryAll(int count) {
         List<DownloadInfo> infos = new ArrayList<>();
         try{
-            //todo List<DownloadInfo> list = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao()
-            //todo         .queryBuilder().orderDesc(DownloadInfoDao.Properties.Key).list();
-            //todo if(list.size() > count){
-            //todo    for (int i = 0; i < count; i++) {
-            //todo        infos.add(list.get(i));
-            //todo    }
+            List<DownloadInfo> list = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao()
+                     .queryBuilder().orderDesc(DownloadInfoDao.Properties.Key).list();
+             if(list.size() > count){
+                for (int i = 0; i < count; i++) {
+                    infos.add(list.get(i));
+                }
 
-            //todo }else {
-            //todo    infos.addAll(list);
-            //todo }
+             }else {
+                infos.addAll(list);
+             }
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -202,8 +203,8 @@ public class DownloadInfoDaoHelper {
     public static List<DownloadInfo> queryAll() {
         List<DownloadInfo> infos = new ArrayList<>();
         try{
-            //todo infos = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao()
-            //todo        .queryBuilder().orderDesc(DownloadInfoDao.Properties.Key).list();
+             infos = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao()
+                    .queryBuilder().orderDesc(DownloadInfoDao.Properties.Key).list();
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -215,7 +216,7 @@ public class DownloadInfoDaoHelper {
      */
     public static void clear(){
         try{
-            //todo GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao().deleteAll();
+             GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao().deleteAll();
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -226,8 +227,8 @@ public class DownloadInfoDaoHelper {
      */
     public static void dropTable(){
         try{
-            //todo DownloadInfoDao downloadInfoDao = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao();
-            //todo downloadInfoDao.dropTable(downloadInfoDao.getDatabase(),true);
+             DownloadInfoDao downloadInfoDao = GreenDaoDatabase.getInstance().getDaoSession().getDownloadInfoDao();
+             downloadInfoDao.dropTable(downloadInfoDao.getDatabase(),true);
         }catch (Exception e) {
             e.printStackTrace();
         }

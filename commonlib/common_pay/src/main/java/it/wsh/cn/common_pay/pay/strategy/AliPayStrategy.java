@@ -1,4 +1,4 @@
-package it.wsh.cn.common_pay.nativepay.strategy;
+package it.wsh.cn.common_pay.pay.strategy;
 
 import android.app.Activity;
 import android.os.Handler;
@@ -10,11 +10,11 @@ import com.google.gson.Gson;
 
 import java.util.Map;
 
-import it.wsh.cn.common_pay.nativepay.PayResultCode;
-import it.wsh.cn.common_pay.nativepay.PaymentOrder;
-import it.wsh.cn.common_pay.nativepay.model.AliPayRes;
-import it.wsh.cn.common_pay.nativepay.model.AliPayResult;
-import it.wsh.cn.common_pay.nativepay.util.ThreadManager;
+import it.wsh.cn.common_pay.pay.PayResultCode;
+import it.wsh.cn.common_pay.pay.PaymentOrder;
+import it.wsh.cn.common_pay.pay.model.AliPayRes;
+import it.wsh.cn.common_pay.pay.model.AliPayResult;
+import it.wsh.cn.common_pay.pay.util.ThreadManager;
 
 public class AliPayStrategy extends BasePayStrategy {
 

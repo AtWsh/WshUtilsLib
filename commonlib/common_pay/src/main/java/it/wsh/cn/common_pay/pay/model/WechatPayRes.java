@@ -1,12 +1,10 @@
-package it.wsh.cn.common_pay.nativepay.model;
+package it.wsh.cn.common_pay.pay.model;
 
-
-import it.wsh.cn.common_pay.nativepay.ICreatePayObj;
 
 /**
  * h5返回的微信支付参数信息
  */
-public class WechatPayRes implements ICreatePayObj {
+public class WechatPayRes {
     private String partnerid;//微信支付分配的商户号
     private String prepayid;//微信返回的支付交易会话ID
     private String packageValue;//暂填写固定值Sign=WXPay

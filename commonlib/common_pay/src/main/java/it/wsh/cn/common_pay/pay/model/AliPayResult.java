@@ -1,4 +1,4 @@
-package it.wsh.cn.common_pay.nativepay.model;
+package it.wsh.cn.common_pay.pay.model;
 
 import android.text.TextUtils;
 

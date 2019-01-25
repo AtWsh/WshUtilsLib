@@ -319,16 +319,16 @@ public abstract class CommonBuilder<T> {
                     mRetryTimes, mRetryDelayMillis, onUiCallBack, mHttpCustomConfig, callback);
         }else if(!paramsEmpty && !bodyObjEmpty && mapHeaderEmpty){
             return clientManager.postParamsAndObj(getBaseUrl(), getPath(), httpKey, getParams(), mBodyObj,
-                    mRetryTimes, mRetryDelayMillis, getTagHash(), onUiCallBack, mHttpCustomConfig, callback);
+                    getTagHash(), mRetryTimes, mRetryDelayMillis, onUiCallBack, mHttpCustomConfig, callback);
         }else if(!paramsEmpty && bodyObjEmpty && !mapHeaderEmpty){
             return clientManager.post(getBaseUrl(), getPath(), httpKey, getParams(), mHttpHeader, getTagHash(),
                     mRetryTimes, mRetryDelayMillis, onUiCallBack, mHttpCustomConfig, callback);
         }else if(paramsEmpty && !bodyObjEmpty && !mapHeaderEmpty){
             return clientManager.postMapHeaderAndObj(getBaseUrl(), getPath(), httpKey, mHttpHeader, mBodyObj,
-                    mRetryTimes, mRetryDelayMillis, getTagHash(), onUiCallBack, mHttpCustomConfig, callback);
+                    getTagHash(), mRetryTimes, mRetryDelayMillis, onUiCallBack, mHttpCustomConfig, callback);
         }else if(!paramsEmpty && !bodyObjEmpty && !mapHeaderEmpty){
             return clientManager.post(getBaseUrl(), getPath(), httpKey, getParams(), mHttpHeader, mBodyObj,
-                    mRetryTimes, mRetryDelayMillis, getTagHash(), onUiCallBack, mHttpCustomConfig, callback);
+                    getTagHash(), mRetryTimes, mRetryDelayMillis, onUiCallBack, mHttpCustomConfig, callback);
         }else {
             HttpLog.e("CommonBuilder：Error! processPostQuest : not support request !" );
             return -1;

@@ -405,7 +405,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                                 HttpLog.e("HttpClient: apply, msg");
                                 pair = new Pair<>(msg, null);
                                 if (!onUiCallBack) {
-                                    callback.onError(ExceptionHandle.ERROR.UNKNOWN, msg);
+                                    callback.onError(response.code(), msg);
                                 }
                                 return pair;
                             }

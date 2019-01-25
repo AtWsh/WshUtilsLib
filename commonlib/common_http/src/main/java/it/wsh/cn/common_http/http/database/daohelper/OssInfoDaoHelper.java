@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.wsh.cn.common_http.http.database.bean.OssInfo;
+import it.wsh.cn.common_http.http.database.greendao.OssInfoDao;
 import it.wsh.cn.common_http.http.database.utils.GreenDaoDatabase;
 
 
@@ -32,7 +33,7 @@ public class OssInfoDaoHelper {
 
         OssInfo info = new OssInfo(key, url, savePath, totalSize, strMd5);
         try{
-            //todo raw = GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao().insertOrReplace(info);
+             raw = GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao().insertOrReplace(info);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -58,8 +59,8 @@ public class OssInfoDaoHelper {
         }
 
         try{
-            //todo AsyncSession asyncSession = GreenDaoDatabase.getInstance().getDaoSession().startAsyncSession();
-            //todo asyncSession.insertOrReplace(info);
+             AsyncSession asyncSession = GreenDaoDatabase.getInstance().getDaoSession().startAsyncSession();
+             asyncSession.insertOrReplace(info);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -80,7 +81,7 @@ public class OssInfoDaoHelper {
         }
 
         try{
-            //todo raw = GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao().insertOrReplace(info);
+             raw = GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao().insertOrReplace(info);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,8 +95,8 @@ public class OssInfoDaoHelper {
             return;
         }
         try{
-            //todo AsyncSession asyncSession = GreenDaoDatabase.getInstance().getDaoSession().startAsyncSession();
-            //todo asyncSession.insertOrReplace(info);
+             AsyncSession asyncSession = GreenDaoDatabase.getInstance().getDaoSession().startAsyncSession();
+             asyncSession.insertOrReplace(info);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,7 +113,7 @@ public class OssInfoDaoHelper {
         }
 
         try{
-            //todo GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao().insertOrReplaceInTx(list);
+             GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao().insertOrReplaceInTx(list);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -128,12 +129,12 @@ public class OssInfoDaoHelper {
         boolean delete = false;
 
         try{
-            //todo OssInfo info = GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao()
-            //todo         .queryBuilder().where(OssInfoDao.Properties.Key.eq(key)).unique();
-            //todo if(info != null){
-            //todo     deleteInfo(info);
-            //todo    delete = true;
-            //todo }
+             OssInfo info = GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao()
+                     .queryBuilder().where(OssInfoDao.Properties.Key.eq(key)).unique();
+             if(info != null){
+                 deleteInfo(info);
+                delete = true;
+             }
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -150,7 +151,7 @@ public class OssInfoDaoHelper {
             return;
         }
         try{
-            //todo GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao().delete(info);
+             GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao().delete(info);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -165,8 +166,8 @@ public class OssInfoDaoHelper {
         OssInfo info = null;
 
         try{
-            //todo info = GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao().
-            //todo        queryBuilder().where(OssInfoDao.Properties.Key.eq(key)).unique();
+            info = GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao().
+                    queryBuilder().where(OssInfoDao.Properties.Key.eq(key)).unique();
 
         }catch (Exception e) {
             e.printStackTrace();
@@ -180,16 +181,16 @@ public class OssInfoDaoHelper {
     public static List<OssInfo> queryAll(int count) {
         List<OssInfo> infos = new ArrayList<>();
         try{
-            //todo List<OssInfo> list = GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao()
-            //todo         .queryBuilder().orderDesc(OssInfoDao.Properties.Key).list();
-            //todo if(list.size() > count){
-            //todo     for (int i = 0; i < count; i++) {
-            //todo        infos.add(list.get(i));
-            //todo    }
+             List<OssInfo> list = GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao()
+                     .queryBuilder().orderDesc(OssInfoDao.Properties.Key).list();
+             if(list.size() > count){
+                 for (int i = 0; i < count; i++) {
+                    infos.add(list.get(i));
+                }
 
-            //todo  }else {
-            //todo     infos.addAll(list);
-            //todo }
+             }else {
+                 infos.addAll(list);
+             }
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -202,8 +203,8 @@ public class OssInfoDaoHelper {
     public static List<OssInfo> queryAll() {
         List<OssInfo> infos = new ArrayList<>();
         try{
-            //todo infos = GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao()
-            //todo        .queryBuilder().orderDesc(OssInfoDao.Properties.Key).list();
+            infos = GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao()
+                    .queryBuilder().orderDesc(OssInfoDao.Properties.Key).list();
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -215,7 +216,7 @@ public class OssInfoDaoHelper {
      */
     public static void clear(){
         try{
-            //todo  GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao().deleteAll();
+             GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao().deleteAll();
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -226,8 +227,8 @@ public class OssInfoDaoHelper {
      */
     public static void dropTable(){
         try{
-            //todo OssInfoDao downloadInfoDao = GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao();
-            //todo downloadInfoDao.dropTable(downloadInfoDao.getDatabase(),true);
+             OssInfoDao downloadInfoDao = GreenDaoDatabase.getInstance().getDaoSession().getOssInfoDao();
+             downloadInfoDao.dropTable(downloadInfoDao.getDatabase(),true);
         }catch (Exception e) {
             e.printStackTrace();
         }
