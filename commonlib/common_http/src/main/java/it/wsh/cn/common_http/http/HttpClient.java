@@ -63,14 +63,11 @@ public class HttpClient<T> implements GenericLifecycleObserver {
         if (!TextUtils.isEmpty(baseUrl)) {
             mBaseUrl = baseUrl;
         }
-        if (httpConfig == null) {
-            httpConfig = HttpConfig.getDefault();
-        }
         mGson = gson;
         init(httpConfig);
     }
 
-    public void init(HttpConfig httpConfig) {
+    private void init(HttpConfig httpConfig) {
         OkHttpClient client = getOkHttpClient(httpConfig);
         try {
             mCurrentRetrofit = new Retrofit.Builder()
@@ -94,13 +91,26 @@ public class HttpClient<T> implements GenericLifecycleObserver {
             return null;
         }
 
+        int connectTimeout;
+        int readTimeout;
+        int writeTimeout;
+        if (httpConfig == null) {
+            connectTimeout = HttpConfig.CONNECT_TIME_OUT_DEFAULT;
+            readTimeout = HttpConfig.READ_TIME_OUT_DEFAULT;
+            writeTimeout = HttpConfig.WRITE_TIME_OUT_DEFAULT;
+        }else {
+            connectTimeout = httpConfig.getConnectTimeout();
+            readTimeout = httpConfig.getReadTimeout();
+            writeTimeout = httpConfig.getWriteTimeout();
+        }
+
         //缓存路径
         String cacheFile = mContext.getCacheDir() + "/retrofit";
         Cache cache = new Cache(new File(cacheFile), HttpConstants.SIZE_OF_CACHE);
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .connectTimeout(httpConfig.getConnectTimeout(), TimeUnit.SECONDS)
-                .readTimeout(httpConfig.getReadTimeout(), TimeUnit.SECONDS)
-                .writeTimeout(httpConfig.getWriteTimeout(), TimeUnit.SECONDS)
+                .connectTimeout(connectTimeout, TimeUnit.SECONDS)
+                .readTimeout(readTimeout, TimeUnit.SECONDS)
+                .writeTimeout(writeTimeout, TimeUnit.SECONDS)
                 .addInterceptor(getHttpInterceptor(httpConfig))
                 .addInterceptor(getLogInterceptor())
                 .cache(cache);
@@ -152,23 +162,30 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                     builder = okHttpRequest.newBuilder();
                 }
 
-                if (!config.getHeaders().isEmpty()) {
-                    Set<Map.Entry<String, String>> entrySet = config.getHeaders().entrySet();
+                HttpConfig realConfig;
+                if (config == null) {
+                    realConfig = HttpConfig.create(true);
+                }else {
+                    realConfig = config;
+                }
+
+                if (!realConfig.getHeaders().isEmpty()) {
+                    Set<Map.Entry<String, String>> entrySet = realConfig.getHeaders().entrySet();
                     for (Map.Entry<String, String> entry : entrySet) {
                         builder.addHeader(entry.getKey(), entry.getValue());
                     }
                 }
 
                 boolean networkAvailable = isNetworkAvailable(mContext);
-                if (networkAvailable && config.isNeedNetWorkCache()) { //有网络连接，看是否有配置，没配置，则走默认不缓存
+                if (networkAvailable && realConfig.isNeedNetWorkCache()) { //有网络连接，看是否有配置，没配置，则走默认不缓存
                     CacheControl cacheControl = new CacheControl.Builder()
-                            .maxAge(config.getNetWorkCacheTimeout(), TimeUnit.SECONDS)
+                            .maxAge(realConfig.getNetWorkCacheTimeout(), TimeUnit.SECONDS)
                             .build();
 
                     builder.addHeader(HttpConstants.CACHE_CONTROL, cacheControl.toString());
-                } else if (!networkAvailable && config.isNeedNoNetWorkCache()) { //离线缓存
+                } else if (!networkAvailable && realConfig.isNeedNoNetWorkCache()) { //离线缓存
                     CacheControl cacheControl = new CacheControl.Builder()
-                            .maxAge(config.getNoNetWorkCacheTimeout(), TimeUnit.SECONDS)
+                            .maxAge(realConfig.getNoNetWorkCacheTimeout(), TimeUnit.SECONDS)
                             .build();
 
                     builder.addHeader(HttpConstants.CACHE_CONTROL, cacheControl.toString());

@@ -13,9 +13,9 @@ import java.util.Map;
  */
 public class HttpConfig {
 
-    private final static int CONNECT_TIME_OUT_DEFAULT = 3;
-    private final static int READ_TIME_OUT_DEFAULT = 5;
-    private final static int WRITE_TIME_OUT_DEFAULT = 5;
+    public final static int CONNECT_TIME_OUT_DEFAULT = 3;
+    public final static int READ_TIME_OUT_DEFAULT = 5;
+    public final static int WRITE_TIME_OUT_DEFAULT = 5;
     private final static int NET_WORK_CACHE_TIMEOUT = 5;//有网缓存，默认5秒
     private final static int NO_NET_WORK_CACHE_TIMEOUT = 60 * 60 * 24 ; //离线缓存，默认一天
 
@@ -30,9 +30,6 @@ public class HttpConfig {
     private boolean mNeedNoNetWorkCache = true; // 是否需要离线缓存
 
     private static final String TRACEID = "traceId";
-
-    private static HttpConfig sDefaultConfig = create(true);
-
 
 
     private Map<String, String> mHeaders = new HashMap<>();
@@ -205,6 +202,6 @@ public class HttpConfig {
 
 
     public static HttpConfig getDefault() {
-        return sDefaultConfig;
+        return create(true);
     }
 }
