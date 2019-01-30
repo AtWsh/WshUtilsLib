@@ -99,6 +99,7 @@ public class HttpClientManager<T> implements IHttpClient<T> {
             httpClient = new HttpClient(mContext, baseUrl, httpConfig, mGson);
             saveCacheHttpClient(httpClient, baseUrl, httpConfig);
         }else {
+            httpClient.updateConfit(httpConfig);
             HttpLog.d("HttpClientManager: getCacheHttpClient, get cacheHttpClient success!");
         }
         return httpClient;

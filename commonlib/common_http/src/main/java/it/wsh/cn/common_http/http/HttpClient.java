@@ -57,6 +57,7 @@ public class HttpClient<T> implements GenericLifecycleObserver {
     private final HashMap<Integer, List<Pair<Integer, Disposable>>> mDisposableCache = new HashMap<>();
 
     private String mBaseUrl = "";
+    private HttpConfig mHttpConfig;
 
     public HttpClient(Context context, String baseUrl, HttpConfig httpConfig, Gson gson) {
         mContext = context;
@@ -65,6 +66,13 @@ public class HttpClient<T> implements GenericLifecycleObserver {
         }
         mGson = gson;
         init(httpConfig);
+    }
+
+    /**
+     * 更新配置
+     */
+    public void updateConfit(HttpConfig httpConfig) {
+        mHttpConfig = httpConfig;
     }
 
     private void init(HttpConfig httpConfig) {
@@ -146,7 +154,8 @@ public class HttpClient<T> implements GenericLifecycleObserver {
         return logInterceptor;
     }
 
-    private Interceptor getHttpInterceptor(final HttpConfig config) {
+    private Interceptor getHttpInterceptor(HttpConfig config) {
+        mHttpConfig = config;
         Interceptor interceptor = new Interceptor() {
             @Override
             public okhttp3.Response intercept(Chain chain) throws IOException {
@@ -163,10 +172,10 @@ public class HttpClient<T> implements GenericLifecycleObserver {
                 }
 
                 HttpConfig realConfig;
-                if (config == null) {
+                if (mHttpConfig == null) {
                     realConfig = HttpConfig.create(true);
                 }else {
-                    realConfig = config;
+                    realConfig = mHttpConfig;
                 }
 
                 if (!realConfig.getHeaders().isEmpty()) {
