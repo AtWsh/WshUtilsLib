@@ -436,7 +436,7 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
      * GET 无参数请求测试  获取知乎新闻
      */
     private void requestZhihuInfo() {
-       /* HttpConfig httpConfig = HttpConfig.create(true);
+        HttpConfig httpConfig = HttpConfig.create(true);
         new StoriesResponse.Builder().setTag(this).setHttpCustomConfig(httpConfig).build(new HttpCallBack<StoriesResponse>() {
             @Override
             public void onSuccess(StoriesResponse storiesResponse) {
@@ -449,31 +449,7 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
                 Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
                 Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
             }
-        });*/
-
-        String url = "https://uic-dev-ali.evergrande.cn:8443/v1/api/user/get_profile?appid=100001" +
-                "&timestamp=1547023340165&sig=41F8967530742D473F7E394501515653" +
-                "&access_token=njuWBlvByBlRr38b+FtPkwLCqCE4yIxIoSJ0ZVAK9rALGcFl8/NmxUDU6TEcYd5gqwgMPx8G/MGPv8K+WjdI0PIalBt7h6E9TSVtUtd6z3PsqvQunSP0KYEW6qIBPpTxgX77T6uyCkvCDT2G9a5jCmhWxY8a047kAMrQ1B9sph+DA7+g+URaSjXURG36Hp8rRQjrtsdoyS5E9gqvtfbn3t5NDp+yhMWgPfkRlae7XzY=";
-
-        Map<String,String> params = new HashMap<>();
-        params.put("timestamp", "1547023340165");
-        params.put("sig", "41F8967530742D473F7E394501515653");
-        params.put("access_token", "njuWBlvByBlRr38b+FtPkwLCqCE4yIxIoSJ0ZVAK9rALGcFl8/NmxUDU6TEcYd5gqwgMPx8G/MGPv8K+WjdI0PIalBt7h6E9TSVtUtd6z3PsqvQunSP0KYEW6qIBPpTxgX77T6uyCkvCDT2G9a5jCmhWxY8a047kAMrQ1B9sph+DA7+g+URaSjXURG36Hp8rRQjrtsdoyS5E9gqvtfbn3t5NDp+yhMWgPfkRlae7XzY=");
-        new StoriesResponse.Builder().setTag(this).setParamsMap(params).build(new HttpCallBack<StoriesResponse>() {
-            @Override
-            public void onSuccess(StoriesResponse storiesResponse) {
-                Toast.makeText(HttpDemoActivity.this, "请求成功！  " + storiesResponse.toString(), Toast.LENGTH_LONG).show();
-                Log.d(TAG, storiesResponse.toString());
-            }
-
-            @Override
-            public void onError(int stateCode, String errorInfo) {
-                Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
-                Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
-            }
         });
-        String urlEncode = HttpUrlEncodeUtils.urlEncode(url);
-        Log.d("wsh_log", urlEncode);
     }
 }
 

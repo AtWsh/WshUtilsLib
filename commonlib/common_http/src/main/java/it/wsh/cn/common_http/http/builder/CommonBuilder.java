@@ -297,14 +297,10 @@ public abstract class CommonBuilder<T> {
 
     private int processPostQuest(boolean onUiCallBack, HttpCallBack<T> callback, int httpKey) {
         HttpClientManager clientManager = HttpClientManager.getInstance();
-        boolean isPathEmpty = TextUtils.isEmpty(getPath());
         boolean paramsEmpty = getParams() == null;
         boolean bodyObjEmpty = mBodyObj == null;
         boolean mapHeaderEmpty = (mHttpHeader == null || mHttpHeader.size() <= 0);
-        if (isPathEmpty) {
-            HttpLog.e("CommonBuilder：Error! processPostQuest: Path is empty !" );
-            return -1;
-        }
+
         if (paramsEmpty && bodyObjEmpty && mapHeaderEmpty) {
             return clientManager.post(getBaseUrl(), getPath(), httpKey, getTagHash(), mRetryTimes, mRetryDelayMillis,
                     onUiCallBack, mHttpCustomConfig, callback);
@@ -337,13 +333,8 @@ public abstract class CommonBuilder<T> {
 
     private int processGetQuest(boolean onUiCallBack, HttpCallBack<T> callback, int httpKey) {
         HttpClientManager clientManager = HttpClientManager.getInstance();
-        boolean isPathEmpty = TextUtils.isEmpty(getPath());
         boolean paramsEmpty = getParams() == null;
         boolean mapHeaderEmpty = (mHttpHeader == null || mHttpHeader.size() <= 0);
-        if (isPathEmpty) {
-            HttpLog.e("CommonBuilder：Error! processGetQuest : Path is empty !" );
-            return -1;
-        }
 
         if (paramsEmpty && mapHeaderEmpty) {
             //验证Ok
