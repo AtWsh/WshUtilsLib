@@ -13,6 +13,7 @@ import it.wsh.cn.common_utils.utils.RouteUtils;
 import it.wsh.cn.wshutilslib.httpanotationtest.HttpAnnotationDemoActivity;
 import it.wsh.cn.wshutilslib.httpdemo.HttpDemoActivity;
 import it.wsh.cn.wshutilslib.ossdemo.OssDemoActivity;
+import it.wsh.cn.wshutilslib.pay.PayDemoActivity;
 import it.wsh.cn.wshutilslib.rxjavademo.RxjavaTestActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -105,5 +106,14 @@ public class MainActivity extends AppCompatActivity {
      */
     public void httpAnnotationTest(View view) {
         HttpAnnotationDemoActivity.luanchActivity(this);
+    }
+
+    /**
+     * 跳 FragmentActivity
+     *
+     * @param view
+     */
+    public void payTest(View view) {
+        PayDemoActivity.luanchActivity(this);
     }
 }

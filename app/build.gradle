@@ -20,7 +20,7 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = [moduleName: project.getName(), projectDir:project.projectDir.getAbsolutePath()]
+                arguments = [moduleName: project.getName(), projectDir: project.projectDir.getAbsolutePath()]
                 includeCompileClasspath = true
             }
         }
@@ -68,4 +68,5 @@ dependencies {
     runtimeOnly project(':login')
     runtimeOnly project(':share')
     implementation project(':baidumap')
+    implementation project(':common_pay')
 }

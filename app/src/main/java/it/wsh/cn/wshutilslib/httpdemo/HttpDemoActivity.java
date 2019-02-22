@@ -13,7 +13,6 @@ import com.google.gson.JsonObject;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -21,19 +20,16 @@ import butterknife.Unbinder;
 import it.wsh.cn.common_http.http.HttpCallBack;
 import it.wsh.cn.common_http.http.HttpConfig;
 import it.wsh.cn.common_http.http.request.HttpRequest;
-import it.wsh.cn.common_http.http.utils.HttpUrlEncodeUtils;
 import it.wsh.cn.wshutilslib.R;
 import it.wsh.cn.wshutilslib.httpdemo.bean.AccountExistResponse;
+import it.wsh.cn.wshutilslib.httpdemo.bean.LocalServerLoginResponse;
 import it.wsh.cn.wshutilslib.httpdemo.bean.NoticeListResponse;
 import it.wsh.cn.wshutilslib.httpdemo.bean.RouteInfoResponse;
 import it.wsh.cn.wshutilslib.httpdemo.bean.StoriesResponse;
 import it.wsh.cn.wshutilslib.httpdemo.bean.WeatherResponse;
 import it.wsh.cn.wshutilslib.httpdemo.builder.RemoteLogUploadBuilder;
 import it.wsh.cn.wshutilslib.httpdemo.newhttp.requestinfo.RouteRequestInfo;
-import it.wsh.cn.wshutilslib.httpdemo.newhttp.requestinfo.ZhihuRequestInfo;
 import it.wsh.cn.wshutilslib.httpdemo.newhttp.response.RouteResponseInfo;
-import it.wsh.cn.wshutilslib.httpdemo.newhttp.response.ZhihuResponseInfo;
-import okhttp3.Route;
 
 
 /**
@@ -74,13 +70,19 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
     @OnClick({R.id.get_zhihu_info_btn, R.id.weather_btn, R.id.account_exist, R.id.notice_list, R.id.route_info_btn
             , R.id.route_info_add_header, R.id.route_info_set_http_config
             , R.id.upload, R.id.download, R.id.life_circle_test, R.id.list_response_test
-            , R.id.new_http_test})
+            , R.id.new_http_test, R.id.http_local_test})
     public void onClick(View view) {
         switch (view.getId()) {
 
             case R.id.new_http_test:
 
                 newHttpTest();
+
+                break;
+
+            case R.id.http_local_test:
+
+                httpLocalTest();
 
                 break;
 
@@ -148,6 +150,23 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    private void httpLocalTest() {
+        new LocalServerLoginResponse.ListBuilder().setTag(this).build(new HttpCallBack<List<LocalServerLoginResponse>>() {
+
+            @Override
+            public void onSuccess(List<LocalServerLoginResponse> list) {
+                Toast.makeText(HttpDemoActivity.this, "请求成功！  " + list.toString(), Toast.LENGTH_LONG).show();
+                Log.d(TAG, list.toString());
+            }
+
+            @Override
+            public void onError(int stateCode, String errorInfo) {
+                Toast.makeText(HttpDemoActivity.this, "请求失败！  stateCode = " + stateCode + "; errorInfo = " + errorInfo, Toast.LENGTH_LONG).show();
+                Log.d(TAG, "stateCode = " + stateCode + "; errorInfo = " + errorInfo);
+            }
+        });
+    }
+
     private void newHttpTest() {
 
         //Get 请求
@@ -195,7 +214,7 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
         RouteRequestInfo routeRequestInfo = new RouteRequestInfo("6", "isValidRouter", "params");
         new HttpRequest<RouteRequestInfo, RouteResponseInfo>()
                 .setTag(HttpDemoActivity.this)
-                .setRetryTimes(3,2000)
+                .setRetryTimes(3, 2000)
                 .start(routeRequestInfo, new HttpCallBack<RouteResponseInfo>() {
                     @Override
                     public void onSuccess(RouteResponseInfo responseInfo) {

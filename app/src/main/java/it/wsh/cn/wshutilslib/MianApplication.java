@@ -9,10 +9,10 @@ import com.baidu.mapapi.SDKInitializer;
 import com.squareup.leakcanary.LeakCanary;
 
 import it.wsh.cn.common_http.http.HttpManager;
-import it.wsh.cn.common_http.http.database.utils.GreenDaoDatabase;
 import it.wsh.cn.common_imageloader.GlideConfig;
 import it.wsh.cn.common_oss.OssManager;
 import it.wsh.cn.common_oss.glidemodel.AliyunOSSModelLoaderFactory;
+import it.wsh.cn.common_pay.pay.PayConfig;
 import it.wsh.cn.componentbase.application.ApplicationConfig;
 import it.wsh.cn.componentbase.application.BaseApplication;
 import it.wsh.cn.wshutilslib.config.OssBusinessConfig;
@@ -22,9 +22,10 @@ import it.wsh.cn.wshutilslib.config.OssBusinessConfig;
  * created on: 2018/8/10 17:39
  * description:
  */
-public class MianApplication extends BaseApplication{
+public class MianApplication extends BaseApplication {
 
     private static Context mContext;
+
     public static Context getContext() {
         return mContext;
     }
@@ -63,6 +64,9 @@ public class MianApplication extends BaseApplication{
         //自4.3.0起，百度地图SDK所有接口均支持百度坐标和国测局坐标，用此方法设置您使用的坐标类型.
         //包括BD09LL和GCJ02两种坐标，默认是BD09LL坐标。
         SDKInitializer.setCoordType(CoordType.BD09LL);
+
+        //支付初始化
+        PayConfig.init(this, "");
     }
 
     @Override
@@ -70,7 +74,7 @@ public class MianApplication extends BaseApplication{
         for (String s : ApplicationConfig.sApplicationPath) {
             try {
                 Class<?> aClass = Class.forName(s);
-                BaseApplication app = (BaseApplication)aClass.newInstance();
+                BaseApplication app = (BaseApplication) aClass.newInstance();
                 app.initModule(this);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
@@ -87,7 +91,7 @@ public class MianApplication extends BaseApplication{
         for (String s : ApplicationConfig.sApplicationPath) {
             try {
                 Class<?> aClass = Class.forName(s);
-                BaseApplication app = (BaseApplication)aClass.newInstance();
+                BaseApplication app = (BaseApplication) aClass.newInstance();
                 app.initModuleData(this);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();

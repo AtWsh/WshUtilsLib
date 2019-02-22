@@ -35,10 +35,11 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation deps.test.junit
-    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
     androidTestImplementation deps.support.test.runner
     androidTestImplementation deps.support.test.espresso
     api deps.gson
     api deps.wechat_api
     implementation files('libs/alipaySdk-20170922.jar')
+    implementation project(':hdpay')
 }

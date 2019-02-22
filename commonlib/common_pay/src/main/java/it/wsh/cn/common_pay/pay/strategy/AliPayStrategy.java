@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 import java.util.Map;
 
 import it.wsh.cn.common_pay.pay.PayResultCode;
-import it.wsh.cn.common_pay.pay.PaymentOrder;
+import it.wsh.cn.common_pay.pay.callback.PayCallBack;
 import it.wsh.cn.common_pay.pay.model.AliPayRes;
 import it.wsh.cn.common_pay.pay.model.AliPayResult;
 import it.wsh.cn.common_pay.pay.util.ThreadManager;
@@ -24,47 +24,47 @@ public class AliPayStrategy extends BasePayStrategy {
 
     private static final String TAG = AliPayStrategy.class.getSimpleName();
 
-    public AliPayStrategy(Activity context,String payData, PaymentOrder.PayCallBack callBack){
-        super(context,payData,callBack);
-        aliPayRes = new Gson().fromJson(payData,AliPayRes.class);
+    public AliPayStrategy(Activity context, String payData, PayCallBack callBack) {
+        super(context, payData, callBack);
+        aliPayRes = new Gson().fromJson(payData, AliPayRes.class);
     }
 
     Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if(msg.what != PAY_RESULT_MSG){
+            if (msg.what != PAY_RESULT_MSG) {
                 return;
             }
             ThreadManager.shutdown();
-            AliPayResult result = new AliPayResult((Map<String, String>)msg.obj);
+            AliPayResult result = new AliPayResult((Map<String, String>) msg.obj);
             switch (result.getResultStatus()) {
                 case AliPayResult.PAY_OK_STATUS:
-                    callBack.onPayCallBack(PayResultCode.COMMON_PAY_OK);
+                    mCallBack.onPayCallBack(PayResultCode.COMMON_PAY_OK);
                     break;
 
                 case AliPayResult.PAY_CANCLE_STATUS:
-                    callBack.onPayCallBack(PayResultCode.COMMON_USER_CACELED_ERR);
+                    mCallBack.onPayCallBack(PayResultCode.COMMON_USER_CACELED_ERR);
                     break;
 
                 case AliPayResult.PAY_FAILED_STATUS:
-                    callBack.onPayCallBack(PayResultCode.COMMON_PAY_ERR);
+                    mCallBack.onPayCallBack(PayResultCode.COMMON_PAY_ERR);
                     break;
 
                 case AliPayResult.PAY_WAIT_CONFIRM_STATUS:
-                    callBack.onPayCallBack(PayResultCode.ALI_PAY_WAIT_CONFIRM_ERR);
+                    mCallBack.onPayCallBack(PayResultCode.ALI_PAY_WAIT_CONFIRM_ERR);
                     break;
 
                 case AliPayResult.PAY_NET_ERR_STATUS:
-                    callBack.onPayCallBack(PayResultCode.ALI_PAY_NET_ERR);
+                    mCallBack.onPayCallBack(PayResultCode.ALI_PAY_NET_ERR);
                     break;
 
                 case AliPayResult.PAY_UNKNOWN_ERR_STATUS:
-                    callBack.onPayCallBack(PayResultCode.ALI_PAY_UNKNOW_ERR);
+                    mCallBack.onPayCallBack(PayResultCode.ALI_PAY_UNKNOW_ERR);
                     break;
 
                 default:
-                    callBack.onPayCallBack(PayResultCode.ALI_PAY_OTHER_ERR);
+                    mCallBack.onPayCallBack(PayResultCode.ALI_PAY_OTHER_ERR);
                     break;
             }
             mHandler.removeCallbacksAndMessages(null);
@@ -76,24 +76,29 @@ public class AliPayStrategy extends BasePayStrategy {
         Runnable payRun = new Runnable() {
             @Override
             public void run() {
-                if(mContext == null || aliPayRes == null){
+                if (mContext == null || aliPayRes == null) {
                     return;
                 }
                 PayTask task = new PayTask(mContext);
-                if(aliPayRes != null && !TextUtils.isEmpty(aliPayRes.getOrderStr())){
-                    Map<String,String> result = task.payV2(aliPayRes.getOrderStr(),true);
+                if (aliPayRes != null && !TextUtils.isEmpty(aliPayRes.getOrderStr())) {
+                    Map<String, String> result = task.payV2(aliPayRes.getOrderStr(), true);
                     Message message = mHandler.obtainMessage();
                     message.what = PAY_RESULT_MSG;
                     message.obj = result;
                     mHandler.sendMessage(message);
-                }else {
+                } else {
                     //BHLog.i(TAG,"alipayStrategy is null");
-                    callBack.onPayCallBack(PayResultCode.ALI_PAY_GSON_TO_OBJ_ERROR);
+                    mCallBack.onPayCallBack(PayResultCode.ALI_PAY_GSON_TO_OBJ_ERROR);
                 }
             }
         };
 //        ThreadManager.getInstance().postLogicTask(payRun);
         ThreadManager.execute(payRun);
+    }
+
+    @Override
+    public void clear() {
+
     }
 
 }

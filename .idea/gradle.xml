@@ -20,6 +20,7 @@
             <option value="$PROJECT_DIR$/commonlib/common_oss" />
             <option value="$PROJECT_DIR$/commonlib/common_pay" />
             <option value="$PROJECT_DIR$/commonlib/common_utils" />
+            <option value="$PROJECT_DIR$/commonlib/hdpay" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
