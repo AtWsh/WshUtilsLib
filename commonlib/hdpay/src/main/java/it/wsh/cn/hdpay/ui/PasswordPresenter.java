@@ -1,6 +1,7 @@
 package it.wsh.cn.hdpay.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.widget.Toast;
 
 import it.wsh.cn.common_http.http.HttpCallBack;
@@ -19,6 +20,11 @@ public class PasswordPresenter {
     private int mErrorTimes = 0;
     private final int MAX_ERROR_TIMES = 3;
 
+    private String mPrepayId;
+    private String mToken;
+    private String mWalletId;
+    private String mQrcode;
+
 
     public void onAttachView(Activity view) {
 
@@ -34,9 +40,9 @@ public class PasswordPresenter {
         //todo 获得支付结果，如果是密码错误则判断是否超过三次输入错误密码，没超过三次则弹窗重新输入和忘记密码。超过三次则撤单，关闭界面。
         HdPasswordPayReq hdPasswordPayReq = new HdPasswordPayReq();
         hdPasswordPayReq.pay_pwd = password;
-        hdPasswordPayReq.prepay_id = "123456";
-        hdPasswordPayReq.token = "token";
-        hdPasswordPayReq.wallet_id = "123456";
+        hdPasswordPayReq.prepay_id = mPrepayId;
+        hdPasswordPayReq.token = mToken;
+        hdPasswordPayReq.wallet_id = mWalletId;
 
         new HdPasswordPayRsp.Builder()
                 .setTag(mView)
@@ -86,8 +92,8 @@ public class PasswordPresenter {
     //撤单
     public void cancelPay() {
         HdCancelPayReq hdCancelPayReq = new HdCancelPayReq();
-        hdCancelPayReq.prepay_id = "123456";
-        new HdCancelPayRsp.Builder("authorization")
+        hdCancelPayReq.prepay_id = mPrepayId;
+        new HdCancelPayRsp.Builder()
                 .setTag(mView)
                 //todo 正式开发需要加上
                 /*.addBodyObj(hdCancelPayReq)*/
@@ -104,4 +110,13 @@ public class PasswordPresenter {
                 });
     }
 
+    public void initData(Intent intent) {
+        if (intent == null) {
+            return;
+        }
+        mPrepayId = intent.getStringExtra(HdPayConstants.KEY_PREPAY_ID);
+        mToken = intent.getStringExtra(HdPayConstants.KEY_TOKEN);
+        mWalletId = intent.getStringExtra(HdPayConstants.KEY_WALLET_ID);
+        mQrcode = intent.getStringExtra(HdPayConstants.KEY_QRCODE);
+    }
 }

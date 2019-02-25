@@ -57,7 +57,7 @@ public class HdPayTask {
                             HdPayManager.getInstance().sendPayResultBroadcast(HdPayResultCode.HD_PAY_REQUEST_PAYRSP_ERR, "");
                         } else {
                             //获取成功，调起密码界面。 此处已是主线程
-                            startPasswordActivity();
+                            startPasswordActivity(hdQrcodePayRsp.token);
                         }
                     }
 
@@ -79,7 +79,7 @@ public class HdPayTask {
                     HdPayManager.getInstance().sendPayResultBroadcast(HdPayResultCode.HD_PAY_REQUEST_PAYRSP_ERR, "");
                 } else {
                     //鉴权成功，调起密码界面。 此处已是主线程
-                    startPasswordActivity();
+                    startPasswordActivity(rsp.token);
                 }
             }
 
@@ -91,12 +91,16 @@ public class HdPayTask {
         });
     }
 
-    private void startPasswordActivity() {
+    private void startPasswordActivity(String token) {
         Context context = HdPayManager.getInstance().getContext();
         if (context == null) {
             HdPayManager.getInstance().sendPayResultBroadcast(HdPayResultCode.HD_PAY_REQUEST_PAY_CONTEXT_ERR, "");
             return;
         }
-        PasswordActivity.luanchActivity(context);
+
+        if (TextUtils.isEmpty(token)) {
+            return;
+        }
+        PasswordActivity.luanchActivity(context, mHdPayReq.prepay_id, token, mHdPayReq.wallet_id, mHdPayReq.qr_code);
     }
 }

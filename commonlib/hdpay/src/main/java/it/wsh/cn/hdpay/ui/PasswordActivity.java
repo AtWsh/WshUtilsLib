@@ -10,16 +10,25 @@ import it.wsh.cn.hdpay.HdPayManager;
 import it.wsh.cn.hdpay.HdPayResultCode;
 import it.wsh.cn.hdpay.R;
 import it.wsh.cn.hdpay.callback.PasswordInputListener;
+import it.wsh.cn.hdpay.utils.HdPayConstants;
 import it.wsh.cn.hdpay.utils.HdPayLog;
 
 public class PasswordActivity extends AppCompatActivity {
 
     private PasswordPresenter mPresenter;
     private PasswordView mPasswordView;
+    private String mPrepayId;
+    private String mToken;
+    private String mWalletId;
+    private String mQrcode;
 
-    public static void luanchActivity(Context context) {
+    public static void luanchActivity(Context context, String prepay_id, String token, String wallet_id, String qr_code) {
         HdPayLog.d("Start PasswordActivity ");
         Intent intent = new Intent(context, PasswordActivity.class);
+        intent.putExtra(HdPayConstants.KEY_PREPAY_ID, prepay_id);
+        intent.putExtra(HdPayConstants.KEY_TOKEN, token);
+        intent.putExtra(HdPayConstants.KEY_WALLET_ID, wallet_id);
+        intent.putExtra(HdPayConstants.KEY_QRCODE, qr_code);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
@@ -33,6 +42,7 @@ public class PasswordActivity extends AppCompatActivity {
         mPresenter = new PasswordPresenter();
         if (mPresenter != null) {
             mPresenter.onAttachView(this);
+            mPresenter.initData(getIntent());
         }
 
         initView();

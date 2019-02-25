@@ -8,8 +8,8 @@ public class HdCancelPayRsp extends HdPayBaseRsp {
     public String prepay_id;
 
     public static class Builder extends HdPayBaseRsp.BasePayBuilder<HdCancelPayRsp> {
-        public Builder(String authorization) {
-            super(authorization);
+        public Builder() {
+            super();
         }
 
         @Override

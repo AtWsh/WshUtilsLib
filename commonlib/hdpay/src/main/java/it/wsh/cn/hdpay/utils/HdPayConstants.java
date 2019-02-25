@@ -6,6 +6,11 @@ public class HdPayConstants {
     public static final String HD_PAY_RESULT_EXTRA_CODE = "it.cn.hd.pay.HD_PAY_RESULT_EXTRA_CODE";
     public static final String HD_PAY_RESULT_EXTRA_INFO = "it.cn.hd.pay.HD_PAY_RESULT_EXTRA_INFO";
 
+    public static final String KEY_PREPAY_ID = "prepay_id";
+    public static final String KEY_TOKEN = "token";
+    public static final String KEY_WALLET_ID = "wallet_id";
+    public static final String KEY_QRCODE = "qrcode";
+
     public static class HdPayResultStringCode {
         public static final String PASS_WORD_ERROR = "PASS_WORD_ERROR"; //密码错误
         public static final String INVALID_REQUEST = "INVALID_REQUEST";//参数错误
