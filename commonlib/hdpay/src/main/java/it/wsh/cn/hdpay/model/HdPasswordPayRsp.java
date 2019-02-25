@@ -32,8 +32,8 @@ public class HdPasswordPayRsp extends HdPayBaseRsp {
     public String pay_id;
 
     public static class Builder extends HdPayBaseRsp.BasePayBuilder<HdPasswordPayRsp> {
-        public Builder(String authorization) {
-            super(authorization);
+        public Builder() {
+            super();
         }
 
         @Override

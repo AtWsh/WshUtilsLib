@@ -20,8 +20,8 @@ public class HdQrcodePayRsp extends HdPayBaseRsp {
     public String pay_id;
 
     public static class Builder extends HdPayBaseRsp.BasePayBuilder<HdQrcodePayRsp> {
-        public Builder(String authorization) {
-            super(authorization);
+        public Builder() {
+            super();
         }
 
         @Override

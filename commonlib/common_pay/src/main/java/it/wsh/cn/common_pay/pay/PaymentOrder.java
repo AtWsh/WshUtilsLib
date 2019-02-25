@@ -101,7 +101,7 @@ public class PaymentOrder {
      * @return
      */
     private boolean hasWxAppid() {
-        if (TextUtils.isEmpty(PayConfig.getWXAppid())) {
+        if (TextUtils.isEmpty(PayManager.getWXAppid())) {
             return false;
         }
         return true;

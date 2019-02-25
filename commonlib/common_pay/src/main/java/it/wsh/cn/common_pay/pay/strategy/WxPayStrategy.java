@@ -12,7 +12,7 @@ import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import it.wsh.cn.common_pay.pay.PayConfig;
+import it.wsh.cn.common_pay.pay.PayManager;
 import it.wsh.cn.common_pay.pay.PayConstants;
 import it.wsh.cn.common_pay.pay.PayResultCode;
 import it.wsh.cn.common_pay.pay.callback.PayCallBack;
@@ -41,7 +41,7 @@ public class WxPayStrategy extends BasePayStrategy {
             return;
         }
 
-        String wxAppid = PayConfig.getWXAppid();
+        String wxAppid = PayManager.getWXAppid();
         api.registerApp(wxAppid);
         registerPayResultBroadcast();
         if (mPayRes != null) {

@@ -30,7 +30,7 @@ public class HdPayTask {
             return;
         }
 
-        boolean qrcodePay = TextUtils.isEmpty(mHdPayReq.qr_code);
+        boolean qrcodePay = !TextUtils.isEmpty(mHdPayReq.qr_code);
         if (qrcodePay) {
             //todo 这里开启轮询
             doQrcodePayPolling();
@@ -46,7 +46,8 @@ public class HdPayTask {
         hdQrcodePayReq.qr_code = mHdPayReq.qr_code;
         hdQrcodePayReq.wallet_id = mHdPayReq.wallet_id;
 
-        new HdQrcodePayRsp.Builder("authorization")
+        new HdQrcodePayRsp.Builder()
+                //todo 正式接口，需要放开此处
                 /* .addBodyObj(hdQrcodePayReq)*/
                 .build(new HttpCallBack<HdQrcodePayRsp>() {
                     @Override
@@ -70,7 +71,7 @@ public class HdPayTask {
 
     private void doAuthentication() {
         HdAuthenticationReq hdAuthenticationReq = new HdAuthenticationReq(mHdPayReq);
-        new HdAuthenticationRsp.Builder("authorization")/*.addBodyObj(hdAuthenticationReq)*/.build(new HttpCallBack<HdAuthenticationRsp>() {
+        new HdAuthenticationRsp.Builder()/*.addBodyObj(hdAuthenticationReq)*/.build(new HttpCallBack<HdAuthenticationRsp>() {
             @Override
             public void onSuccess(HdAuthenticationRsp rsp) {
                 HdPayLog.d("authorizaton onSuccess");

@@ -38,7 +38,7 @@ public class PasswordPresenter {
         hdPasswordPayReq.token = "token";
         hdPasswordPayReq.wallet_id = "123456";
 
-        new HdPasswordPayRsp.Builder("authorization")
+        new HdPasswordPayRsp.Builder()
                 .setTag(mView)
                 //todo 正式开发需要加上
                 /*.addBodyObj(hdPasswordPayReq)*/

@@ -12,7 +12,7 @@ import it.wsh.cn.common_http.http.HttpManager;
 import it.wsh.cn.common_imageloader.GlideConfig;
 import it.wsh.cn.common_oss.OssManager;
 import it.wsh.cn.common_oss.glidemodel.AliyunOSSModelLoaderFactory;
-import it.wsh.cn.common_pay.pay.PayConfig;
+import it.wsh.cn.common_pay.pay.PayManager;
 import it.wsh.cn.componentbase.application.ApplicationConfig;
 import it.wsh.cn.componentbase.application.BaseApplication;
 import it.wsh.cn.wshutilslib.config.OssBusinessConfig;
@@ -66,7 +66,8 @@ public class MianApplication extends BaseApplication {
         SDKInitializer.setCoordType(CoordType.BD09LL);
 
         //支付初始化
-        PayConfig.init(this, "");
+        PayManager.init(this, "", "APP");
+        PayManager.setOrUpdateAuthorization("authorization");
     }
 
     @Override
