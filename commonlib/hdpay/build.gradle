@@ -17,6 +17,19 @@ android {
             }
         }
 
+        ndk {
+            //选择要添加的对应cpu类型的.so库。  暂时把 x86 去掉，音视频不支持 x86,后面会加上
+            abiFilters  'x86','armeabi-v7a','x86_64'
+            // 还可以添加 'x86', 'x86_64', 'mips', 'mips64' armeabi-v7a ,'armeabi', 'x86'
+        }
+
+        sourceSets {
+            main {
+                jni.srcDirs=[]
+                jniLibs.srcDirs  'src/main/jni'
+            }
+        }
+
     }
 
     buildTypes {
@@ -29,6 +42,12 @@ android {
             consumerProguardFiles 'proguard-rules.pro'
         }
     }
+
+    /*externalNativeBuild {
+        ndkBuild {
+            path './src/main/jni/Android.mk'
+        }
+    }*/
 
 }
 

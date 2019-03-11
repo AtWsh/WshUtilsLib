@@ -456,7 +456,7 @@ public class HttpDemoActivity extends AppCompatActivity implements View.OnClickL
      */
     private void requestZhihuInfo() {
         HttpConfig httpConfig = HttpConfig.create(true);
-        new StoriesResponse.Builder().setTag(this).setHttpCustomConfig(httpConfig).build(new HttpCallBack<StoriesResponse>() {
+        new StoriesResponse.Builder().setTag(this).setHttpCustomConfig(httpConfig).build(true, new HttpCallBack<StoriesResponse>() {
             @Override
             public void onSuccess(StoriesResponse storiesResponse) {
                 Toast.makeText(HttpDemoActivity.this, "请求成功！  " + storiesResponse.toString(), Toast.LENGTH_LONG).show();
