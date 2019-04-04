@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/tv_task_test1"
+        android:layout_width="wrap_content"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="10dp"
+        android:gravity="center"
+        android:background="#FF0"
+        android:text="SingleTask Test" />
+
+    <TextView
+        android:id="@+id/tv_task_test2"
+        android:layout_width="wrap_content"
+        android:layout_toRightOf="@+id/tv_task_test1"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:background="#FF0"
+        android:text="SingleInstance Test"
+        android:visibility="gone"/>
+
+</RelativeLayout>

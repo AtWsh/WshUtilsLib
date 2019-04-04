@@ -10,6 +10,7 @@ import com.alibaba.android.arouter.launcher.ARouter;
 import com.example.wsh.baidumap.DituDemoActivity;
 
 import it.wsh.cn.common_utils.utils.RouteUtils;
+import it.wsh.cn.wshutilslib.TaskAndLaunchModeTest.SingleTaskTestFirstActivity;
 import it.wsh.cn.wshutilslib.httpanotationtest.HttpAnnotationDemoActivity;
 import it.wsh.cn.wshutilslib.httpdemo.HttpDemoActivity;
 import it.wsh.cn.wshutilslib.ossdemo.OssDemoActivity;
@@ -115,5 +116,14 @@ public class MainActivity extends AppCompatActivity {
      */
     public void payTest(View view) {
         PayDemoActivity.luanchActivity(this);
+    }
+
+    /**
+     * 跳 SingleTaskTestFirstActivity
+     *
+     * @param view
+     */
+    public void taskOrLaunchmodeTest(View view) {
+        SingleTaskTestFirstActivity.startSelf(this);
     }
 }

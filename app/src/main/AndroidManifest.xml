@@ -41,7 +41,8 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="T0aFs0xRLuZYc84PIs2hrclN5O4QrHPO" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -56,6 +57,14 @@
         <activity android:name=".rxjavademo.RxjavaTestActivity"></activity>
         <activity android:name=".ossdemo.OssDemoActivity"></activity>
         <activity android:name=".pay.PayDemoActivity"></activity>
+        <activity android:name=".TaskAndLaunchModeTest.SingleTaskTestFirstActivity"
+            android:launchMode="singleTask"/>
+        <activity android:name=".TaskAndLaunchModeTest.SingleTaskTestSecondActivity"/>
+
+        <activity android:name=".TaskAndLaunchModeTest.SingleInstanceTestAActivity"/>
+        <activity android:name=".TaskAndLaunchModeTest.SingleInstanceTestBActivity"
+            android:launchMode="singleInstance"/>
+        <activity android:name=".TaskAndLaunchModeTest.SingleInstanceTestCActivity"/>
     </application>
 
 </manifest>
