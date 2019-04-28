@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--自定义扫描圆环的自定义属性-->
+    <declare-styleable name="CustomCircleView">
+        <!--对应中间文本文字的大小-->
+        <attr name="textSize" format="dimension" />
+        <!--对应中间文本-->
+        <attr name="text" format="string" />
+        <!--对应内圆的颜色-->
+        <attr name="circleColor" format="color" />
+        <!--对应外环的颜色-->
+        <attr name="arcColor" format="color" />
+        <!--对应文本的颜色-->
+        <attr name="textColor" format="color" />
+        <!--对应外环的起始角度-->
+        <attr name="startAngle" format="integer" />
+
+        <!--对应内圆的半径-->
+        <attr name="circleRadius" format="dimension" />
+
+        <!--对应外环的半径-->
+        <attr name="arcRadius" format="dimension" />
+
+        <!--对应外环的厚度-->
+        <attr name="arcStrokeWidth" format="dimension" />
+
+        <!--百分比-->
+        <attr name="percent" format="integer" />
+    </declare-styleable>
+
+</resources>

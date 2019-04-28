@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/one_key_internet_banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/colorWhite"
+        android:paddingTop="12dp">
+
+        <Button
+            android:id="@+id/bt_setting_network"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/dimen_26dp"
+            android:layout_marginRight="@dimen/dimen_26dp"
+            android:layout_marginBottom="@dimen/dimen_60dp"
+            android:background="@drawable/sv_main_btn_selector"
+            android:paddingTop="@dimen/dimen_14dp"
+            android:paddingBottom="@dimen/dimen_14dp"
+            android:text="@string/setting_network"
+            android:textColor="@color/color_222A37"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/one_key_internet_tip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/one_key_internet_indicator"
+            android:layout_above="@id/bt_setting_network"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/dimen_20dp"
+            android:layout_marginBottom="@dimen/dimen_10dp"
+            android:paddingLeft="@dimen/dimen_40dp"
+            android:paddingRight="@dimen/dimen_40dp"
+            android:text="@string/one_key_to_internet_info"
+            android:textColor="#A4A9AF"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@id/one_key_internet_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dimen_40dp"
+            android:layout_marginLeft="@dimen/dimen_40dp"
+            android:textColor="#081530"
+            android:textSize="22sp"
+            android:layout_alignParentTop="true"
+            android:layout_alignStart="@id/one_key_internet_tip"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

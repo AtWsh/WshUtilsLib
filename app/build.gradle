@@ -25,11 +25,15 @@ android {
             }
         }
     }
+
+
     sourceSets {
         main {
-            manifest.srcFile 'src/main/AndroidManifest.xml'
+            java.srcDirs = ['src/main/java', 'src/main/aidl']
         }
     }
+
+
     buildTypes {
         release {
             minifyEnabled true
@@ -69,4 +73,6 @@ dependencies {
     runtimeOnly project(':share')
     implementation project(':baidumap')
     implementation project(':common_pay')
+
+    implementation deps.retrofit
 }

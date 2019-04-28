@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/dimen_10dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/tv_custom_circle_view_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dimen_5dp"
+        android:background="#FF0"
+        android:text="开始"/>
+
+    <TextView
+        android:id="@+id/tv_custom_circle_view_stop"
+        android:layout_toRightOf="@+id/tv_custom_circle_view_start"
+        android:layout_marginLeft="@dimen/dimen_10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dimen_5dp"
+        android:background="#FF0"
+        android:text="暂停"/>
+
+    <TextView
+        android:id="@+id/tv_custom_circle_view_10"
+        android:layout_below="@+id/tv_custom_circle_view_start"
+        android:layout_marginTop="@dimen/dimen_10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dimen_5dp"
+        android:background="#FF0"
+        android:text="10%"/>
+
+    <TextView
+        android:id="@+id/tv_custom_circle_view_50"
+        android:layout_below="@+id/tv_custom_circle_view_start"
+        android:layout_toRightOf="@+id/tv_custom_circle_view_10"
+        android:layout_marginLeft="@dimen/dimen_10dp"
+        android:layout_marginTop="@dimen/dimen_10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dimen_5dp"
+        android:background="#FF0"
+        android:text="50%"/>
+
+    <TextView
+        android:id="@+id/tv_custom_circle_view_100"
+        android:layout_below="@+id/tv_custom_circle_view_start"
+        android:layout_toRightOf="@+id/tv_custom_circle_view_50"
+        android:layout_marginLeft="@dimen/dimen_10dp"
+        android:layout_marginTop="@dimen/dimen_10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dimen_5dp"
+        android:background="#FF0"
+        android:text="100%"/>
+
+    <it.wsh.cn.wshutilslib.CustomVewTest.widget.CustomCircleView
+        android:id="@+id/custom_circle_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:textSize = "14sp"
+        app:text = "50%"
+        app:circleColor = "#F00"
+        app:arcColor = "#FF0"
+        app:textColor = "#FFF"
+        app:startAngle = "270"
+        app:circleRadius="30dp"
+        app:arcRadius = "60dp"
+        app:arcStrokeWidth = "20dp"
+        app:percent = "50"/>
+
+</RelativeLayout>

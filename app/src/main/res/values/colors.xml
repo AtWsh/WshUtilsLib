@@ -3,4 +3,102 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="transparent">#00000000</color>
+
+    <!--主背景颜色-->
+    <color name="main_bg_color">#F0F0F0</color>
+    <!--title背景颜色-->
+    <color name="head_bg_color">#FFFFFF</color>
+    <!--分割线颜色-->
+    <color name="line_bg">#dbdbdb</color>
+    <!--标题颜色-->
+    <color name="header_title_color">#333333</color>
+
+    <color name="color_black">#000000</color>
+
+    <color name="color_white">#FFFFFF</color>
+    <!--通用itemview的颜色-->
+    <color name="common_item_background">#FFFFFF</color>
+    <color name="common_item_text_color">#222A37</color>
+    <color name="common_item_val_text_color">#A4A9AF</color>
+
+    <!--通用灰色-->
+    <color name="black_1">#333333</color>
+    <color name="black_2">#666666</color>
+    <color name="black_3">#999999</color>
+    <color name="black_4">#BDBDBD</color>
+    <color name="black_5">#E8E8E8</color>
+    <color name="black_6">#40BDBDBD</color>
+    <color name="black_7">#43000000</color>
+    <color name="black_8">#333333</color>
+
+    <!--文字颜色-->
+    <color name="font_black">#666</color>
+    <color name="s_text_color_black_1">@color/black_1</color>
+    <color name="s_text_color_black_2">@color/black_2</color>
+    <color name="s_text_color_black_3">@color/black_3</color>
+    <color name="s_text_color_black_4">@color/black_4</color>
+    <color name="s_text_color_black_5">@color/black_5</color>
+    <color name="s_text_color_white_1">#ffffffff</color>
+
+    <color name="contents_text">#ff000000</color>
+    <color name="encode_view">#ffffffff</color>
+    <color name="possible_result_points">#c0ffbd21</color> <!-- Android standard ICS color -->
+    <color name="result_minor_text">#ffc0c0c0</color>
+    <color name="result_points">#c099cc00</color> <!-- Android standard ICS color -->
+    <color name="result_text">#ffffffff</color>
+    <color name="result_view">#b0000000</color>
+    <color name="status_text">#ffffffff</color>
+    <color name="viewfinder_laser">#ffcc0000</color> <!-- Android standard ICS color -->
+    <color name="viewfinder_mask">#60000000</color>
+
+    <color name="arc_fg_color">#3a92ec</color>
+    <color name="arc_bg_color">#f2f2f2</color>
+    <color name="alert_color">#f26161</color>
+    <color name="alert_color_alpha">#88f26161</color>
+    <color name="text_color">#333333</color>
+    <color name="wait_color_blue">#89EAED</color>
+    <color name="transparent_background">#70000000</color>
+    <color name="transparent_background_half">#e0ffffff</color>
+    <color name="shadow_color">#dadada</color>
+    <color name="cyan">#13D5DC</color>
+    <color name="cyan_light">#5513D5DC</color>
+    <color name="arc_text_color">#2f3133</color>
+
+    <color name="easy_gray_s">#BF2F3133</color>
+
+    <color name="color_757870a">#75787a</color>
+    <color name="color_2f3133">#2f3133</color>
+    <color name="checked_color">#75787a</color>
+    <color name="unchecked_color">#c8cacc</color>
+    <color name="border_dbdbdb">#dbdbdb</color>
+    <color name="alpha_border">#a6dbdbdb</color>
+    <color name="alpha_white">#0c000000</color>
+    <color name="color_13d5dc">#13d5dc</color>
+    <color name="color_222A37">#222A37</color>
+    <color name="color_ffC800">#FDC810</color>
+    <color name="color_ffda00">#FFDA00</color>
+    <color name="color_fec805">#FEC805</color>
+
+
+    <color name="colorWhite">#ffffff</color>
+    <color name="color_d4d8de">#d4d8de</color>
+
+    <color name="colorHint">#a4aab3</color>
+    <color name="colorText">#3a3f41</color>
+    <color name="colorDivider">#F0F2F4</color>
+    <color name="colorTheme">#FFCF01</color>
+    <color name="text_grey">#A4A9AF</color>
+
+    <color name="pickerview_timebtn_nor">#057dff</color>
+    <color name="pickerview_timebtn_pre">#c2daf5</color>
+    <color name="pickerview_bg_topbar">#f5f5f5</color>
+
+    <color name="pickerview_topbar_title">#000000</color>
+    <color name="pickerview_wheelview_textcolor_out">#a8a8a8</color>
+    <color name="pickerview_wheelview_textcolor_center">#2a2a2a</color>
+    <color name="pickerview_wheelview_textcolor_divider">#d5d5d5</color>
+    <color name="pickerview_bgColor_overlay">#60000000</color>
+    <color name="pickerview_bgColor_default">#FFFFFFFF</color>
 </resources>

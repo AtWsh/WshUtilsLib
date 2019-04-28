@@ -22,7 +22,7 @@ import it.wsh.cn.wshutilslib.config.OssBusinessConfig;
  * created on: 2018/8/10 17:39
  * description:
  */
-public class MianApplication extends BaseApplication {
+public class MainApplication extends BaseApplication {
 
     private static Context mContext;
 

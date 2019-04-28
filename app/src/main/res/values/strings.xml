@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">WshUtilsLib</string>
+
+    <!--island_wifi  start-->
+    <string name="one_key_to_internet_title">免费上网</string>
+    <string name="wifi_connected_title">连接网络</string>
+    <string name="setting_network">设置网络</string>
+    <string name="wifi_connected_fail_tips">认证失败，请断开Wi-Fi后重新设置！</string>
+    <string name="wifi_connected_success_tips">您已成功连接恒大海花岛全岛Wifi！</string>
+    <string name="wifi_connected_fail_error_207_tips">认证失败，今天连接Wi-Fi次数已用尽</string>
+    <string name="one_key_to_internet_step1_tips">[设置]&#8194;-&#8194;[无线局域网]</string>
+    <string name="one_key_to_internet_step2_tips">连接海花岛WiFi&#12288;[恒大海花岛WIFI]</string>
+    <string name="one_key_to_internet_step3_tips">APP认证，连接成功</string>
+    <string name="wifi_connecting">网络连接中…</string>
+    <string name="wifi_connect_finish">完成</string>
+    <string name="one_key_to_internet_info">海花岛WiFi已全面覆盖，您仅需要连接恒大海花岛WIFI，即可免费享用社区WiFi上网！</string>
+    <!--island_wifi  end-->
 </resources>

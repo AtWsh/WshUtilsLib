@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/header_layout_rel"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="#FFFFFF">
+
+            <TextView
+                android:id="@+id/header_left"
+                style="@style/HeaderStyle"
+                android:layout_alignParentLeft="true"
+                android:drawableLeft="@mipmap/icn_back_black"
+                android:drawablePadding="16dp"
+                android:paddingLeft="24dp"
+                android:paddingRight="8dp"
+                android:textColor="#333333"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/header_center"
+                style="@style/HeaderStyle"
+                android:layout_centerInParent="true"
+                android:textColor="#333333"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/header_right"
+                style="@style/HeaderStyle"
+                android:layout_alignParentRight="true"
+                android:drawablePadding="16dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="24dp"
+                android:textColor="#333333"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/unread_count_left"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_marginRight="18dp"
+                android:background="@drawable/dot_view"
+                android:visibility="gone" />
+
+            <View
+                android:id="@+id/header_line"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_alignParentBottom="true" />
+        </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</RelativeLayout>
