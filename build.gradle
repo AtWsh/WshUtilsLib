@@ -10,7 +10,7 @@ buildscript {
                 'compileSdk'            : 27, // 编译版本
                 'targetSdk'             : 27, // 目标版本
 
-                'androidPlugin'         : '3.1.1', // Android Gradle版本
+                'androidPlugin'         : '3.2.1', // Android Gradle版本
                 'buildTools'            : '27.0.3', // 编译工具版本
                 'supportLibrary'        : '27.1.1', // Android Support包版本
 
