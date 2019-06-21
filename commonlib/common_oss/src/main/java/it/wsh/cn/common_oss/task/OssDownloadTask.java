@@ -143,7 +143,7 @@ public class OssDownloadTask implements IDownloadTask {
      */
     private void notifyCreateError(IProcessListener callBack) {
         if (callBack != null) {
-            callBack.onComplete(IProcessListener.ERROR_DOWNLOAD_OSSTASK_CREATE, null);
+            callBack.onResult(IProcessListener.ERROR_DOWNLOAD_OSSTASK_CREATE, null);
         }
     }
 

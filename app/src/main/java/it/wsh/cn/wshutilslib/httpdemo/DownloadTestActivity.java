@@ -133,7 +133,7 @@ public class DownloadTestActivity extends AppCompatActivity {
         public void onClick(View v) {
 
             String downloadUrl = mDownloadUrl1;
-            boolean deleteDownloadTask = DownloadManager.getInstance().delete(downloadUrl);
+            boolean deleteDownloadTask = DownloadManager.getInstance().delete(downloadUrl, "tengxun.apk", "");
             if (deleteDownloadTask) {
                 Toast.makeText(DownloadTestActivity.this, "成功删除", Toast.LENGTH_SHORT).show();
                 mProgressBar2.setProgress(0);
@@ -172,7 +172,7 @@ public class DownloadTestActivity extends AppCompatActivity {
         public void onClick(View v) {
 
             String downloadUrl = mDownloadUrl1;
-            DownloadManager.getInstance().stop(downloadUrl, false);
+            DownloadManager.getInstance().stop(downloadUrl, "tengxun.apk", "");
         }
     };
 
@@ -243,11 +243,12 @@ public class DownloadTestActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onComplete(int stateCode, String info) {
+                public void onResult(int stateCode, String info) {
                     if (stateCode == IProcessListener.PAUSE) {
                         Log.d("wsh_log", "onPause");
+                        Toast.makeText(DownloadTestActivity.this,  info, Toast.LENGTH_SHORT).show();
                     }else {
-                        Toast.makeText(DownloadTestActivity.this, "下载失败：" + info, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(DownloadTestActivity.this, info, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -278,11 +279,12 @@ public class DownloadTestActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onComplete(int stateCode, String info) {
+                public void onResult(int stateCode, String info) {
                     if (stateCode == IProcessListener.PAUSE) {
                         Log.d("wsh_log", "onPause");
+                        Toast.makeText(DownloadTestActivity.this,  info, Toast.LENGTH_SHORT).show();
                     }else {
-                        Toast.makeText(DownloadTestActivity.this, "下载失败：" + info, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(DownloadTestActivity.this, info, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -304,11 +306,12 @@ public class DownloadTestActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onComplete(int stateCode, String info) {
+        public void onResult(int stateCode, String info) {
             if (stateCode == IProcessListener.PAUSE) {
                 Log.d("wsh_log", "onPause");
+                Toast.makeText(DownloadTestActivity.this,  info, Toast.LENGTH_SHORT).show();
             }else {
-                Toast.makeText(DownloadTestActivity.this, "下载失败：" + info, Toast.LENGTH_SHORT).show();
+                Toast.makeText(DownloadTestActivity.this, info, Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -325,11 +328,12 @@ public class DownloadTestActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onComplete(int stateCode, String info) {
+        public void onResult(int stateCode, String info) {
             if (stateCode == IProcessListener.PAUSE) {
                 Log.d("wsh_log", "onPause");
+                Toast.makeText(DownloadTestActivity.this,  info, Toast.LENGTH_SHORT).show();
             }else {
-                Toast.makeText(DownloadTestActivity.this, "下载失败：" + info, Toast.LENGTH_SHORT).show();
+                Toast.makeText(DownloadTestActivity.this, info, Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -346,11 +350,12 @@ public class DownloadTestActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onComplete(int stateCode, String info) {
+        public void onResult(int stateCode, String info) {
             if (stateCode == IProcessListener.PAUSE) {
                 Log.d("wsh_log", "onPause");
+                Toast.makeText(DownloadTestActivity.this,  info, Toast.LENGTH_SHORT).show();
             }else {
-                Toast.makeText(DownloadTestActivity.this, "下载失败：" + info, Toast.LENGTH_SHORT).show();
+                Toast.makeText(DownloadTestActivity.this, info, Toast.LENGTH_SHORT).show();
             }
         }
     };

@@ -61,7 +61,7 @@ public class OssManager {
             @Override
             public void error(int stateCode, String errorInfo) {
                 if (listener != null) {
-                    listener.onComplete(stateCode, errorInfo);
+                    listener.onResult(stateCode, errorInfo);
                 }
             }
         });
@@ -171,7 +171,7 @@ public class OssManager {
             @Override
             public void error(int stateCode, String errorInfo) {
                 if (callBack != null) {
-                    callBack.onComplete(stateCode, errorInfo);
+                    callBack.onResult(stateCode, errorInfo);
                 }
             }
         });

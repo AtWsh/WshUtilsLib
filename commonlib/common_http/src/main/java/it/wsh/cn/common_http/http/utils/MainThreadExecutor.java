@@ -31,7 +31,7 @@ public class MainThreadExecutor implements Executor {
         this.execute(new Runnable() {
             @Override
             public void run() {
-                listener.onComplete(stateCode, msg);
+                listener.onResult(stateCode, msg);
             }
         });
     }
@@ -41,7 +41,7 @@ public class MainThreadExecutor implements Executor {
         this.execute(new Runnable() {
             @Override
             public void run() {
-                listener.onComplete(IProcessListener.SUCCESS, msg);
+                listener.onResult(IProcessListener.SUCCESS, msg);
             }
         });
     }

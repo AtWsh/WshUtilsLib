@@ -1,15 +1,14 @@
 package it.wsh.cn.common_http.http.download;
 
 import android.content.Context;
+import android.support.annotation.IntDef;
 import android.text.TextUtils;
 
 import java.io.File;
-import java.util.HashMap;
 
 import it.wsh.cn.common_http.http.IProcessInfo;
 import it.wsh.cn.common_http.http.IProcessListener;
 import it.wsh.cn.common_http.http.database.bean.DownloadInfo;
-import it.wsh.cn.common_http.http.database.bean.OssInfo;
 import it.wsh.cn.common_http.http.database.daohelper.DownloadInfoDaoHelper;
 import it.wsh.cn.common_http.http.database.daohelper.OssInfoDaoHelper;
 
@@ -25,7 +24,16 @@ public class DownloadManager{
     private Context mContext;
 
     private static volatile DownloadManager sInstance;
-    private HashMap<Integer, IDownloadTask> mDownloadTasks = new HashMap<>();
+    private DownloadDataEngine mDownloadDataEngine = DownloadDataEngine.getInstance();
+
+    public static final int RESULT_EXIST = -2; //表示任务已经存在
+    public static final int RESULT_ERROR = 0; //表示失败
+    public static final int RESULT_OK = 1; //表示成功
+    public static final int RESULT_CACHE = 2; //表示进入了缓存队列
+
+    @IntDef({RESULT_ERROR, RESULT_OK, RESULT_CACHE})
+    public @interface Result {
+    }
 
     public static DownloadManager getInstance() {
         if (sInstance == null) {
@@ -134,8 +142,14 @@ public class DownloadManager{
             return -1;
         }
 
+        //2. 判断任务是否在下载中
+        boolean downloading = mDownloadDataEngine.isTaskDownloading(info.getKey());
+        if (downloading) { //在下载中
+            return -2;
+        }
+
         //2.创建DownloadTask
-        DownloadTask task = getDownloadTask(mContext, info, callBack);
+        DownloadTask task = createDownloadTask(mContext, info, callBack);
         if (task == null) {
             return -1;
         }
@@ -183,7 +197,7 @@ public class DownloadManager{
      * @param processListener
      */
     public boolean addDownloadListener(int key, IProcessListener processListener) {
-        IDownloadTask downloadTask = mDownloadTasks.get(key);
+        IDownloadTask downloadTask = mDownloadDataEngine.getDownloadTask(key);
         if (downloadTask != null) {
             return downloadTask.addListener(processListener);
         }
@@ -223,7 +237,7 @@ public class DownloadManager{
      * @param processListener
      */
     public boolean removeDownloadListener(int key, IProcessListener processListener) {
-        IDownloadTask downloadTask = mDownloadTasks.get(key);
+        IDownloadTask downloadTask = mDownloadDataEngine.getDownloadTask(key);
         if (downloadTask != null) {
             return downloadTask.removeProcessListener(processListener);
         }else {
@@ -252,7 +266,7 @@ public class DownloadManager{
     }
 
     public boolean stop(int key) {
-        IDownloadTask task = mDownloadTasks.get(key);
+        IDownloadTask task = mDownloadDataEngine.getDownloadTask(key);
         if (task != null) {
             task.exit();
             removeDownloadTask(key);
@@ -292,7 +306,7 @@ public class DownloadManager{
      * @return
      */
     public boolean delete(int key) {
-        IDownloadTask task = mDownloadTasks.get(key);
+        IDownloadTask task = mDownloadDataEngine.getDownloadTask(key);
         if (task != null) {
             task.delete();
             removeDownloadTask(key);
@@ -301,20 +315,16 @@ public class DownloadManager{
     }
 
     /**
-     * 获取DownloadTask
+     * 构建新的DownloadTask
      * @param mContext
      * @param info
      * @return
      */
-    private DownloadTask getDownloadTask(Context mContext, DownloadInfo info, IProcessListener callBack) {
+    private DownloadTask createDownloadTask(Context mContext, DownloadInfo info, IProcessListener callBack) {
         if (mContext == null || info == null) {
             return null;
         }
 
-        IDownloadTask cacheTask = mDownloadTasks.get(info.getKey());
-        if (cacheTask != null ) { //在下载中
-            return null;
-        }
         DownloadTask task = new DownloadTask(mContext, info, callBack);
         return task;
     }
@@ -416,10 +426,7 @@ public class DownloadManager{
      * @param task
      */
     private void saveDownloadTask(int key, IDownloadTask task) {
-        if (key == -1 || task == null) {
-            return;
-        }
-        mDownloadTasks.put(key, task);
+        mDownloadDataEngine.addDownloadTask(key, task);
     }
 
     /**
@@ -427,8 +434,6 @@ public class DownloadManager{
      * @param key
      */
     public void removeDownloadTask(int key) {
-        if (mDownloadTasks.containsKey(key)) {
-            mDownloadTasks.remove(key);
-        }
+        mDownloadDataEngine.removeDownloadTask(key);
     }
 }

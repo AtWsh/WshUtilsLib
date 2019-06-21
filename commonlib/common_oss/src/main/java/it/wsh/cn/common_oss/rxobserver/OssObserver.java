@@ -105,7 +105,7 @@ public class OssObserver implements Observer<OssInfo> {
             return;
         }
         for (IProcessListener listener : mListeners) {
-            listener.onComplete(IProcessListener.ERROR_DOWNLOAD_RETROFIT, e.getMessage());
+            listener.onResult(IProcessListener.ERROR_DOWNLOAD_RETROFIT, e.getMessage());
         }
     }
 
@@ -117,7 +117,7 @@ public class OssObserver implements Observer<OssInfo> {
             return;
         }
         for (IProcessListener listener : mListeners) {
-            listener.onComplete(IProcessListener.PAUSE, "");
+            listener.onResult(IProcessListener.PAUSE, "");
         }
     }
 }

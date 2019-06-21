@@ -12,7 +12,7 @@ import it.wsh.cn.common_http.http.database.bean.DownloadInfo;
 /**
  * author: wenshenghui
  * created on: 2018/9/27 18:16
- * description:
+ * description: 下载任务观察者，控制数据接收和分发
  */
 public class DownloadObserver implements Observer<DownloadInfo> {
 
@@ -118,7 +118,7 @@ public class DownloadObserver implements Observer<DownloadInfo> {
             return;
         }
         for (IProcessListener listener : mListeners) {
-            listener.onComplete(IProcessListener.ERROR_DOWNLOAD_RETROFIT, e.getMessage());
+            listener.onResult(IProcessListener.ERROR_DOWNLOAD_RETROFIT, e.getMessage());
         }
     }
 
@@ -130,7 +130,7 @@ public class DownloadObserver implements Observer<DownloadInfo> {
             return;
         }
         for (IProcessListener listener : mListeners) {
-            listener.onComplete(IProcessListener.PAUSE, "");
+            listener.onResult(IProcessListener.PAUSE, "Download pause");
         }
     }
 
@@ -139,7 +139,7 @@ public class DownloadObserver implements Observer<DownloadInfo> {
             return;
         }
         for (IProcessListener listener : mListeners) {
-            listener.onComplete(IProcessListener.SUCCESS, "");
+            listener.onResult(IProcessListener.SUCCESS, "Download finish");
         }
     }
 }

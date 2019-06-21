@@ -21,6 +21,7 @@ import it.wsh.cn.common_http.http.HttpCallBack;
 import it.wsh.cn.common_http.http.HttpConfig;
 import it.wsh.cn.wshutilslib.R;
 import it.wsh.cn.wshutilslib.httpdemo.DownloadTestActivity;
+import it.wsh.cn.wshutilslib.httpdemo.DownloadTestActivity2;
 import it.wsh.cn.wshutilslib.httpdemo.LifeCircleTestActivity;
 import it.wsh.cn.wshutilslib.httpdemo.bean.AccountExistResponse;
 import it.wsh.cn.wshutilslib.httpdemo.bean.NoticeListResponse;

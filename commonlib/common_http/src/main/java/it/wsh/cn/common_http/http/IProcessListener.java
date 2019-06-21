@@ -13,9 +13,9 @@ public interface IProcessListener {
     int ERROR_DOWNLOAD_RETROFIT = 1001;
     int ERROR_DOWNLOAD_OSSTASK_CREATE = 1002;
 
-    void onStart();
-    void onProgress(IProcessInfo info);
-    void onComplete(int stateCode, String info);
+    void onStart(); //任务开启则会回调，
+    void onProgress(IProcessInfo info); //只回调进度，不关心状态
+    void onResult(int stateCode, String info); //只关心状态：暂停或结束
 
 
     /**

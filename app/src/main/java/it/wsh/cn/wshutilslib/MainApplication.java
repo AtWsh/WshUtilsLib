@@ -16,6 +16,7 @@ import it.wsh.cn.common_pay.pay.PayManager;
 import it.wsh.cn.componentbase.application.ApplicationConfig;
 import it.wsh.cn.componentbase.application.BaseApplication;
 import it.wsh.cn.wshutilslib.config.OssBusinessConfig;
+import it.wsh.cn.wshutilslib.httpdemo.DownloadHelper;
 
 /**
  * author: wenshenghui
@@ -58,6 +59,7 @@ public class MainApplication extends BaseApplication {
         GlideConfig.addModelLoaderFactory(new AliyunOSSModelLoaderFactory());
 
         HttpManager.init(this);
+        DownloadHelper.getInstance().init(this);
 
         //在使用SDK各组件之前初始化context信息，传入ApplicationContext
         SDKInitializer.initialize(this);

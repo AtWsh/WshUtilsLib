@@ -53,7 +53,7 @@ public class OssDownloadManager {
 
         if (TextUtils.isEmpty(downloadUrl) || configInfo == null) {
             if (callBack != null) {
-                callBack.onComplete(IProcessListener.ERRCODE_UPLOAD_UNKNOWN_ERR,
+                callBack.onResult(IProcessListener.ERRCODE_UPLOAD_UNKNOWN_ERR,
                         "downloadUrl is empty or OssConfigInfo == null");
             }
             return ;
@@ -61,7 +61,7 @@ public class OssDownloadManager {
         //1.构建IDownloadInfo
         OssInfo info = getOssInfo(downloadUrl, fileName, savePath);
         if (info == null) {
-            callBack.onComplete(IProcessListener.ERRCODE_UPLOAD_UNKNOWN_ERR,
+            callBack.onResult(IProcessListener.ERRCODE_UPLOAD_UNKNOWN_ERR,
                     "OssEntity == null");
             return ;
         }
@@ -73,14 +73,14 @@ public class OssDownloadManager {
         info.setSecurityToken(configInfo.SecurityToken);
         IDownloadTask cacheTask = mDownloadTasks.get(info.getKey());
         if (cacheTask != null ) { //在下载中
-            callBack.onComplete(IProcessListener.ERRCODE_UPLOAD_UNKNOWN_ERR,
+            callBack.onResult(IProcessListener.ERRCODE_UPLOAD_UNKNOWN_ERR,
                     "The task is downloading");
             return ;
         }
         //2.创建OssTask 下载用Task
         OssDownloadTask task = getOssTask(mContext, info, callBack);
         if (task == null) {
-            callBack.onComplete(IProcessListener.ERRCODE_UPLOAD_UNKNOWN_ERR,
+            callBack.onResult(IProcessListener.ERRCODE_UPLOAD_UNKNOWN_ERR,
                     "OssDownloadTask == null");
             return ;
         }

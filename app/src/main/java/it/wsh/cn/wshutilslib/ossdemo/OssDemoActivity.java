@@ -122,7 +122,7 @@ public class OssDemoActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onComplete(int stateCode, String info) {
+            public void onResult(int stateCode, String info) {
                 Log.i(TAG, "doOssUploadTest onComplete  stateCode = " + stateCode);
             }
         });
@@ -188,7 +188,7 @@ public class OssDemoActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onComplete(int stateCode, String info) {
+            public void onResult(int stateCode, String info) {
                 Log.i(TAG, "doNormalShowPicTest  onComplete  stateCode = " + stateCode + "     info = " + info);
             }
         });
