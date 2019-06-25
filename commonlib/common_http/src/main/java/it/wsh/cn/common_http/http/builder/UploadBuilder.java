@@ -38,7 +38,7 @@ public abstract class UploadBuilder<T> extends LifeCycleBuilder<T> {
         RequestBody imgBody = RequestBody.create(MultipartBody.FORM, file);
         RequestBody textBody = RequestBody.create(HttpConstants.TEXT_TYPE, des);
         mPartMap.put(HttpConstants.FILE_NAME + file.getName(), imgBody);
-        mPartMap.put(HttpConstants.FILE_NAME + file.getName(), textBody);
+        mPartMap.put(HttpConstants.FILE_DES + file.getName(), textBody);
         return this;
     }
 

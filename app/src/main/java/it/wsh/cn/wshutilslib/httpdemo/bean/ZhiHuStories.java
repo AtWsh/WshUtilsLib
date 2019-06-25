@@ -23,7 +23,7 @@ public class ZhiHuStories {
         return  "type = " + type +
                 "; id = " + id +
                 "; ga_prefix = " + ga_prefix +
-                "; title = " + images +
+                "; title = " + title +
                 "; images = " + (images == null ? "" : images.toString());
     }
 }

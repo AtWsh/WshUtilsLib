@@ -21,7 +21,6 @@ import it.wsh.cn.common_http.http.HttpCallBack;
 import it.wsh.cn.common_http.http.HttpConfig;
 import it.wsh.cn.common_http.http.request.HttpRequest;
 import it.wsh.cn.wshutilslib.R;
-import it.wsh.cn.wshutilslib.httpanotationtest.HttpAnnotationDemoActivity;
 import it.wsh.cn.wshutilslib.httpdemo.bean.AccountExistResponse;
 import it.wsh.cn.wshutilslib.httpdemo.bean.LocalServerLoginResponse;
 import it.wsh.cn.wshutilslib.httpdemo.bean.NoticeListResponse;
